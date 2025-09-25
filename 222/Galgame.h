@@ -32,17 +32,16 @@ namespace galgame
 
 		float speed;
 		
-		int scrHeight;
-		int scrWidth;
+		Vector2 pos;
 
 		
 		
-		StandardTextBox(const std::string& textL0, const std::string& textL1, float textSize, rlRAII::FileRAII fontData, float speed) :
+		StandardTextBox(const std::string& textL0, const std::string& textL1, float textSize, rlRAII::FileRAII fontData, float speed, Vector2 pos, float width) :
 			textSize(textSize), spacing(textSize * 0.1f), lineSpacing(textSize * 0.3f), speed(speed), timeCount(0.0f), drawing(true),
 			font(DynamicLoadFontFromMemory((textL0 + textL1).c_str(), fontData.fileName(), fontData.get(), fontData.size(), textSize)),
-			textHeight(MeasureTextEx(font.get(), textL0.c_str(), textSize, spacing).y)
+			textHeight(MeasureTextEx(font.get(), textL0.c_str(), textSize, spacing).y), pos(pos)
 		{
-			std::vector<std::vector<int>> t0 = TextLineCaculateWithWordWrap(textL0.c_str(), textSize, spacing, font.get(), 1280);//主文本占2/3屏，1280px
+			std::vector<std::vector<int>> t0 = TextLineCaculateWithWordWrap(textL0.c_str(), textSize, spacing, font.get(), width);//主文本占2/3屏，1280px
 			
 			totalPixel = 0;
 
@@ -61,7 +60,7 @@ namespace galgame
 				UnloadUTF8(text);
 			}
 
-			std::vector<std::vector<int>> t1 = TextLineCaculateWithWordWrap(textL1.c_str(), textSize, spacing, font.get(), 1280);//主文本占2/3屏，1280px
+			std::vector<std::vector<int>> t1 = TextLineCaculateWithWordWrap(textL1.c_str(), textSize, spacing, font.get(), width);
 
 			for (auto& s : t1)
 			{
@@ -105,7 +104,7 @@ namespace galgame
 		StandardTextBoxDraw(Vector2 position, rlRAII::RenderTexture2DRAII texture) : pos(position), texture(texture) {}
 		void draw() override
 		{
-			DrawTextureRec(texture.get().texture, { 0, 0, float(texture.get().texture.width), -float(texture.get().texture.height) }, {320,720}, WHITE);
+			DrawTextureRec(texture.get().texture, { 0, 0, float(texture.get().texture.width), -float(texture.get().texture.height) }, pos, WHITE);
 			//DrawTextureV(texture.get().texture, { 500,500 }, WHITE);
 		}
 	};
@@ -137,29 +136,30 @@ namespace galgame
 
 					int activePixelTmp = comActive.timeCount * comActive.speed * 2000;
 
+					if (activePixelTmp - comActive.activePixel > 10)
+					{
+						comInactive.activePixel = activePixelTmp;
+					}
+
 					if (comActive.activePixel < comActive.totalPixel)
 					{
 						comInactive.timeCount += GetFrameTime();
 						comActive.timeCount += GetFrameTime();
+						//comInactive.activePixel = activePixelTmp;
 					}
 					
 					
-					if (activePixelTmp - comActive.activePixel > 10)
+					if (activePixelTmp - comActive.activePixel > 10 && comActive.activePixel < comActive.totalPixel)
 					{
-						//rlRAII::RenderTexture2DRAII textureTmp(LoadRenderTexture(1280, int(comActive.totalHeightL0 + comActive.totalHeightL1)));
-						//UnloadRenderTexture(textureTmp.get());
 						textureTmp = LoadRenderTexture(1280, int(comActive.totalHeightL0 + comActive.totalHeightL1));
 
-						comInactive.activePixel = activePixelTmp;
 						int activePixel0 = activePixelTmp;
 						int activePixel1 = activePixelTmp;
 						
-
-						//int drawLine = 0;
 						int spacing = comActive.textHeight + comActive.lineSpacing;
 						BeginTextureMode(textureTmp.get());
 						ClearBackground(BLANK);
-						for (int activeLine = 0; activeLine < comActive.textL0.size() && activePixel0; ++activeLine)//, ++drawLine)
+						for (int activeLine = 0; activeLine < comActive.textL0.size() && activePixel0; ++activeLine)
 						{
 							if (activePixel0 >= comActive.textL0[activeLine].get().width)
 							{
@@ -172,8 +172,7 @@ namespace galgame
 								activePixel0 = 0;
 							}
 						}
-						//drawLine = 1;
-						for (int activeLine = 0; activeLine < comActive.textL1.size() && activePixel1; ++activeLine)//, ++drawLine)
+						for (int activeLine = 0; activeLine < comActive.textL1.size() && activePixel1; ++activeLine)
 						{
 							if (activePixel1 >= comActive.textL1[activeLine].get().width)
 							{
@@ -190,7 +189,7 @@ namespace galgame
 						
 					}
 
-					(*layers)[layerDepth].push_back(std::make_unique<StandardTextBoxDraw>(StandardTextBoxDefaultPosition, textureTmp));
+					(*layers)[layerDepth].push_back(std::make_unique<StandardTextBoxDraw>(comActive.pos, textureTmp));
 				}
 			);
 		}

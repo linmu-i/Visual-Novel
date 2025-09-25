@@ -298,7 +298,9 @@ public:
 				text1,//u8"非常に長い一段で、自動改行のテストに使用できる、意味や象徴的な意味のない、無作為に打たれた、冗長なテストテキストです。",
 				50,
 				FontData,
-				1.0f
+				1.0f,
+				{ float(GetScreenWidth() / 6), float(GetScreenHeight() / 3 * 2) },
+				GetScreenWidth() / 3 * 2
 			));
 			isInitialized = true;
 			return selfNode;
@@ -477,7 +479,9 @@ public:
 				text1,//u8"非常に長い一段で、自動改行のテストに使用できる、意味や象徴的な意味のない、無作為に打たれた、冗長なテストテキストです。",
 				50,
 				FontData,
-				1.0f
+				1.0f,
+				{ float(GetScreenWidth() / 6), float(GetScreenHeight() / 3 * 2) },
+				GetScreenWidth() / 3 * 2
 			));
 			isInitialized = true;
 			return selfNode;
