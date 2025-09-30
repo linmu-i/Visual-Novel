@@ -269,6 +269,7 @@ Font DynamicLoadFont(const char* text, const char* fontPath, float fontSize)
 	int* codepoints = LoadCodepoints(text, &codepointCount);
 	Font font = LoadFontEx(fontPath, fontSize, codepoints, codepointCount);
 	UnloadCodepoints(codepoints);
+	SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
 	return font;
 }
 

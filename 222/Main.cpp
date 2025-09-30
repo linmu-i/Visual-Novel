@@ -32,22 +32,24 @@ private:
 	int background;
 	int buttonExId;
 	int animationId;
+	float& volume;
 
 	class System : public ecs::SystemBase
 	{
 	private:
 		AllStates& state;
+		float& volume;
 		int start;
 		int config;
 		ecs::MessageManager& msgMgr;
 		rlRAII::MusicRAII music;
 
 	public:
-		System(ecs::MessageManager* msgMgr, AllStates& state, int start, int config, rlRAII::MusicRAII& music) : msgMgr(*msgMgr), state(state), start(start), config(config), music(music) {}
+		System(ecs::MessageManager* msgMgr, AllStates& state, int start, int config, rlRAII::MusicRAII& music, float& volume) : msgMgr(*msgMgr), state(state), start(start), config(config), music(music), volume(volume) {}
 
 		void update()
 		{
-			
+			SetMusicVolume(music.get(), volume);
 			UpdateMusicStream(music.get());
 			auto s = msgMgr.getMessageList(start);
 			auto c = msgMgr.getMessageList(config);
@@ -69,7 +71,7 @@ private:
 	};
 
 public:
-	MenuWorld(AllStates& state, int scrX, int scrY) : state(state), music("resource\\music\\1.mp3"), World2D(scrX, scrY)
+	MenuWorld(AllStates& state, int scrX, int scrY, float& volume) : state(state), music("resource\\music\\1.mp3"), World2D(scrX, scrY), volume(volume)
 	{
 		PlayMusicStream(music.get());
 		ui::ApplyButton(*this);
@@ -102,7 +104,7 @@ public:
 		this->getSystem<ui::ButtonSystem>()->registerListener(buttonStart, buttonStart);
 		this->getSystem<ui::ButtonSystem>()->registerListener(buttonConfig, buttonConfig);
 
-		this->addSystem(System(this->getMessageManager(), state, buttonStart, buttonConfig, music));
+		this->addSystem(System(this->getMessageManager(), state, buttonStart, buttonConfig, music, volume));
 	}
 
 
@@ -117,6 +119,8 @@ private:
 	int back;
 	int select;
 	int text;
+	int musicDynamicSlider;
+	int mscVlm;
 
 	rlRAII::Texture2DRAII bg;
 	bool initialized = false;
@@ -129,19 +133,21 @@ private:
 		AllStates& state;
 		int back;
 		int select;
+		int slider;
 		ecs::MessageManager& msgMgr;
-		ui::ButtonCom& but0;
-		ui::ButtonCom& but1;
 		bool& showFPS;
 		float& timeCount;
+		float& volume;
+		ecs::World2D* wld;
 
 	public:
-		System(ecs::MessageManager* msgMgr, AllStates& state, int back, int select, bool& showFPS, ui::ButtonCom& but0, ui::ButtonCom& but1, bool& init, float& timeCount) : msgMgr(*msgMgr), state(state), back(back), select(select), but0(but0), but1(but1), showFPS(showFPS), timeCount(timeCount) {}
+		System(ecs::MessageManager* msgMgr, AllStates& state, int back, int select, int slider, bool& showFPS, float& volume, ecs::World2D* wld, bool& init, float& timeCount) : msgMgr(*msgMgr), state(state), back(back), select(select), wld(wld), showFPS(showFPS), timeCount(timeCount), slider(slider), volume(volume) {}
 
 		void update()
 		{
 			auto b = msgMgr.getMessageList(back);
-			auto s = msgMgr.getMessageList(select);
+			auto s = wld->getDoubleBuffer<ui::SwitchCom>()->active()->get(select);
+			volume = wld->getDoubleBuffer<ui::SliderCom>()->active()->get(slider)->value * 2.0f;
 			if (b != nullptr)
 			{
 				if (b->size() > 0)
@@ -153,25 +159,19 @@ private:
 			}
 			if (s != nullptr)
 			{
-				if (s->size() > 0)
+				if (s->state)
 				{
-					if (showFPS)
-					{
-						showFPS = false;
-						but0.text = "";
-						but1.text = "";
-					}
-					else
-					{
-						showFPS = true;
-						but0.text = ".";
-						but1.text = ".";
-					}
+					showFPS = true;
+				}
+				else
+				{
+					showFPS = false;
 				}
 			}
 		}
 	};
 
+	/*
 	class Dr : public ecs::DrawBase
 	{
 	public:
@@ -179,7 +179,7 @@ private:
 		{
 			DrawCircle(1010, 536, 10, WHITE);
 		}
-	};
+	};*/
 
 	class BG : public ecs::DrawBase
 	{
@@ -207,28 +207,36 @@ private:
 
 		void update() override
 		{
-			layer[1].push_back(std::make_unique<Dr>(Dr()));
+			//layer[1].push_back(std::make_unique<Dr>(Dr()));
 			layer[0].push_back(std::make_unique<BG>(bg));
 		}
 	};
 
 public:
-	Config(AllStates& state, bool& showFPS, int scrX, int scrY) : state(state), showFPS(showFPS), World2D(scrX, scrY)
+	Config(AllStates& state, bool& showFPS, float& volume, int scrX, int scrY) : state(state), showFPS(showFPS), World2D(scrX, scrY)
 	{
 		ui::ApplyButton(*this);
+		ui::ApplySwitch(*this);
+		ui::ApplySlider(*this);
+		ui::ApplyTextBoxEx(*this);
 
 		back = this->getEntityManager()->getId();
 		select = this->getEntityManager()->getId();
 		text = this->getEntityManager()->getId();
+		mscVlm = this->getEntityManager()->getId();
+		musicDynamicSlider = this->getEntityManager()->getId();
 
 		this->createUnit(back, ui::ButtonCom({ 150,150 }, 300, 80, 50, WHITE, BLUE, "Back", nullptr));
-		this->createUnit(select, ui::ButtonCom({ 1000,500 }, 20, 20, 100, BLACK, nullptr, ".", nullptr));
-		this->createUnit(text, ui::ButtonCom({ 850,537 }, 0, 0, 50, WHITE, BLUE, "ShowFPS", nullptr));
+		this->createUnit(select, ui::SwitchCom(12, {0xaa, 0xaa, 0xff, 0xff}, { 550, 530 }, 3));//ui::ButtonCom({ 1000,500 }, 20, 20, 100, BLACK, nullptr, ".", nullptr));
+		//this->createUnit(text, ui::ButtonCom({ 850,537 }, 0, 0, 50, WHITE, BLUE, "ShowFPS", nullptr));
+		this->createUnit(text, ui::TextBoxExCom(FontData, u8"显示帧率: ", { 350,500 }, WHITE, 5, 50, 5));
+		this->createUnit(mscVlm, ui::TextBoxExCom(FontData, u8"音量调节: ", { 850,500 }, WHITE, 5, 50, 5));
+		this->createUnit(musicDynamicSlider, ui::SliderCom(300, 0.5f, 1.0f, 0, { 1200,530 }, { 0xaa,0xaa,0xaa,0xff }, { 0xaa,0xaa,0xff,0xff }, nullptr, nullptr, 3));
 
 		this->getSystem<ui::ButtonSystem>()->registerListener(back, back);
 		this->getSystem<ui::ButtonSystem>()->registerListener(select, select);
 
-		this->addSystem(System(this->getMessageManager(), state, back, select, showFPS, *(this->getDoubleBuffer<ui::ButtonCom>()->active()->get(select)), *(this->getDoubleBuffer<ui::ButtonCom>()->inactive()->get(select)), initialized, timeCount));
+		this->addSystem(System(this->getMessageManager(), state, back, select, musicDynamicSlider, showFPS, volume, this, initialized, timeCount));
 		this->addSystem(Sys(this->getUiLayer(), bg));
 	}
 
@@ -496,7 +504,7 @@ private:
 
 	std::vector<std::unique_ptr<SceneBase>> mainList;
 
-	
+	float& volume;
 	
 
 	class System : public ecs::SystemBase
@@ -505,16 +513,18 @@ private:
 		std::vector<std::unique_ptr<SceneBase>>& mainList;
 		gotoNode<SceneBase> pointer;
 		bool active = false;
+		float& volume;
 		rlRAII::MusicRAII music = rlRAII::MusicRAII("resource\\music\\2.mp3");
 
 	public:
-		System(std::vector<std::unique_ptr<SceneBase>>& mainList) : mainList(mainList)
+		System(std::vector<std::unique_ptr<SceneBase>>& mainList, float& volume) : mainList(mainList), volume(volume)
 		{
 			PlayMusicStream(music.get());
 		}
 
 		void update() override
 		{
+			SetMusicVolume(music.get(), volume);
 			UpdateMusicStream(music.get());
 			if (active)
 			{
@@ -531,7 +541,7 @@ private:
 	};
 
 public:
-	Main(std::string font, int scrX, int scrY) : font(font), World2D(scrX, scrY)
+	Main(std::string font, int scrX, int scrY, float& volume) : font(font), World2D(scrX, scrY), volume(volume)
 	{
 		mainList.push_back(std::make_unique<MainScene>(MainScene(this, { &mainList, 0 }, { &mainList, 1 }, u8"你好。", u8"こんにちは。", font)));
 		mainList.push_back(std::make_unique<MainScene>(MainScene(this, { &mainList, 1 }, { &mainList, 2 }, u8"这里并没有什么Galgame。", u8"ここには特にガルゲームはありません。", font)));
@@ -556,7 +566,7 @@ public:
 		ui::ApplyButton(*this);
 		gal::ApplyStandardTextBox(*this);
 
-		this->addSystem(System(mainList));
+		this->addSystem(System(mainList, volume));
 	}
 
 };
@@ -577,10 +587,11 @@ int main()
 	AllStates state = AllStates::Menu;
 
 	bool showFPS = true;
+	float volume = 1.0f;
 
-	MenuWorld menu(state, WinWidth, WinHeight);
-	Config config(state, showFPS, WinWidth, WinHeight);
-	Main main(FONT_PATH, WinWidth, WinHeight);
+	MenuWorld menu(state, WinWidth, WinHeight, volume);
+	Config config(state, showFPS, volume, WinWidth, WinHeight);
+	Main main(FONT_PATH, WinWidth, WinHeight, volume);
 
 	//rlRAII::FileRAII fd = FONT_PATH;
 	//rlRAII::FontRAII f = DynamicLoadFontFromMemory((std::string(u8"一段非常之长的，可用于测试自动换行的，包含符号的，没有任何现实意义与象征意义的，随便乱打的，废话连篇的测试文本") + std::string(u8"非常に長い一段で、自動改行のテストに使用できる、意味や象徴的な意味のない、無作為に打たれた、冗長なテストテキストです。")).c_str(), fd.fileName(), fd.get(), fd.size(), 50);
