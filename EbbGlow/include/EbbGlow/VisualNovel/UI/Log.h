@@ -1,36 +1,35 @@
 #pragma once
 
+#include <EbbGlow/Core/ECS/SubSystem.h>
+#include <EbbGlow/UI/UI.h>
 #include <EbbGlow/VisualNovel/ScriptLoader/ScriptLoader.h>
 
 namespace ebbglow::visualnovel
 {
-	struct ItemCom
+	struct Item
 	{
 		std::string text;
 		std::string exText;
 		std::string voicePath;
 		std::string sceneName;
 
-		Vec2 position;
+		Rect region;
 		float scale;
 		const VisualNovelConfig& cfg;
 		rsc::SharedFont font;
 
-		core::entity jumpButtonId;
-		core::entity voiceButtonId;
-
-		ItemCom(const std::string& text, const std::string& exText, const std::string& voicePath, const std::string& sceneName, Vec2 position, float scale, const VisualNovelConfig& cfg)
-			: text(text), exText(exText), voicePath(voicePath), sceneName(sceneName), position(position), scale(scale), cfg(cfg) {
+		Item(const std::string& text, const std::string& exText, const std::string& voicePath, const std::string& sceneName, Rect region, float scale, const VisualNovelConfig& cfg)
+			: text(text), exText(exText), voicePath(voicePath), sceneName(sceneName), region(region), scale(scale), cfg(cfg) {
 		}
 	};
 
 	class ItemDraw : public core::DrawBase
 	{
 	private:
-		const ItemCom& com;
+		const Item& com;
 
 	public:
-		ItemDraw(const ItemCom& com) : com(com) {}
+		ItemDraw(const Item& com) : com(com) {}
 		void draw() override;
 	};
 
@@ -43,11 +42,14 @@ namespace ebbglow::visualnovel
 		core::DoubleComs<LogCom>* coms;
 		ScriptLoader* scLoader;
 
-		core::Layers layersBuf;
+		core::Layer layerBuf;
 		rsc::SharedRenderTexture2D textureBuf;
+		core::SubSystem<ui::ButtonExCom, ui::ButtonExSystem> buttonSubSys;
 
 	public:
-		LogSystem(ScriptLoader* scLoader) : scLoader(scLoader), world(&scLoader->world) {}
+		LogSystem(ScriptLoader* scLoader) :
+			scLoader(scLoader), world(&scLoader->world), coms(scLoader->world.getDoubleBuffer<LogCom>()), buttonSubSys(scLoader->world) {}
+		
 
 		void update() override;
 	};

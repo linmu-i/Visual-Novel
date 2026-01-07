@@ -29,19 +29,20 @@ namespace ebbglow::core
 
 	public:
 		AddBuffer(ComponentPoolBase* pool0, ComponentPoolBase* pool1) : AddBufferBase(pool0, pool1) {}
-		void addBuffer(entity id, T&& data)
+		template<typename U>
+		void addBuffer(entity id, U&& data)
 		{
-			buffer.emplace_back(id, std::forward<T>(data));
+			buffer.emplace_back(id, std::forward<U>(data));
 		}
 
 		void addToPool() override
 		{
 			ComponentPool<T>* p0 = static_cast<ComponentPool<T>*>(pool0);
 			ComponentPool<T>* p1 = static_cast<ComponentPool<T>*>(pool1);
-			for (auto& b : buffer)
+			for (auto& [id, data] : buffer)
 			{
-				p0->add(b.first, b.second);
-				p1->add(b.first, b.second);
+				p0->add(id, data);
+				p1->add(id, std::move(data));
 			}
 			buffer.clear();
 		}

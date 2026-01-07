@@ -37,5 +37,22 @@ namespace ebbglow::core
 			system.update();
 			doubleComs.swap();
 		}
+
+		template<typename ComTRef>
+		SubSystem& createUnit(entity id, ComTRef&& com)
+		{
+			waitAdd.addBuffer(std::forward<ComTRef>(com));
+			return *this;
+		}
+
+		void deleteUnit(entity id)
+		{
+			waitDelete.push_back(id);
+		}
+
+		DoubleComs<ComT>* getDoubleBuffer()
+		{
+			return &doubleComs;
+		}
 	};
 }
