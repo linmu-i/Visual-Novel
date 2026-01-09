@@ -71,6 +71,10 @@ namespace ebbglow
 		{
 			return { width, height };
 		}
+		[[nodiscard]] constexpr Rect offsetOf(Vec2 offset) const noexcept
+		{
+			return Rect{ x + offset.x, y + offset.y, width, height };
+		}
 	};
 
 	namespace colors

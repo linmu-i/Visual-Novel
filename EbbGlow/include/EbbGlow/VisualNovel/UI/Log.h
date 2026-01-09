@@ -15,11 +15,11 @@ namespace ebbglow::visualnovel
 
 		Rect region;
 		float scale;
-		const VisualNovelConfig& cfg;
+		const VisualNovelConfig* cfg;
 		rsc::SharedFont font;
 
 		Item(const std::string& text, const std::string& exText, const std::string& voicePath, const std::string& sceneName, Rect region, float scale, const VisualNovelConfig& cfg)
-			: text(text), exText(exText), voicePath(voicePath), sceneName(sceneName), region(region), scale(scale), cfg(cfg) {
+			: text(text), exText(exText), voicePath(voicePath), sceneName(sceneName), region(region), scale(scale), cfg(&cfg) {
 		}
 	};
 
@@ -33,7 +33,32 @@ namespace ebbglow::visualnovel
 		void draw() override;
 	};
 
-	struct LogCom {};
+	void DrawItem(const Item& item) noexcept;
+
+	struct LogCom
+	{
+		float wheelDeltaCount;
+		uint32_t index;
+
+		bool animationUp;
+		bool animationDown;
+		float animationTime;
+
+		rsc::SharedRenderTexture2D textureBuf;
+		std::vector<core::entity> voiceButton;
+		std::vector<core::entity> jumpButton;
+		std::vector<Item> items;
+	};
+
+	class LogDraw : public core::DrawBase
+	{
+	private:
+		const LogCom& com;
+
+	public:
+		LogDraw(const LogCom& com) : com(com) {}
+		void draw() override;
+	};
 
 	class LogSystem : public core::SystemBase
 	{
@@ -43,7 +68,7 @@ namespace ebbglow::visualnovel
 		ScriptLoader* scLoader;
 
 		core::Layer layerBuf;
-		rsc::SharedRenderTexture2D textureBuf;
+		
 		core::SubSystem<ui::ButtonExCom, ui::ButtonExSystem> buttonSubSys;
 
 	public:

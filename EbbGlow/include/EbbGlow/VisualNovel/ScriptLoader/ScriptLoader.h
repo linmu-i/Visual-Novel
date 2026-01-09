@@ -62,6 +62,9 @@ namespace ebbglow::visualnovel
 		//设置
 		VisualNovelConfig& cfg;
 
+		//多语言文本
+		std::unordered_map<std::string, std::vector<std::string>> i18nText;
+
 		ScriptLoader(core::World2D& world, VisualNovelConfig& cfg, MusicManager* musicMgr) : world(world), cfg(cfg), musicMgr(*musicMgr) {}
 		std::future<void> init(const std::string& filePath) noexcept;
 		void loadScene(rsc::SharedFile::Iterator& it) noexcept;

@@ -37,4 +37,15 @@ namespace ebbglow::visualnovel
 		if (args.empty()) return;
 		loader->beginScene = GetString(args.front(), *loader);
 	}
+	void Global_I18nText(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	{
+		if (args.size() < 2) return;
+		std::vector<std::string> text;
+		text.reserve(args.size() - 1);
+		for (size_t i = 1; i < args.size(); ++i)
+		{
+			text.push_back(GetString(args[i], *loader));
+		}
+		loader->i18nText.emplace(args[0], std::move(text));
+	}
 }

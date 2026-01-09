@@ -82,6 +82,8 @@ namespace ebbglow::visualnovel
 			loader->idList.push_back(idMgr->getId());
 			world.createUnit(loader->idList.back(), ui::ImageBoxExCom({ cfg.textBoxBackGround, Vec2{ (cfg.ScreenWidth - cfg.textBoxBackGround.width() * scale) / 2, cfg.ScreenHeight * (0.75f - 0.03125f)} + cfg.drawOffset, cfg.LayerDefine.textBoxBackGroundLayer, world.getUiLayer(), scale }));
 		}
+
+		loader->logTmp.text = GetString(args[cfg.mainLanguage], *loader) + '\n' + GetString(args[cfg.secondaryLanguage], *loader);
 	}
 
 	void Scene_Chr(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
@@ -104,6 +106,8 @@ namespace ebbglow::visualnovel
 
 		loader->idList.push_back(world.getEntityManager()->getId());
 		world.createUnit(loader->idList.back(), ui::TextBoxExCom{ cfg.fontData, GetString(args[0], *loader), Vec2{float(x + textOffsetX), float(y)} + cfg.drawOffset, float(cfg.textSize), 0.1f * cfg.textSize, colors::White, loader->world.getUiLayer(), cfg.LayerDefine.textBoxLayer });
+
+		loader->logTmp.exText = GetString(args[0], *loader);
 	}
 
 	void Scene_Button(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
@@ -208,6 +212,14 @@ namespace ebbglow::visualnovel
 	void Scene_SetNum(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
 	{
 		if (args.size() < 2) return;
+		if (args[0].empty()) return;
+		int32_t offset = 0;
+		size_t posOfIndex = args[0].find_last_of('[');
+		if (args[0].back() == ']')
+		{
+			std::string offsetText = args[0].substr(posOfIndex + 1, args[0].length() - posOfIndex - 2);
+			offset = static_cast<int32_t>(round(GetNumber(offsetText, '\0', *loader)));
+		}
 		double* var = GetNumberVariable(args[0], *loader);
 		if (var == nullptr) return;
 		*var = GetNumber(args[1], '\0', * loader);
@@ -236,8 +248,6 @@ namespace ebbglow::visualnovel
 		bool isLoop = args[2] == "@Loop";
 		KeyframeAnimBuffer().id = world.getEntityManager()->getId();
 		KeyframeAnimBuffer().com = ui::KeyFramesAnimationCom{ img, world.getUiLayer(), scale, layerDepth, isLoop };
-		//loader->idList.push_back(world.getEntityManager()->getId());
-		//world.createUnit(loader->idList.back(), ui::KeyFramesAnimationCom{ img, world.getUiLayer(), scale, layerDepth, isLoop });
 	}
 
 	void Scene_AddKeyFrame(ScriptLoader* loader, const std::vector<std::string>& args) noexcept

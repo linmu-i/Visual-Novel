@@ -127,6 +127,16 @@ namespace ebbglow::visualnovel
 		}
 		return result;
 	}
+
+	static bool IsKeyWord(rsc::SharedFile::Iterator& it, std::string_view keyWord)
+	{
+		return (!memcmp(it.get(), keyWord.data(), keyWord.size()) && (isspace(it[-1]) || it.position() == 0) && isspace(it[keyWord.size()]));
+	}
+
+	static bool IsValidName(unsigned char chr)
+	{
+		return isdigit(chr) || isalpha(chr) || chr == '-' || chr == '_';
+	}
 	
 	std::string GetStateTag(std::string_view token)
 	{
@@ -140,12 +150,29 @@ namespace ebbglow::visualnovel
 		{
 			++it;
 			std::string varName;
-			while (!isspace(*it) && *it != '[' && !it.eof())
+			while (IsValidName(*it) && !it.eof())
 			{
 				varName += *it;
 				++it;
 			}
-			int32_t index = 0;
+			SkipSpace(it);
+			if (*it == '[')
+			{
+				varName += '[';
+				++it;
+				SkipSpace(it);
+				while (*it != ']' && !it.eof())
+				{
+					varName += *it;
+					++it;
+				}
+				if (*it == ']')
+				{
+					varName += ']';
+					++it;
+				}
+			}
+			/*int32_t index = 0;
 			if (*it == '[')
 			{
 				++it;
@@ -164,7 +191,10 @@ namespace ebbglow::visualnovel
 			if (varViewIt == scLoader.textView.end()) return "";
 			index += varViewIt->second.index;
 			if (index < 0 || index >= scLoader.textStorage.size()) return "";
-			return scLoader.textStorage[index];
+			return scLoader.textStorage[index];*/
+			auto* var = GetTextVariable(varName, scLoader);
+			if (var == nullptr) return "";
+			return *var;
 		}
 		++it;
 		while (*it != '"' && !it.eof())
@@ -206,17 +236,53 @@ namespace ebbglow::visualnovel
 
 	std::string* GetTextVariable(const std::string& name, ScriptLoader& scLoader) noexcept
 	{
-		auto varViewIt = scLoader.textView.find(name);
+		if (name.empty()) return nullptr;
+
+		int32_t offset = 0;
+		size_t posOfIndex = name.find_last_of('[');
+		if (name.back() == ']')
+		{
+			std::string offsetText = name.substr(posOfIndex + 1, name.length() - posOfIndex - 2);
+			offset = static_cast<int32_t>(round(GetNumber(offsetText, '\0', scLoader)));
+		}
+
+		if (name.length() >= 15)
+		{
+			if (!memcmp(name.c_str(), "SCENE_ARGS_LIST", 15) && (name[15] == '[' || name[15] == '\0' || isspace(static_cast<unsigned char>(name[15]))))
+			{
+				if (offset >= 0 && offset < scLoader.sceneArgs.size())
+				{
+					return &scLoader.sceneArgs[offset];
+				}
+				else
+				{
+					return nullptr;
+				}
+			}
+		}
+
+		auto varViewIt = scLoader.textView.find(name.substr(0, posOfIndex));
 		if (varViewIt == scLoader.textView.end()) return nullptr;
 		int32_t index = varViewIt->second.index;
+		index += offset;
 		if (index < 0 || index >= scLoader.textStorage.size()) return nullptr;
 		return &scLoader.textStorage[index];
 	}
 	double* GetNumberVariable(const std::string& name, ScriptLoader& scLoader) noexcept
 	{
-		auto varViewIt = scLoader.numberView.find(name);
+		if (name.empty()) return nullptr;
+		int32_t offset = 0;
+		size_t posOfIndex = name.find_last_of('[');
+		if (name.back() == ']')
+		{
+			std::string offsetText = name.substr(posOfIndex + 1, name.length() - posOfIndex - 2);
+			offset = static_cast<int32_t>(round(GetNumber(offsetText, '\0', scLoader)));
+		}
+
+		auto varViewIt = scLoader.numberView.find(name.substr(0, posOfIndex));
 		if (varViewIt == scLoader.numberView.end()) return nullptr;
 		int32_t index = varViewIt->second.index;
+		index += offset;
 		if (index < 0 || index >= scLoader.numberStorage.size()) return nullptr;
 		return &scLoader.numberStorage[index];
 	}
@@ -459,16 +525,6 @@ namespace ebbglow::visualnovel
 		while (!it.eof() && *it != '\n') ++it;
 		++it;
 		return SceneInfo(std::move(sceneName), std::move(sceneType), std::move(args));
-	}
-
-	bool IsKeyWord(rsc::SharedFile::Iterator& it, std::string_view keyWord)
-	{
-		return (!memcmp(it.get(), keyWord.data(), keyWord.size()) && (isspace(it[-1]) || it.position() == 0) && isspace(it[keyWord.size()]));
-	}
-
-	bool IsValidName(unsigned char chr)
-	{
-		return isdigit(chr) || isalpha(chr) || chr == '-' || chr == '_';
 	}
 
 	void ScriptLoader::ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept

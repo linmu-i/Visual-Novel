@@ -13,6 +13,7 @@ namespace ebbglow::visualnovel
 		scLoader.registerGlobalFunction("Number", Global_Number);
 		scLoader.registerGlobalFunction("Include", Global_Include);
 		scLoader.registerGlobalFunction("BeginScene", Global_BeginScene);
+		scLoader.registerGlobalFunction("I18nText", Global_I18nText);
 
 		scLoader.registerSceneType("TextScene", SceneType_TextScene);
 		scLoader.registerSceneType("SelectScene", SceneType_SelectScene);

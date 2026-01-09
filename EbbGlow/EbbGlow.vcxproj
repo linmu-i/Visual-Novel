@@ -220,6 +220,10 @@
     <ClInclude Include="source\EbbGlow\Utils\RLKey.h" />
     <ClInclude Include="source\EbbGlow\Utils\RLTypesCast.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Script.txt" />
+    <Text Include="Script2.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

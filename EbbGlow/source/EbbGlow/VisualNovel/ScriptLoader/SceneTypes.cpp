@@ -59,9 +59,8 @@ namespace ebbglow::visualnovel
 					{
 						if (textBoxComs->active()->get(scLoader->exIdList.back())->activePixel >= textBoxComs->active()->get(scLoader->exIdList.back())->totalPixel)
 						{
-							LogView logTmp = scLoader->logTmp;
-							logTmp.text = world->getDoubleBuffer<MainTextBoxCom>()->active()->get(scLoader->exIdList.back())->textStr;
-							scLoader->addLog(std::move(logTmp));
+							scLoader->addLog(std::move(scLoader->logTmp));
+							scLoader->logTmp.clear();
 							auto next = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), scLoader->sceneView.find(scLoader->sceneArgs.front())->second);
 							world->deleteUnit(id);
 							world->getEntityManager()->recycleId(id);
@@ -114,6 +113,17 @@ namespace ebbglow::visualnovel
 							world->deleteUnit(id);
 							world->getEntityManager()->recycleId(id);
 							scLoader->loadScene(scIt);
+							auto selectI18nIt = scLoader->i18nText.find("ExLogText_Select");
+							std::string exLogTextSelect;
+							if (selectI18nIt != scLoader->i18nText.end())
+							{
+								exLogTextSelect = selectI18nIt->second[scLoader->cfg.uiLanguage];
+							}
+							else
+							{
+								exLogTextSelect = reinterpret_cast<const char*>(u8"Ñ¡Ôñ:");
+							}
+							scLoader->logTmp.exText = exLogTextSelect;
 							return;
 						}
 					}
