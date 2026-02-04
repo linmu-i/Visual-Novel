@@ -56,12 +56,27 @@ namespace ebbglow
 		float width;
 		float height;
 
+		constexpr Rect() : x(0.0f), y(0.0f), width(0.0f), height(0.0f) {}
 		constexpr Rect(float x, float y, float width, float height) : x(x), y(y), width(width), height(height) {}
 		constexpr Rect(Vec2 position, Vec2 coverage) : x(position.x), y(position.y), width(coverage.x), height(coverage.y) {}
 
-		[[nodiscard]] constexpr bool inBox(const Vec2& point) const noexcept
+		[[nodiscard]] constexpr bool contain(const Vec2& point) const noexcept
 		{
 			return (point.x > x && point.y > y && point.x < x + width && point.y < y + height);
+		}
+		[[nodiscard]] constexpr bool contain(const Rect& other) const noexcept
+		{
+			return other.x >= x &&
+				other.y >= y &&
+				other.x + other.width <= x + width &&
+				other.y + other.height <= y + height;
+		}
+		[[nodiscard]] constexpr bool intersect(const Rect& other) const noexcept
+		{
+			return !(other.x + other.width <= x ||
+				other.x >= x + width ||
+				other.y + other.height <= y ||
+				other.y >= y + height);
 		}
 		[[nodiscard]] constexpr Vec2 position() const noexcept
 		{
@@ -74,6 +89,22 @@ namespace ebbglow
 		[[nodiscard]] constexpr Rect offsetOf(Vec2 offset) const noexcept
 		{
 			return Rect{ x + offset.x, y + offset.y, width, height };
+		}
+		[[nodiscard]] constexpr Rect extendOf(Vec2 extension) const noexcept
+		{
+			return Rect{ x , y , width + extension.x, height + extension.y };
+		}
+		[[nodiscard]] constexpr float area() const noexcept
+		{
+			return  width * height;
+		}
+		[[nodiscard]] constexpr Vec2 center() const noexcept
+		{
+			return  Vec2{ x + width * 0.5f, y + height * 0.5f };
+		}
+		[[nodiscard]] constexpr bool operator==(const Rect& other) const noexcept
+		{
+			return  x == other.x && y == other.y && width == other.width && height == other.height;
 		}
 	};
 

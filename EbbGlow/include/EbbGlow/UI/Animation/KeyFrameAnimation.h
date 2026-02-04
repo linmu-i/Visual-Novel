@@ -56,7 +56,7 @@ namespace ebbglow::ui
 
 		void draw() override
 		{
-			gfx::DrawTexturePro
+			gfx::DrawTextureRegionToRegion
 			(
 				texture,
 				{ 0, 0, float(texture.width()), float(texture.height()) },

@@ -304,6 +304,12 @@ namespace ebbglow::resource
 		return static_cast<Texture*>(texture)->height;
 	}
 
+	Vec2 SharedTexture::size() const noexcept
+	{
+		if (texture == nullptr) return Vec2{ 0.0f, 0.0f };
+		return Vec2{ static_cast<float>(static_cast<Texture*>(texture)->width), static_cast<float>(static_cast<Texture*>(texture)->height) };
+	}
+
 	// SharedFont 实现
 	SharedFont::SharedFont() noexcept : font(nullptr), ref(nullptr) {}
 
@@ -677,19 +683,20 @@ namespace ebbglow::resource
 	// SharedFile 实现
 	SharedFile::SharedFile() noexcept : ref(nullptr), fileData(nullptr), dataSize(0), name(nullptr) {}
 
-	SharedFile::SharedFile(const char* filePath) noexcept
+	SharedFile::SharedFile(const char* filePath) noexcept : fileData(nullptr), ref(nullptr), dataSize(0), name(nullptr)
 	{
 		size_t len = strlen(filePath);
 		name = new(std::nothrow) char[len + 1];
+		if (!name)
+		{
+			return;
+		}
 		memcpy(name, filePath, len + 1);
 		std::ifstream file(filePath, std::ios::binary);
 		if (!file)
 		{
 			delete[] name;
 			name = nullptr;
-			fileData = nullptr;
-			dataSize = 0;
-			ref = nullptr;
 			return;
 		}
 		std::vector<uint8_t> data{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
@@ -699,29 +706,33 @@ namespace ebbglow::resource
 		{
 			delete[] name;
 			name = nullptr;
-			fileData = nullptr;
-			dataSize = 0;
-			ref = nullptr;
 			return;
 		}
 		memcpy(fileData, data.data(), data.size());
 		ref = new(std::nothrow) size_t(1);
+		if (!ref)
+		{
+			delete[] name;
+			name = nullptr;
+			delete[] fileData;
+			fileData = nullptr;
+			return;
+		}
 		dataSize = data.size();
 	}
 
-	SharedFile::SharedFile(std::u8string_view filePath) noexcept
+	SharedFile::SharedFile(std::u8string_view filePath) noexcept : fileData(nullptr), ref(nullptr), dataSize(0), name(nullptr)
 	{
+		name = new(std::nothrow) char[filePath.size() + 1];
+		if (!name) return;
 		std::filesystem::path path(filePath);
 		std::ifstream file(path, std::ios::binary);
-		name = new(std::nothrow) char[filePath.size() + 1];
 		memcpy(name, filePath.data(), filePath.size());
 		name[filePath.size()] = '\0';
 		if (!file)
 		{
 			delete[] name;
 			name = nullptr;
-			fileData = nullptr;
-			ref = nullptr;
 			return;
 		}
 		std::vector<uint8_t> data{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
@@ -731,13 +742,18 @@ namespace ebbglow::resource
 		{
 			delete[] name;
 			name = nullptr;
-			fileData = nullptr;
-			dataSize = 0;
-			ref = nullptr;
 			return;
 		}
 		memcpy(fileData, data.data(), data.size());
 		ref = new(std::nothrow) size_t(1);
+		if (!ref)
+		{
+			delete[] name;
+			name = nullptr;
+			delete[] fileData;
+			fileData = nullptr;
+			return;
+		}
 		dataSize = data.size();
 	}
 
@@ -747,6 +763,19 @@ namespace ebbglow::resource
 		size_t len = strlen(name);
 		this->name = new(std::nothrow) char[len + 1];
 		this->fileData = new unsigned char[dataSize];
+
+		if (!this->name || !this->fileData || !ref)
+		{
+			delete[] this->name;
+			delete[] this->fileData;
+			delete ref;
+			ref = nullptr;
+			this->name = nullptr;
+			this->fileData = nullptr;
+			dataSize = 0;
+			return;
+		}
+
 		memcpy(this->name, name, len + 1);
 		memcpy(this->fileData, fileData, dataSize);
 	}
@@ -1189,6 +1218,12 @@ namespace ebbglow::resource
 	int SharedRenderTexture::height() const noexcept
 	{
 		return static_cast<::RenderTexture*>(renderTexture)->texture.height;
+	}
+
+	Vec2 SharedRenderTexture::size() const noexcept
+	{
+		return Vec2{ static_cast<float>(static_cast<::RenderTexture*>(renderTexture)->texture.width),
+					 static_cast<float>(static_cast<::RenderTexture*>(renderTexture)->texture.height) };
 	}
 
 	// SharedSound 实现

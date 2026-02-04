@@ -186,6 +186,9 @@
     <ClCompile Include="source\EbbGlow\VisualNovel\UI\Log.cpp">
       <Filter>源文件\VisualNovel\UI</Filter>
     </ClCompile>
+    <ClCompile Include="source\EbbGlow\VisualNovel\UI\UIState.cpp">
+      <Filter>源文件\VisualNovel\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\EbbGlow\Utils\ResourceCreator.h">
@@ -232,9 +235,6 @@
     </ClInclude>
     <ClInclude Include="include\EbbGlow\Graphics\Graphics.h">
       <Filter>头文件\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EbbGlow\Utils\attachedLib.h">
-      <Filter>头文件\Utils</Filter>
     </ClInclude>
     <ClInclude Include="include\EbbGlow\Utils\Control.h">
       <Filter>头文件\Utils</Filter>
@@ -340,6 +340,9 @@
     </ClInclude>
     <ClInclude Include="include\EbbGlow\Core\ECS\SubSystem.h">
       <Filter>头文件\Core\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\VisualNovel\UI\UIState.h">
+      <Filter>头文件\VisualNovel\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

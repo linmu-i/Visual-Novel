@@ -12,7 +12,6 @@ namespace ebbglow::gfx
 
 	void DrawLine(Vec2 startPos, Vec2 endPos, Color color, float lineThick = 1.0f);
 
-
 	void DrawRect(Rect rect, Color color, float rotation = 0.0f, Vec2 origin = { 0.0f, 0.0f });
 	void DrawRectLines(Rect rect, Color color, float lineThick = 1.0f);
 	void DrawRectangleGradientV(Rect rect, Color color1, Color color2);
@@ -38,12 +37,12 @@ namespace ebbglow::gfx
 	void DrawPolyLines(Vec2 center, int sides, float radius, float rotation, Color color, float lineThick = 1.0f);
 
 	void DrawTexture(const rsc::SharedTexture2D& texture, Vec2 pos, float scale = 1.0f, float rotation = 0.0f, Color tint = { 255, 255, 255, 255 });
-	void DrawTexturePro(const rsc::SharedTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin = { 0.0f, 0.0f }, float rotation = 0.0f, Color tint = { 255, 255, 255, 255 });
 	void DrawTextureRegion(const rsc::SharedTexture2D& texture, Rect sourceRec, Vec2 pos, Color tint = { 255, 255, 255, 255 });
+	void DrawTextureRegionToRegion(const rsc::SharedTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin = { 0.0f, 0.0f }, float rotation = 0.0f, Color tint = { 255, 255, 255, 255 });
 
 	void DrawTexture(const rsc::SharedRenderTexture2D& texture, Vec2 pos, float scale = 1.0f, float rotation = 0.0f, Color tint = { 255, 255, 255, 255 });
-	void DrawTexturePro(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin = { 0.0f, 0.0f }, float rotation = 0.0f, Color tint = { 255, 255, 255, 255 });
 	void DrawTextureRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Vec2 pos, Color tint = { 255, 255, 255, 255 });
+	void DrawTextureRegionToRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin = { 0.0f, 0.0f }, float rotation = 0.0f, Color tint = { 255, 255, 255, 255 });
 
 	void DrawText(const rsc::SharedFont& font, const std::string& text, Vec2 position, float fontSize, float spacing, Color tint = colors::White, Vec2 origin = { 0.0f, 0.0f }, float rotation = 0.0f);
 	void DrawTextCodepoints(const rsc::SharedFont& font, const std::vector<int32_t>& codepoints, Vec2 position, float fontSize, float spacing, Color tint = colors::White);

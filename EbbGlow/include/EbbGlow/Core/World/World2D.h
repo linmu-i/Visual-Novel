@@ -20,8 +20,8 @@ namespace ebbglow::core
 		std::unordered_map<std::type_index, std::unique_ptr<DoubleBufferedBase>> doubleBuffered;
 
 		std::vector<std::unique_ptr<SystemBase>> systems;
-		std::array<std::vector<std::unique_ptr<DrawBase>>, 16> unitsLayer;
-		std::array<std::vector<std::unique_ptr<DrawBase>>, 16> uiLayer;
+		std::array<Layer, 16> unitsLayer;
+		std::array<Layer, 16> uiLayer;
 		MessageManager messageManager;
 		Camera2D camera;
 
@@ -70,8 +70,8 @@ namespace ebbglow::core
 		uint64_t framesCount = 0;
 
 		IdManager* getEntityManager() { return &entityManager; }
-		std::array<std::vector<std::unique_ptr<DrawBase>>, 16>* getUnitsLayer() { return &unitsLayer; }
-		std::array<std::vector<std::unique_ptr<DrawBase>>, 16>* getUiLayer() { return &uiLayer; }
+		std::array<Layer, 16>* getUnitsLayer() { return &unitsLayer; }
+		std::array<Layer, 16>* getUiLayer() { return &uiLayer; }
 		Camera2D* getCamera() { return &camera; }
 		MessageManager* getMessageManager() { return &messageManager; }
 

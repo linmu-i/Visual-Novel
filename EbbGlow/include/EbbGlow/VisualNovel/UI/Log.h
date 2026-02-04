@@ -14,12 +14,12 @@ namespace ebbglow::visualnovel
 		std::string sceneName;
 
 		Rect region;
-		float scale;
 		const VisualNovelConfig* cfg;
 		rsc::SharedFont font;
 
-		Item(const std::string& text, const std::string& exText, const std::string& voicePath, const std::string& sceneName, Rect region, float scale, const VisualNovelConfig& cfg)
-			: text(text), exText(exText), voicePath(voicePath), sceneName(sceneName), region(region), scale(scale), cfg(&cfg) {
+		Item(const std::string& text, const std::string& exText, const std::string& voicePath, const std::string& sceneName, Rect region, const VisualNovelConfig& cfg)
+			: text(text), exText(exText), voicePath(voicePath), sceneName(sceneName), region(region), cfg(&cfg),
+			font(utils::DynamicLoadFont(cfg.fontData, text + exText + '.', cfg.textSize)) {
 		}
 	};
 
@@ -38,25 +38,38 @@ namespace ebbglow::visualnovel
 	struct LogCom
 	{
 		float wheelDeltaCount;
-		uint32_t index;
+		int32_t index;
 
 		bool animationUp;
 		bool animationDown;
 		float animationTime;
 
+		float drawOffsetY;
+
 		rsc::SharedRenderTexture2D textureBuf;
 		std::vector<core::entity> voiceButton;
 		std::vector<core::entity> jumpButton;
 		std::vector<Item> items;
+
+		core::Layer* layer;
+
+		LogCom(const VisualNovelConfig& cfg, core::Layer* layer)
+			: wheelDeltaCount(0.0f), index(0),
+			animationUp(false), animationDown(false), animationTime(0.0f),
+			drawOffsetY(0.0f),
+			textureBuf(cfg.ScreenWidth, cfg.ScreenHeight * 5.0f / 6.0f),
+			layer(layer) {
+		}
 	};
 
 	class LogDraw : public core::DrawBase
 	{
 	private:
 		const LogCom& com;
+		const VisualNovelConfig& cfg;
 
 	public:
-		LogDraw(const LogCom& com) : com(com) {}
+		LogDraw(const LogCom& com, const VisualNovelConfig& cfg) : com(com), cfg(cfg) {}
 		void draw() override;
 	};
 

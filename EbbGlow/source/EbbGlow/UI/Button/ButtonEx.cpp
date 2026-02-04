@@ -23,11 +23,11 @@ namespace ebbglow::ui
 		}
 		if (iconRef->valid())
 		{
-			gfx::DrawTexture(*iconRef, button.rect.position(), button.iconScale);
+			gfx::DrawTextureRegionToRegion(*iconRef, Rect(0.0f, 0.0f, (float)iconRef->width(), (float)iconRef->height()), button.drawRect);
 		}
 		if (button.font.valid())
 		{
-			gfx::DrawText(button.font, button.text, button.rect.position() + button.rect.coverage() / 2 - utils::MeasureTextSize(button.font, button.text, button.textSize, button.spacing) / 2, button.textSize, button.spacing);
+			gfx::DrawText(button.font, button.text, button.hitRect.position() + button.hitRect.coverage() / 2 - utils::MeasureTextSize(button.font, button.text, button.textSize, button.spacing) / 2, button.textSize, button.spacing);
 		}
 	}
 
@@ -42,7 +42,7 @@ namespace ebbglow::ui
 				int inBoxCount = 0;
 				for (auto& p : input::PointList())
 				{
-					if (act.rect.inBox(p.position))
+					if (act.hitRect.contain(p.position))
 					{
 						if (p.type == input::PointType::Mouse)
 						{

@@ -34,7 +34,7 @@ namespace ebbglow::ui
 				int inBoxCount = 0;
 				for (auto& p : input::PointList())
 				{
-					if (act.rect.inBox(p.position))
+					if (act.rect.contain(p.position))
 					{
 						if (p.type == input::PointType::Mouse)
 						{
@@ -77,7 +77,7 @@ namespace ebbglow::ui
 						if (release) msgMgr->addUnicastMessage(std::make_unique<ButtonReleaseMsg>(ButtonReleaseMsg(id, releaseId)), id);
 					}
 				}
-				(*layer)[act.layerDepth].push_back(std::make_unique<ButtonDraw>(ButtonDraw(act)));
+				(*layer)[act.layerDepth].push_back(std::make_unique<ButtonDraw>(act));
 			});
 	}
 }

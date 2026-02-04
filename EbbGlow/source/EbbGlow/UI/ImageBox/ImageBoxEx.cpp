@@ -5,7 +5,7 @@ namespace ebbglow::ui
 {
 	void ImageBoxExDraw::draw()
 	{
-		if (imgBox.img.valid()) gfx::DrawTexturePro(imgBox.img, { 0.0f, 0.0f, static_cast<float>(imgBox.img.width()), static_cast<float>(imgBox.img.height()) }, { imgBox.position.x, imgBox.position.y, imgBox.img.width() * imgBox.scale, imgBox.img.height() * imgBox.scale }, imgBox.origin, imgBox.rotation, imgBox.tint);
+		if (imgBox.img.valid()) gfx::DrawTextureRegionToRegion(imgBox.img, { 0.0f, 0.0f, static_cast<float>(imgBox.img.width()), static_cast<float>(imgBox.img.height()) }, { imgBox.position.x, imgBox.position.y, imgBox.img.width() * imgBox.scale, imgBox.img.height() * imgBox.scale }, imgBox.origin, imgBox.rotation, imgBox.tint);
 	}
 
 	void ImageBoxExSystem::update()

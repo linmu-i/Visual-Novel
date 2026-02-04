@@ -7,8 +7,36 @@
 
 namespace ebbglow::core
 {
-	using Layers = std::array<std::vector<std::unique_ptr<DrawBase>>, 16>;
-	using Layer = std::vector<std::unique_ptr<DrawBase>>;
+	//using Layer = std::vector<std::unique_ptr<DrawBase>>;
+	class Layer
+	{
+	private:
+		std::vector<std::unique_ptr<DrawBase>> storageArr;
+		std::vector<DrawBase*> drawArr;
+
+	public:
+		Layer() {}
+		Layer& push_back(std::unique_ptr<DrawBase>&& package)
+		{
+			storageArr.push_back(std::move(package));
+			drawArr.push_back(storageArr.back().get());
+			return *this;
+		}
+		Layer& push_back(DrawBase* package)
+		{
+			drawArr.push_back(package);
+			return *this;
+		}
+		void clear() noexcept
+		{
+			storageArr.clear();
+			drawArr.clear();
+		}
+		auto begin() noexcept { return drawArr.begin(); }
+		auto end() noexcept { return drawArr.end(); }
+	};
+
+	using Layers = std::array<Layer, 16>;
 
 	class AddBufferBase
 	{

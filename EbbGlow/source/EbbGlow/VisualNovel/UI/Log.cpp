@@ -99,57 +99,128 @@ namespace ebbglow::visualnovel
 		}
 	}
 
+	static Item CreateItem(const LogView& logView, ScriptLoader& loader, int index, Vec2 texSize) noexcept
+	{
+		return Item
+		{
+			logView.text,
+			logView.exText,
+			logView.voice,
+			logView.sceneName,
+
+			Rect{texSize.x / 6.0f, index * (texSize.y / 6.0f), texSize.x * 0.6666667f, (texSize.y / 6.0f)},
+			loader.cfg
+		};
+	}
+
+	static std::vector<Item> CreateItemList(ScriptLoader& loader, int index, Vec2 texSize) noexcept
+	{
+		std::vector<Item> items;
+		for (int i = 0; i < 6; ++i)
+		{
+			if (index + i == 0)
+			{
+				items.push_back(CreateItem(loader.logTmp, loader, i, texSize));
+			}
+			else
+			{
+				items.push_back(CreateItem(loader.logView[loader.logView.size() - index - i], loader, i, texSize));
+			}
+		}
+	}
+
+	void LogDraw::draw()
+	{
+		Rect origin{0, com.drawOffsetY, static_cast<float>(com.textureBuf.width()), com.textureBuf.height() * 5.0f / 6.0f};
+	
+		gfx::DrawTextureRegionToRegion(com.textureBuf, origin, Rect{ 0, cfg.ScreenHeight / 8.0f, static_cast<float>(cfg.ScreenWidth), cfg.ScreenHeight * 0.75f });
+	}
+
 	void LogSystem::update()
 	{
 		coms->active()->forEach([this](core::entity id, LogCom& act)
 			{
 				auto& ina = *coms->inactive()->get(id);
-				act.wheelDeltaCount += input::MouseWheelDelta();
-				int32_t delta = act.wheelDeltaCount > 0.0 ? floor(act.wheelDeltaCount) : ceil(act.wheelDeltaCount);
-
-				float itemHeight = act.textureBuf.height() / 7.0f;
-
 				auto& logView = scLoader->logView;
 
-				if (delta != 0)
+				act.wheelDeltaCount += input::MouseWheelDelta();
+				int32_t delta = act.wheelDeltaCount > 0.0 ? floor(act.wheelDeltaCount) : ceil(act.wheelDeltaCount);
+				int32_t newIndex = std::clamp(act.index + delta, 0, std::max(static_cast<int>(logView.size()) - 6, 0));
+					
+				float itemHeight = act.textureBuf.height() / 6.0f;
+				Vec2 texSize = act.textureBuf.size();
+
+				float drawOffset = 0.0f;
+				
+				if (newIndex != act.index)
 				{
-					ina.wheelDeltaCount -= delta;
-					ina.index = std::clamp(act.index - delta, 0u, static_cast<uint32_t>(scLoader->logView.size() - 1));
+					ina.index = newIndex;
+
+					act.wheelDeltaCount -= delta;
 
 					if (delta > 0)
 					{
 						ina.animationUp = true;
 						ina.animationDown = false;
 					}
-					else
+					else if (delta < 0)
 					{
 						ina.animationUp = false;
 						ina.animationDown = true;
 					}
-					ina.animationTime = 0.0f;
 
-					
-					if (logView.size() < 5)
+					if (logView.size() < 6)
 					{
+						ina.items.push_back(CreateItem(scLoader->logTmp, *scLoader, logView.size(), texSize));
 						for (int i = 0; i < logView.size(); ++i)
 						{
-							//ina.items[i] = Item
-							//{
-							//	scLoader->logView[i].text,
-							//	scLoader->logView[i].exText,
-								
-							//};
+							ina.items[i] = CreateItem(logView[i], *scLoader, i, texSize);
 						}
 					}
-
-					BeginTextureMode(ina.textureBuf);
+					else
+					{
+						if (delta < 0)
+						{
+							ina.items = CreateItemList(*scLoader, newIndex, texSize);
+						}
+						else
+						{
+							ina.items = CreateItemList(*scLoader, newIndex - 1, texSize);
+						}
+					}
 				}
-				else if (act.animationUp)
+				else if (act.animationDown || act.animationUp)
 				{
-					ina.animationTime += utils::GetFrameTime();
-					float scale = std::min(ina.animationTime / 0.5f, 1.0f);
-					
+					constexpr float animationDuration = 0.5f;
+
+					ina.animationTime += GetFrameTime();
+
+					if (act.animationTime > animationDuration)
+					{
+						ina.animationTime = 0.0f;
+						ina.animationUp = false;
+						ina.animationDown = false;
+					}
+					else
+					{
+						if (delta > 0) ina.drawOffsetY = itemHeight - act.animationTime / animationDuration * itemHeight;
+						else ina.drawOffsetY = act.animationTime / animationDuration * itemHeight;
+					}
 				}
+
+				BeginTextureMode(act.textureBuf);
+				gfx::ClearBackground(colors::Blank);
+				for (auto& item : act.items)
+				{
+					DrawItem(item);
+				}
+				for (auto& dl : layerBuf)
+				{
+					dl->draw();
+				}
+				EndTextureMode();
+				
+				act.layer->push_back(std::make_unique<LogDraw>(LogDraw(act, scLoader->cfg)));
 			});
 	}
 }

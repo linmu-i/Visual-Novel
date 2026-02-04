@@ -61,7 +61,7 @@ namespace ebbglow::ui
 						if (!activeCom.loop)
 						{
 							inactiveCom.stop = true;
-							inactiveCom.activeFrame = activeCom.keyFrames.size() - 1;
+							inactiveCom.activeFrame = static_cast<int>(activeCom.keyFrames.size()) - 1;
 						}
 						else
 						{

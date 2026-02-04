@@ -4,17 +4,19 @@
 #include <EbbGlow/Utils/Types.h>
 #include <EbbGlow/Utils/Resource.h>
 #include <EbbGlow/Core/World.h>
+#include <EbbGlow/Utils/Math.h>
 
 namespace ebbglow::ui
 {
 	struct ButtonExCom
 	{
-		Rect rect;
+		Rect hitRect;
+		Rect drawRect;
 		
 		rsc::SharedTexture2D normalIcon;
 		rsc::SharedTexture2D hoverIcon;
 		rsc::SharedTexture2D pressedIcon;
-		float iconScale;
+		//float iconScale;
 
 		bool pressed;
 
@@ -27,11 +29,20 @@ namespace ebbglow::ui
 		core::Layer* layer;
 
 		ButtonExCom(Rect rect, uint8_t layerDepth, core::Layers* layer, const rsc::SharedTexture2D& normalIcon, const rsc::SharedTexture2D& hoverIcon, const rsc::SharedTexture2D& pressedIcon, float iconScale, const rsc::SharedFont& font, const std::string& text, Color textColor, float textSize, float spacing) :
-			rect(rect), normalIcon(normalIcon), hoverIcon(hoverIcon), pressedIcon(pressedIcon), iconScale(iconScale), font(font), text(text), textColor(textColor), textSize(textSize), spacing(spacing), layer(&(*layer)[layerDepth]), pressed(false) {
+			hitRect(rect), normalIcon(normalIcon), hoverIcon(hoverIcon), pressedIcon(pressedIcon),
+			drawRect(Rect{ rect.position(), Vec2{static_cast<float>(normalIcon.width()), static_cast<float>(normalIcon.height())} * iconScale}),
+			font(font), text(text), textColor(textColor), textSize(textSize), spacing(spacing), layer(&(*layer)[layerDepth]), pressed(false) {
 		}
 
 		ButtonExCom(Rect rect, core::Layer* layer, const rsc::SharedTexture2D& normalIcon, const rsc::SharedTexture2D& hoverIcon, const rsc::SharedTexture2D& pressedIcon, float iconScale, const rsc::SharedFont& font, const std::string& text, Color textColor, float textSize, float spacing) :
-			rect(rect), normalIcon(normalIcon), hoverIcon(hoverIcon), pressedIcon(pressedIcon), iconScale(iconScale), font(font), text(text), textColor(textColor), textSize(textSize), spacing(spacing), layer(layer), pressed(false) {
+			hitRect(rect), normalIcon(normalIcon), hoverIcon(hoverIcon), pressedIcon(pressedIcon),
+			drawRect(Rect{ rect.position(), Vec2{static_cast<float>(normalIcon.width()), static_cast<float>(normalIcon.height())} *iconScale }),
+			font(font), text(text), textColor(textColor), textSize(textSize), spacing(spacing), layer(layer), pressed(false) {
+		}
+
+		ButtonExCom(Rect hitRect, Rect drawRect, core::Layer* layer, const rsc::SharedTexture2D& normalIcon, const rsc::SharedTexture2D& hoverIcon, const rsc::SharedTexture2D& pressedIcon, const rsc::SharedFont& font, const std::string& text, Color textColor, float textSize, float spacing) :
+			hitRect(hitRect), normalIcon(normalIcon), hoverIcon(hoverIcon), pressedIcon(pressedIcon),
+			drawRect(drawRect), font(font), text(text), textColor(textColor), textSize(textSize), spacing(spacing), layer(layer), pressed(false) {
 		}
 	};
 

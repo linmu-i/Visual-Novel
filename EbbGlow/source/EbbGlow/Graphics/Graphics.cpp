@@ -36,10 +36,10 @@ namespace ebbglow::gfx
 	void DrawRectangleGradientV(Rect rect, Color color1, Color color2)
 	{
 		DrawRectangleGradientV(
-			std::roundl(rect.x),
-			std::roundl(rect.y),
-			std::roundl(rect.width),
-			std::roundl(rect.height),
+			static_cast<int>(lroundf(rect.x)),
+			static_cast<int>(lroundf(rect.y)),
+			static_cast<int>(lroundf(rect.width)),
+			static_cast<int>(lroundf(rect.height)),
 			RLColor(color1),
 			RLColor(color2)
 		);
@@ -48,10 +48,10 @@ namespace ebbglow::gfx
 	void DrawRectangleGradientH(Rect rect, Color color1, Color color2)
 	{
 		DrawRectangleGradientH(
-			std::roundl(rect.x),
-			std::roundl(rect.y),
-			std::roundl(rect.width),
-			std::roundl(rect.height),
+			static_cast<int>(lroundf(rect.x)),
+			static_cast<int>(lroundf(rect.y)),
+			static_cast<int>(lroundf(rect.width)),
+			static_cast<int>(lroundf(rect.height)),
 			RLColor(color1),
 			RLColor(color2)
 		);
@@ -66,20 +66,20 @@ namespace ebbglow::gfx
 	{
 		if (lineThick <= 1.0f)
 		{
-			DrawCircleLines(std::roundl(center.x), std::roundl(center.y), radius, RLColor(color));
+			DrawCircleLines(static_cast<int>(lroundf(center.x)), static_cast<int>(lroundf(center.y)), radius, RLColor(color));
 		}
 		else
 		{
 			for (float r = radius - lineThick / 2.0f; r <= radius + lineThick / 2.0f; r += 1.0f)
 			{
-				DrawCircleLines(std::roundl(center.x), std::roundl(center.y), r, RLColor(color));
+				DrawCircleLines(static_cast<int>(lroundf(center.x)), static_cast<int>(lroundf(center.y)), r, RLColor(color));
 			}
 		}
 	}
 
 	void DrawCircleGradient(Vec2 pos, float radius, Color color1, Color color2)
 	{
-		DrawCircleGradient(std::roundl(pos.x), std::roundl(pos.y), radius, RLColor(color1), RLColor(color2));
+		DrawCircleGradient(static_cast<int>(lroundf(pos.x)), static_cast<int>(lroundf(pos.y)), radius, RLColor(color1), RLColor(color2));
 	}
 
 	void DrawCircleSector(Vec2 center, float radius, float startAngle, float endAngle, Color color, int segments)
@@ -152,7 +152,7 @@ namespace ebbglow::gfx
 		DrawTextureEx(*static_cast<Texture2D*>(texture.get()), RLVec2(pos), rotation, scale, RLColor(tint));
 	}
 
-	void DrawTexturePro(const rsc::SharedTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
+	void DrawTextureRegionToRegion(const rsc::SharedTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
 	{
 		DrawTexturePro(*static_cast<Texture2D*>(texture.get()), RLRect(sourceRec), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
 	}
@@ -167,7 +167,7 @@ namespace ebbglow::gfx
 		DrawTextureEx(static_cast<RenderTexture2D*>(texture.get())->texture, RLVec2(pos), rotation, scale, RLColor(tint));
 	}
 
-	void DrawTexturePro(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
+	void DrawTextureRegionToRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
 	{
 		DrawTexturePro(static_cast<RenderTexture2D*>(texture.get())->texture, RLRect(sourceRec), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
 	}
