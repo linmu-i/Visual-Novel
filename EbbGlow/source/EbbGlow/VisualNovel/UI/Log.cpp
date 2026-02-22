@@ -2,6 +2,7 @@
 #include <EbbGlow/VisualNovel/UI/Log.h>
 #include <EbbGlow/Utils/Input.h>
 #include <EbbGlow/Utils/Control.h>
+#include <EbbGlow/Utils/Math.h>
 
 namespace ebbglow::visualnovel
 {
@@ -27,7 +28,7 @@ namespace ebbglow::visualnovel
 			(
 				Rect{ com.region.x, com.region.y + spacing + heightCount - 0.8f, com.region.x + cfg.ScreenWidth * 0.3333333f, com.region.y + spacing + heightCount + 0.8f },
 				ColorR8G8B8A8(255, 255, 255, 255),
-				ColorR8G8B8A8(0,0,0,0)
+				ColorR8G8B8A8(255,255,255,0)
 			);
 			heightCount += spacing * 2;
 		}
@@ -64,7 +65,7 @@ namespace ebbglow::visualnovel
 			exText[0].push_back(tmp.back());
 			exText[0].push_back(tmp.back());
 		}
-		gfx::DrawTextCodepoints(item.font, exText[0], item.region.position(), cfg.textSize, cfg.textSize * 0.1f);
+		//gfx::DrawTextCodepoints(item.font, exText[0], item.region.position(), cfg.textSize, cfg.textSize * 0.1f);
 		float heightCount = 0.0f;
 		float spacing = item.region.height * 0.08;
 		if (!exText.empty())
@@ -72,9 +73,9 @@ namespace ebbglow::visualnovel
 			heightCount += utils::MeasureTextSize(item.font, utils::ToUTF8Text(exText[0]), cfg.textSize, cfg.textSize * 0.1f).y;
 			gfx::DrawRectangleGradientH
 			(
-				Rect{ item.region.x, item.region.y + spacing + heightCount - 0.8f, item.region.x + cfg.ScreenWidth * 0.3333333f, item.region.y + spacing + heightCount + 0.8f },
+				Rect{ item.region.x, item.region.y + spacing + heightCount - 0.8f, item.region.x + cfg.ScreenWidth * 0.3333333f, 1.6f },
 				ColorR8G8B8A8(255, 255, 255, 255),
-				ColorR8G8B8A8(0, 0, 0, 0)
+				ColorR8G8B8A8(255, 255, 255, 0)
 			);
 			heightCount += spacing * 2;
 		}
@@ -120,20 +121,40 @@ namespace ebbglow::visualnovel
 		{
 			if (index + i == 0)
 			{
-				items.push_back(CreateItem(loader.logTmp, loader, i, texSize));
+				items.push_back(CreateItem(loader.logTmp, loader, 5, texSize));
 			}
 			else
 			{
-				items.push_back(CreateItem(loader.logView[loader.logView.size() - index - i], loader, i, texSize));
+				//items.push_back(CreateItem(loader.logView[loader.logView.size() - index - i], loader, 5 - i, texSize));
+				items.push_back(CreateItem(loader.logView[loader.logView.size() - index - i], loader, 5 - i, texSize));
 			}
+		}
+		return items;
+	}
+
+	LogCom::LogCom(const VisualNovelConfig& cfg, core::Layer* layer, std::string_view returnName, ScriptLoader& scLoader)
+		: wheelDeltaCount(0.0f), index(0),
+		animationUp(false), animationDown(false), animationTime(0.0f),
+		drawOffsetY(0.0f), returnName(returnName),
+		textureBuf(cfg.ScreenWidth, cfg.ScreenHeight * 5.0f / 6.0f),
+		layer(layer)
+	{
+		auto& views = scLoader.logView;
+		items.push_back(CreateItem(scLoader.logTmp, scLoader, std::clamp<size_t>(views.size() + 1, 1, 5), textureBuf.size()));
+		for (int i = 0; i < std::min<size_t>(views.size(), 4); ++i)
+		{
+			items.push_back(CreateItem(views[views.size() - i - 1], scLoader, std::clamp<size_t>(views.size(), 1, 4) - i, textureBuf.size()));
 		}
 	}
 
 	void LogDraw::draw()
 	{
-		Rect origin{0, com.drawOffsetY, static_cast<float>(com.textureBuf.width()), com.textureBuf.height() * 5.0f / 6.0f};
-	
+
+		Rect origin{0, com.drawOffsetY, static_cast<float>(com.textureBuf.width()), -com.textureBuf.height() * 5.0f / 6.0f};
+		
+		//gfx::DrawTextureRegionToRegion(com.textureBuf, Rect{ origin.position() - dst.position(), origin.coverage()}, dst);
 		gfx::DrawTextureRegionToRegion(com.textureBuf, origin, Rect{ 0, cfg.ScreenHeight / 8.0f, static_cast<float>(cfg.ScreenWidth), cfg.ScreenHeight * 0.75f });
+		//gfx::DrawTextureRegionToRegion(com.textureBuf, origin, Rect{ 0, cfg.ScreenHeight / 8.0f, static_cast<float>(cfg.ScreenWidth), cfg.ScreenHeight * 0.75f });
 	}
 
 	void LogSystem::update()
@@ -143,30 +164,34 @@ namespace ebbglow::visualnovel
 				auto& ina = *coms->inactive()->get(id);
 				auto& logView = scLoader->logView;
 
-				act.wheelDeltaCount += input::MouseWheelDelta();
+				ina.wheelDeltaCount += input::MouseWheelDelta();
 				int32_t delta = act.wheelDeltaCount > 0.0 ? floor(act.wheelDeltaCount) : ceil(act.wheelDeltaCount);
-				int32_t newIndex = std::clamp(act.index + delta, 0, std::max(static_cast<int>(logView.size()) - 6, 0));
+				int32_t newIndex = std::clamp(act.index + delta, 0, std::max(static_cast<int>(logView.size()) - 4, 0));
 					
 				float itemHeight = act.textureBuf.height() / 6.0f;
 				Vec2 texSize = act.textureBuf.size();
 
 				float drawOffset = 0.0f;
+
+				if ((act.index <= 0 && act.wheelDeltaCount < 0.0f)
+					|| (act.index >= std::max(static_cast<int>(logView.size()) - 4, 0) && act.wheelDeltaCount > 0.0f))
+					ina.wheelDeltaCount = 0.0f;
 				
 				if (newIndex != act.index)
 				{
 					ina.index = newIndex;
 
-					act.wheelDeltaCount -= delta;
+					ina.wheelDeltaCount = act.wheelDeltaCount - delta;
 
 					if (delta > 0)
 					{
-						ina.animationUp = true;
-						ina.animationDown = false;
+						ina.animationUp = false;
+						ina.animationDown = true;
 					}
 					else if (delta < 0)
 					{
-						ina.animationUp = false;
-						ina.animationDown = true;
+						ina.animationUp = true;
+						ina.animationDown = false;
 					}
 
 					if (logView.size() < 6)
@@ -182,16 +207,19 @@ namespace ebbglow::visualnovel
 						if (delta < 0)
 						{
 							ina.items = CreateItemList(*scLoader, newIndex, texSize);
+							ina.drawOffsetY = 0;
 						}
 						else
 						{
 							ina.items = CreateItemList(*scLoader, newIndex - 1, texSize);
+							ina.drawOffsetY = itemHeight;
 						}
 					}
 				}
 				else if (act.animationDown || act.animationUp)
 				{
-					constexpr float animationDuration = 0.5f;
+					constexpr float animationDuration = 0.2f;
+
 
 					ina.animationTime += GetFrameTime();
 
@@ -203,8 +231,10 @@ namespace ebbglow::visualnovel
 					}
 					else
 					{
-						if (delta > 0) ina.drawOffsetY = itemHeight - act.animationTime / animationDuration * itemHeight;
-						else ina.drawOffsetY = act.animationTime / animationDuration * itemHeight;
+						if (act.animationUp)//delta > 0)
+							ina.drawOffsetY = itemHeight - act.animationTime / animationDuration * itemHeight;
+						else
+							ina.drawOffsetY = act.animationTime / animationDuration * itemHeight;
 					}
 				}
 
@@ -220,7 +250,7 @@ namespace ebbglow::visualnovel
 				}
 				EndTextureMode();
 				
-				act.layer->push_back(std::make_unique<LogDraw>(LogDraw(act, scLoader->cfg)));
+				act.layer->push_back(std::make_unique<LogDraw>(act, scLoader->cfg));
 			});
 	}
 }

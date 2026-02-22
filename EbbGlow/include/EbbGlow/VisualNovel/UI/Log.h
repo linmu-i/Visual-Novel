@@ -53,13 +53,9 @@ namespace ebbglow::visualnovel
 
 		core::Layer* layer;
 
-		LogCom(const VisualNovelConfig& cfg, core::Layer* layer)
-			: wheelDeltaCount(0.0f), index(0),
-			animationUp(false), animationDown(false), animationTime(0.0f),
-			drawOffsetY(0.0f),
-			textureBuf(cfg.ScreenWidth, cfg.ScreenHeight * 5.0f / 6.0f),
-			layer(layer) {
-		}
+		std::string returnName;
+
+		LogCom(const VisualNovelConfig& cfg, core::Layer* layer, std::string_view returnName, ScriptLoader& scLoader);
 	};
 
 	class LogDraw : public core::DrawBase
@@ -82,13 +78,20 @@ namespace ebbglow::visualnovel
 
 		core::Layer layerBuf;
 		
-		core::SubSystem<ui::ButtonExCom, ui::ButtonExSystem> buttonSubSys;
+		//core::SubSystem<ui::ButtonExCom, ui::ButtonExSystem> buttonSubSys;
 
 	public:
 		LogSystem(ScriptLoader* scLoader) :
-			scLoader(scLoader), world(&scLoader->world), coms(scLoader->world.getDoubleBuffer<LogCom>()), buttonSubSys(scLoader->world) {}
+			scLoader(scLoader), world(&scLoader->world),
+			coms(scLoader->world.getDoubleBuffer<LogCom>()) {}
 		
 
 		void update() override;
 	};
+
+	inline void ApplyLogView(core::World2D& world, ScriptLoader& scLoader)
+	{
+		world.addPool<LogCom>();
+		world.addSystem(LogSystem(&scLoader));
+	}
 }

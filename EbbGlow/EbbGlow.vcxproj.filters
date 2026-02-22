@@ -189,6 +189,9 @@
     <ClCompile Include="source\EbbGlow\VisualNovel\UI\UIState.cpp">
       <Filter>源文件\VisualNovel\UI</Filter>
     </ClCompile>
+    <ClCompile Include="source\EbbGlow\UI\Button\MultiButton.cpp">
+      <Filter>源文件\UI\Button</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\EbbGlow\Utils\ResourceCreator.h">
@@ -343,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="include\EbbGlow\VisualNovel\UI\UIState.h">
       <Filter>头文件\VisualNovel\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\UI\Button\MultiButton.h">
+      <Filter>头文件\UI\Button</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

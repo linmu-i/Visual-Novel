@@ -10,6 +10,7 @@ int main()
 {
 	ebbglow::SetConfigFlag(ebbglow::flags::WindowUndecorated);
 	ebbglow::Init(0, 0, "");
+	ebbglow::SetTargetFPS(120);
 	CFG.textSpeed = 1.0f;
 	CFG.fontData = ebbglow::rsc::SharedFile(FONT_PATH);
 	CFG.textBoxBackGround = ebbglow::rsc::SharedTexture2D("resource\\img\\TextBoxBackground.png");

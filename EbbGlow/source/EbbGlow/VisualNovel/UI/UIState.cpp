@@ -13,8 +13,17 @@ namespace ebbglow::visualnovel
 				{
 					ina.retScene = scLoader->sceneName;
 					ina.logActive = false;
-					//world->createUnit(world->getEntityManager()->getId(), LogCom());
-					
+					world->createUnit(world->getEntityManager()->getId(), LogCom(*cfg, &((*world->getUiLayer())[15]), scLoader->sceneName, *scLoader));
+					for (core::entity id : scLoader->idList)
+					{
+						world->deleteUnit(id);
+						world->getEntityManager()->recycleId(id);
+					}
+					for (core::entity id : scLoader->exIdList)
+					{
+						world->deleteUnit(id);
+						world->getEntityManager()->recycleId(id);
+					}
 				}
 			});
 	}

@@ -23,6 +23,10 @@ namespace ebbglow
 	{
 		::SetConfigFlags(flags);
 	}
+	void SetTargetFPS(int32_t fps)
+	{
+		::SetTargetFPS(fps);
+	}
 
 	void BeginDrawing()
 	{

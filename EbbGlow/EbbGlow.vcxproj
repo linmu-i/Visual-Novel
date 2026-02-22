@@ -148,6 +148,7 @@
     <ClCompile Include="source\EbbGlow\UI\Animation\KeyFrameAnimation.cpp" />
     <ClCompile Include="source\EbbGlow\UI\Button\Button.cpp" />
     <ClCompile Include="source\EbbGlow\UI\Button\ButtonEx.cpp" />
+    <ClCompile Include="source\EbbGlow\UI\Button\MultiButton.cpp" />
     <ClCompile Include="source\EbbGlow\UI\ImageBox\ImageBox.cpp" />
     <ClCompile Include="source\EbbGlow\UI\ImageBox\ImageBoxEx.cpp" />
     <ClCompile Include="source\EbbGlow\UI\TextBox\TextBox.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="include\EbbGlow\UI\Button\Button.h" />
     <ClInclude Include="include\EbbGlow\UI\Button\ButtonEx.h" />
     <ClInclude Include="include\EbbGlow\UI\Button\ButtonMsg.h" />
+    <ClInclude Include="include\EbbGlow\UI\Button\MultiButton.h" />
     <ClInclude Include="include\EbbGlow\UI\ImageBox.h" />
     <ClInclude Include="include\EbbGlow\UI\ImageBox\ImageBox.h" />
     <ClInclude Include="include\EbbGlow\UI\ImageBox\ImageBoxEx.h" />

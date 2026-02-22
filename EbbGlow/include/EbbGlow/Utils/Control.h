@@ -31,6 +31,7 @@ namespace ebbglow
 	void Init(int width, int height, const std::string& title);
     bool WindowShouldClose() noexcept;
 	void SetConfigFlag(uint32_t flags);
+    void SetTargetFPS(int32_t fps);
 
 	void BeginDrawing();
 	void EndDrawing();

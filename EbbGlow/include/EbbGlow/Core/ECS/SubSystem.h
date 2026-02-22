@@ -1,5 +1,9 @@
 #pragma once
 
+//´ý¶¨
+
+
+/*
 #include <EbbGlow/Core/World.h>
 
 namespace ebbglow::core
@@ -55,4 +59,4 @@ namespace ebbglow::core
 			return &doubleComs;
 		}
 	};
-}
+}*/

@@ -62,8 +62,6 @@ namespace ebbglow::visualnovel
 							scLoader->addLog(std::move(scLoader->logTmp));
 							scLoader->logTmp.clear();
 							auto next = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), scLoader->sceneView.find(scLoader->sceneArgs.front())->second);
-							world->deleteUnit(id);
-							world->getEntityManager()->recycleId(id);
 							scLoader->loadScene(next);
 						}
 						else
@@ -92,6 +90,7 @@ namespace ebbglow::visualnovel
 		scLoader->exIdList.clear();
 		auto id = scLoader->world.getEntityManager()->getId();
 		scLoader->world.createUnit(id, TextSceneCom());
+		scLoader->idList.push_back(id);
 	}
 
 
@@ -110,8 +109,6 @@ namespace ebbglow::visualnovel
 							auto it = scLoader->sceneView.find(scLoader->sceneArgs[i]);
 							if (it == scLoader->sceneView.end()) break;
 							auto scIt = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), it->second);
-							world->deleteUnit(id);
-							world->getEntityManager()->recycleId(id);
 							scLoader->loadScene(scIt);
 							auto selectI18nIt = scLoader->i18nText.find("ExLogText_Select");
 							std::string exLogTextSelect;
@@ -147,6 +144,7 @@ namespace ebbglow::visualnovel
 		scLoader->exIdList.clear();
 		auto id = scLoader->world.getEntityManager()->getId();
 		scLoader->world.createUnit(id, SelectSceneCom());
+		scLoader->idList.push_back(id);
 	}
 
 
@@ -158,8 +156,6 @@ namespace ebbglow::visualnovel
 				auto& inactiveCom = *coms->inactive()->get(id);
 				if (activeCom.timeCount > activeCom.delay)
 				{
-					world->deleteUnit(id);
-					world->getEntityManager()->recycleId(id);
 					auto it = scLoader->sceneView.find(scLoader->sceneArgs[0]);
 					if (it == scLoader->sceneView.end()) return;
 					auto scIt = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), it->second);
@@ -195,5 +191,6 @@ namespace ebbglow::visualnovel
 			delay = 0.0f;
 		}
 		scLoader->world.createUnit(id, DelaySceneCom(delay));
+		scLoader->idList.push_back(id);
 	}
 }

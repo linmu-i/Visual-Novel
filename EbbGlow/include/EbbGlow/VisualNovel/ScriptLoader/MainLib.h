@@ -3,6 +3,8 @@
 #include <EbbGlow/VisualNovel/ScriptLoader/GlobalFunctions.h>
 #include <EbbGlow/VisualNovel/ScriptLoader/SceneFunctions.h>
 #include <EbbGlow/VisualNovel/ScriptLoader/SceneTypes.h>
+#include <EbbGlow/VisualNovel/UI/UIState.h>
+#include <EbbGlow/VisualNovel/UI/Log.h>
 
 
 namespace ebbglow::visualnovel
@@ -43,5 +45,7 @@ namespace ebbglow::visualnovel
 		ApplyTextScene(world, scLoader);
 		ApplySelectScene(world, scLoader);
 		ApplyDelayScene(world, scLoader);
+		ApplyUIState(world, cfg, scLoader);
+		ApplyLogView(world, scLoader);
 	}
 }

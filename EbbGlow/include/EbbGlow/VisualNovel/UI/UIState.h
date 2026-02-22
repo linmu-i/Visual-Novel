@@ -16,10 +16,18 @@ namespace ebbglow::visualnovel
 		core::DoubleComs<UIState>* state;
 		ScriptLoader* scLoader;
 		core::World2D* world;
+		VisualNovelConfig* cfg;
 
 	public:
-		UIStateSystem(core::DoubleComs<UIState>* state, ScriptLoader& scLoader, core::World2D& world) :
-			state(state), scLoader(&scLoader), world(&world) {}
+		UIStateSystem(core::DoubleComs<UIState>* state, ScriptLoader& scLoader, core::World2D& world, VisualNovelConfig& cfg) :
+			state(state), scLoader(&scLoader), world(&world), cfg(&cfg) {}
 		void update() override;
 	};
+
+	inline void ApplyUIState(core::World2D& world, VisualNovelConfig& cfg, ScriptLoader& scLoader)
+	{
+		world.addPool<UIState>();
+		world.createUnit(world.getEntityManager()->getId(), UIState{ true, "" });
+		world.addSystem(UIStateSystem(world.getDoubleBuffer<UIState>(), scLoader, world, cfg));
+	}
 }
