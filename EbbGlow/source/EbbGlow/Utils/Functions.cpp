@@ -38,6 +38,12 @@ namespace ebbglow::utils
 		}
 		UnloadCodepoints(codePoints);
 
+		uniqueCodePoints.push_back(0x4E00);
+		uniqueCodePoints.push_back(0x4E00);
+		uniqueCodePoints.push_back(0x4E00);
+		//raylib神秘bug，据issue反馈，可能因为字体大小预测不准确导致末尾字符丢失
+		//且此问题一直未修复，因此采取临时方案，在末尾添加几个字符，确保正确加载
+
 		rsc::ResourceCreator creator;
 		if (type == rsc::FontType::Default)
 		{
@@ -64,6 +70,10 @@ namespace ebbglow::utils
 		}
 	}
 
+
+
+
+	/*
 	struct WidthCache {
 		const Font& font;
 		float fontSize;
@@ -235,6 +245,157 @@ namespace ebbglow::utils
 		UnloadCodepoints(codepoints);
 		return result;
 	}
+	*/
+
+struct CodepointsOwner {
+	int* data;
+	int count;
+	CodepointsOwner(const char* text) {
+		data = ::LoadCodepoints(text, &count);
+	}
+	~CodepointsOwner() {
+		if (data) ::UnloadCodepoints(data);
+	}
+};
+
+struct WidthCache {
+	const Font& font;
+	float fontSize;
+	float spacing;
+	mutable std::unordered_map<int, float> cache;
+
+	WidthCache(const Font& f, float fs, float sp) : font(f), fontSize(fs), spacing(sp) {}
+
+	float getWidth(int codepoint) const {
+		if (codepoint == '\n' || codepoint == '\r') return 0.0f;
+		auto it = cache.find(codepoint);
+		if (it != cache.end()) return it->second;
+
+		// 获取字符宽度 (Raylib 逻辑)
+		GlyphInfo gi = GetGlyphInfo(font, codepoint);
+		float width = 0.0f;
+		if (gi.advanceX > 0) {
+			width = gi.advanceX * fontSize / static_cast<float>(font.baseSize);
+		}
+		else {
+			// Fallback 测量
+			int cp = codepoint;
+			char* u8 = LoadUTF8(&cp, 1);
+			if (u8) {
+				width = MeasureTextEx(font, u8, fontSize, 0.0f).x;
+				UnloadUTF8(u8);
+			}
+		}
+		cache[codepoint] = width;
+		return width;
+	}
+
+	float measureRange(const int* cp, int begin, int end) const {
+		if (begin >= end) return 0.0f;
+		float sum = 0.0f;
+		for (int i = begin; i < end; ++i) {
+			sum += getWidth(cp[i]);
+			if (i > begin) sum += spacing;
+		}
+		return sum;
+	}
+};
+
+std::vector<std::vector<int>> TextLineCalculateWithWordWrap(
+	const std::string& text,
+	float fontSize,
+	float spacing,
+	const rsc::SharedFont& font,
+	float maxLength) noexcept
+{
+	if (text.empty() || maxLength <= 0.0f) return {};
+
+	CodepointsOwner cpOwner(text.c_str());
+	if (cpOwner.count <= 0 || !cpOwner.data) return {};
+
+	WidthCache wcache(*static_cast<Font*>(font.get()), fontSize, spacing);
+	std::vector<std::vector<int>> result;
+
+	int* codepoints = cpOwner.data;
+	int totalCount = cpOwner.count;
+	int cursor = 0;
+
+	while (cursor < totalCount) {
+		// 1. 处理显式换行符 (Hard Break)
+		if (codepoints[cursor] == '\n') {
+			result.emplace_back(); // 压入一个空行
+			cursor++;
+			continue;
+		}
+
+		// 2. 找到当前段落的终点（直到下一个 \n 或文本末尾）
+		int paragraphEnd = cursor;
+		while (paragraphEnd < totalCount && codepoints[paragraphEnd] != '\n') {
+			paragraphEnd++;
+		}
+
+		// 3. 对该段落进行软换行计算 (Soft Wrap)
+		int lineStart = cursor;
+		while (lineStart < paragraphEnd) {
+			int lineEnd = lineStart;
+			float currentWidth = 0.0f;
+			int lastSpaceIdx = -1;
+
+			// 尝试向当前行添加字符
+			while (lineEnd < paragraphEnd) {
+				float charW = wcache.getWidth(codepoints[lineEnd]);
+				float addW = (lineEnd > lineStart ? spacing : 0.0f) + charW;
+
+				if (currentWidth + addW > maxLength) {
+					// 超长了！
+					if (lastSpaceIdx != -1) {
+						// 如果这一行有空格，断在最后一个空格处
+						lineEnd = lastSpaceIdx + 1;
+					}
+					// 如果没空格或者是单词太长，就强制在此处断开
+					// 如果 lineEnd == lineStart，说明第一个字符就超长了，强制保留一个
+					if (lineEnd == lineStart) lineEnd++;
+					break;
+				}
+
+				if (codepoints[lineEnd] == ' ') {
+					lastSpaceIdx = lineEnd;
+				}
+
+				currentWidth += addW;
+				lineEnd++;
+			}
+
+			// 4. 提取当前行内容并进行 Trim
+			int trimEnd = lineEnd;
+			// 去掉行末空格（不影响下一行读取）
+			while (trimEnd > lineStart && codepoints[trimEnd - 1] == ' ') {
+				trimEnd--;
+			}
+
+			// 即使是空行（如果原文本此处有字符但被trim了），我们也压入，除非真的没内容
+			// 但在段落内部循环，通常能保证有内容
+			result.emplace_back(codepoints + lineStart, codepoints + trimEnd);
+
+			// 5. 更新 lineStart
+			lineStart = lineEnd;
+
+			// 自动换行优化：如果下一行开头是空格，跳过它（避免文字靠左不对齐）
+			// 注意：这只针对“自动换行”产生的行首空格，手动换行 \n 后的空格在下一步处理
+			while (lineStart < paragraphEnd && codepoints[lineStart] == ' ') {
+				lineStart++;
+			}
+		}
+
+		// 6. 移动游标到段落末尾（跳过已经处理完毕的段落内容）
+		cursor = paragraphEnd;
+		if (cursor < totalCount && codepoints[cursor] == '\n') {
+			cursor++; // 跳过该段落结尾的换行符，进入下一轮处理
+		}
+	}
+
+	return result;
+}
 
 	//警告，会破坏RenderTexture，调用请确保RenderTexture无其他副本
 	rsc::SharedTexture2D TakeTextureFromRenderTexture(rsc::SharedRenderTexture2D&& renderTexture) noexcept

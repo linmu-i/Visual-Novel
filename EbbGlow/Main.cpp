@@ -15,7 +15,7 @@ int main()
 	CFG.fontData = ebbglow::rsc::SharedFile(FONT_PATH);
 	CFG.textBoxBackGround = ebbglow::rsc::SharedTexture2D("resource\\img\\TextBoxBackground.png");
 	CFG.chrNameBackGround = ebbglow::rsc::SharedTexture2D("resource\\img\\ChrBoxBackground.png");
-	CFG.textSize = 48;
+	CFG.textSize = 36;
 	CFG.readTextColor = { 170, 230, 255, 255 };
 	CFG.chrNameOffsetX = 0.5f;
 	CFG.mainLanguage = 0;

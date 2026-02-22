@@ -6,53 +6,6 @@
 
 namespace ebbglow::visualnovel
 {
-	void ItemDraw::draw()
-	{
-		auto& cfg = *com.cfg;
-		auto texts = utils::TextLineCalculateWithWordWrap(com.text, cfg.textSize, cfg.textSize * 0.1f, com.font, cfg.ScreenWidth * 0.6666667f);
-		auto exText = utils::TextLineCalculateWithWordWrap(com.exText, cfg.textSize, cfg.textSize * 0.1f, com.font, cfg.ScreenWidth * 0.6666667f);
-		if (exText.size() > 1)
-		{
-			auto tmp = utils::ToCodepoints(".");
-			exText[0].push_back(tmp.back());
-			exText[0].push_back(tmp.back());
-			exText[0].push_back(tmp.back());
-		}
-		gfx::DrawTextCodepoints(com.font, exText[0], com.region.position(), cfg.textSize, cfg.textSize * 0.1f);
-		float heightCount = 0.0f;
-		float spacing = com.region.height * 0.08;
-		if (!exText.empty())
-		{
-			heightCount += utils::MeasureTextSize(com.font, utils::ToUTF8Text(exText[0]), cfg.textSize, cfg.textSize * 0.1f).y;
-			gfx::DrawRectangleGradientH
-			(
-				Rect{ com.region.x, com.region.y + spacing + heightCount - 0.8f, com.region.x + cfg.ScreenWidth * 0.3333333f, com.region.y + spacing + heightCount + 0.8f },
-				ColorR8G8B8A8(255, 255, 255, 255),
-				ColorR8G8B8A8(255,255,255,0)
-			);
-			heightCount += spacing * 2;
-		}
-		for (int i = 0; i < texts.size(); ++i)
-		{
-			float textHeight = utils::MeasureTextSize(com.font, utils::ToUTF8Text(texts[i]), cfg.textSize, cfg.textSize * 0.1f).y;
-			if (heightCount + textHeight > com.region.height) break;
-			if (heightCount + textHeight * 2 + spacing <= com.region.height)
-			{
-				gfx::DrawTextCodepoints(com.font, texts[i], Vec2{ com.region.x, com.region.y + heightCount }, cfg.textSize, cfg.textSize * 0.1f);
-				heightCount += textHeight + spacing;
-			}
-			else
-			{
-				auto tmp = utils::ToCodepoints(".");
-				texts[i].push_back(tmp.back());
-				texts[i].push_back(tmp.back());
-				texts[i].push_back(tmp.back());
-				gfx::DrawTextCodepoints(com.font, texts[i], Vec2{ com.region.x, com.region.y + heightCount }, cfg.textSize, cfg.textSize * 0.1f);
-				break;
-			}
-		}
-	}
-
 	void DrawItem(const Item& item) noexcept
 	{
 		auto& cfg = *item.cfg;
@@ -65,11 +18,11 @@ namespace ebbglow::visualnovel
 			exText[0].push_back(tmp.back());
 			exText[0].push_back(tmp.back());
 		}
-		//gfx::DrawTextCodepoints(item.font, exText[0], item.region.position(), cfg.textSize, cfg.textSize * 0.1f);
 		float heightCount = 0.0f;
-		float spacing = item.region.height * 0.08;
+		float spacing = item.region.height * 0.06;
 		if (!exText.empty())
 		{
+			gfx::DrawTextCodepoints(item.font, exText[0], item.region.position(), cfg.textSize, cfg.textSize * 0.1f);
 			heightCount += utils::MeasureTextSize(item.font, utils::ToUTF8Text(exText[0]), cfg.textSize, cfg.textSize * 0.1f).y;
 			gfx::DrawRectangleGradientH
 			(
@@ -83,7 +36,7 @@ namespace ebbglow::visualnovel
 		{
 			float textHeight = utils::MeasureTextSize(item.font, utils::ToUTF8Text(texts[i]), cfg.textSize, cfg.textSize * 0.1f).y;
 			if (heightCount + textHeight > item.region.height) break;
-			if (heightCount + textHeight * 2 + spacing <= item.region.height)
+			if (heightCount + textHeight * 2 + spacing <= item.region.height || i == texts.size() - 1)
 			{
 				gfx::DrawTextCodepoints(item.font, texts[i], Vec2{ item.region.x, item.region.y + heightCount }, cfg.textSize, cfg.textSize * 0.1f);
 				heightCount += textHeight + spacing;
@@ -98,6 +51,7 @@ namespace ebbglow::visualnovel
 				break;
 			}
 		}
+		gfx::DrawLine(Vec2{ item.region.x, item.region.y + item.region.height }, Vec2{ item.region.x + cfg.ScreenWidth * 0.6666667f, item.region.y + item.region.height }, ColorR8G8B8A8(128, 128, 128, 255), 1.0f);
 	}
 
 	static Item CreateItem(const LogView& logView, ScriptLoader& loader, int index, Vec2 texSize) noexcept
@@ -125,7 +79,6 @@ namespace ebbglow::visualnovel
 			}
 			else
 			{
-				//items.push_back(CreateItem(loader.logView[loader.logView.size() - index - i], loader, 5 - i, texSize));
 				items.push_back(CreateItem(loader.logView[loader.logView.size() - index - i], loader, 5 - i, texSize));
 			}
 		}
@@ -149,12 +102,8 @@ namespace ebbglow::visualnovel
 
 	void LogDraw::draw()
 	{
-
 		Rect origin{0, com.drawOffsetY, static_cast<float>(com.textureBuf.width()), -com.textureBuf.height() * 5.0f / 6.0f};
-		
-		//gfx::DrawTextureRegionToRegion(com.textureBuf, Rect{ origin.position() - dst.position(), origin.coverage()}, dst);
 		gfx::DrawTextureRegionToRegion(com.textureBuf, origin, Rect{ 0, cfg.ScreenHeight / 8.0f, static_cast<float>(cfg.ScreenWidth), cfg.ScreenHeight * 0.75f });
-		//gfx::DrawTextureRegionToRegion(com.textureBuf, origin, Rect{ 0, cfg.ScreenHeight / 8.0f, static_cast<float>(cfg.ScreenWidth), cfg.ScreenHeight * 0.75f });
 	}
 
 	void LogSystem::update()
@@ -207,12 +156,12 @@ namespace ebbglow::visualnovel
 						if (delta < 0)
 						{
 							ina.items = CreateItemList(*scLoader, newIndex, texSize);
-							ina.drawOffsetY = 0;
+							ina.drawOffsetY = itemHeight;
 						}
 						else
 						{
 							ina.items = CreateItemList(*scLoader, newIndex - 1, texSize);
-							ina.drawOffsetY = itemHeight;
+							ina.drawOffsetY = 0;
 						}
 					}
 				}
@@ -231,7 +180,7 @@ namespace ebbglow::visualnovel
 					}
 					else
 					{
-						if (act.animationUp)//delta > 0)
+						if (act.animationUp)
 							ina.drawOffsetY = itemHeight - act.animationTime / animationDuration * itemHeight;
 						else
 							ina.drawOffsetY = act.animationTime / animationDuration * itemHeight;

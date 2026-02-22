@@ -109,7 +109,7 @@ namespace ebbglow::resource
 		SharedMusic(const SharedMusic& other) noexcept;
 		SharedMusic(SharedMusic&& other) noexcept;
 		SharedMusic(const char* musicPath) noexcept;
-		//SharedMusic(std::u8string_view musicPath) noexcept;//RL无法从u8string_view->std::filesystem::path流式加载音频文件，因此无稳定utf8加载方法，不提供此构造函数
+		SharedMusic(std::u8string_view musicPath) noexcept;
 		
 		SharedMusic& operator=(const SharedMusic& other) noexcept;
 		SharedMusic& operator=(SharedMusic&& other) noexcept;

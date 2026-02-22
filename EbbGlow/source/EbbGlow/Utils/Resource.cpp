@@ -34,8 +34,9 @@ namespace ebbglow::resource
 		}
 	}
 
-	SharedImage::SharedImage(std::u8string_view imagePath) noexcept
+	SharedImage::SharedImage(std::u8string_view imagePath) noexcept : SharedImage(reinterpret_cast<const char*>(std::u8string{ imagePath }.c_str()))
 	{
+		/*
 		std::filesystem::path path(imagePath);
 		std::ifstream file(path, std::ios::binary);
 		if (!file)
@@ -66,6 +67,7 @@ namespace ebbglow::resource
 			delete (::Image*)image;
 			image = nullptr;
 		}
+		*/
 	}
 
 	SharedImage::SharedImage(const SharedImage& other) : image(other.image), ref(other.ref)
@@ -179,8 +181,9 @@ namespace ebbglow::resource
 		}
 	}
 
-	SharedTexture::SharedTexture(std::u8string_view texturePath) noexcept
+	SharedTexture::SharedTexture(std::u8string_view texturePath) noexcept : SharedTexture(reinterpret_cast<const char*>(std::u8string{ texturePath }.c_str()))
 	{
+		/*
 		std::filesystem::path path(texturePath);
 		std::ifstream file(path, std::ios::binary);
 		if (!file)
@@ -191,7 +194,7 @@ namespace ebbglow::resource
 		}
 		std::vector<uint8_t> data{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
 		file.close();
-		
+
 		Image img = LoadImageFromMemory(path.extension().string().c_str(), data.data(), static_cast<int>(data.size()));
 		auto* loaded = new(std::nothrow) Texture2D(LoadTextureFromImage(img));
 		UnloadImage(img);
@@ -211,6 +214,7 @@ namespace ebbglow::resource
 			delete static_cast<::Texture*>(texture);
 			texture = nullptr;
 		}
+		*/
 	}
 
 	SharedTexture::SharedTexture(const SharedTexture& other) : texture(other.texture), ref(other.ref)
@@ -441,7 +445,7 @@ namespace ebbglow::resource
 		other.music = nullptr;
 		other.ref = nullptr;
 	}
-	
+
 	SharedMusic::SharedMusic(const char* musicPath) noexcept
 	{
 		auto* loaded = new(std::nothrow) ::Music(LoadMusicStream(musicPath));
@@ -462,41 +466,7 @@ namespace ebbglow::resource
 		}
 	}
 
-	/*
-	SharedMusic::SharedMusic(std::u8string_view musicPath) noexcept
-	{
-		std::filesystem::path path(musicPath);
-		std::ifstream file(path, std::ios::binary);
-		if (!file)
-		{
-			music = nullptr;
-			ref = nullptr;
-			return;
-		}
-		std::vector<uint8_t> data{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
-		file.close();
-
-		auto* loaded = new(std::nothrow) ::Music(LoadMusicStreamFromMemory(path.extension().string().c_str(), data.data(), static_cast<int>(data.size())));
-		
-		if (loaded == nullptr || !IsMusicValid(*loaded))
-		{
-			if (loaded) delete loaded;
-			music = nullptr;
-			ref = nullptr;
-			return;
-		}
-		music = loaded;
-		ref = new(std::nothrow) size_t(1);
-		PlayMusicStream(*static_cast<::Music*>(music));
-		UpdateMusicStream(*static_cast<::Music*>(music));
-		if (ref == nullptr)
-		{
-			UnloadMusicStream(*static_cast<::Music*>(music));
-			delete static_cast<::Music*>(music);
-			music = nullptr;
-		}
-	}
-	*/
+	SharedMusic::SharedMusic(std::u8string_view musicPath) noexcept : SharedMusic(reinterpret_cast<const char*>(std::u8string{ musicPath }.c_str())) {}
 
 	SharedMusic& SharedMusic::operator=(const SharedMusic& other) noexcept
 	{
@@ -1270,8 +1240,9 @@ namespace ebbglow::resource
 		}
 	}
 
-	SharedSound::SharedSound(std::u8string_view soundPath) noexcept
+	SharedSound::SharedSound(std::u8string_view soundPath) noexcept : SharedSound(reinterpret_cast<const char*>(std::u8string{ soundPath }.c_str()))
 	{
+		/*
 		std::filesystem::path path(soundPath);
 		std::ifstream file(path, std::ios::binary);
 		if (!file)
@@ -1300,6 +1271,7 @@ namespace ebbglow::resource
 			delete static_cast<::Sound*>(sound);
 			sound = nullptr;
 		}
+		*/
 	}
 
 	SharedSound& SharedSound::operator=(const SharedSound& other) noexcept

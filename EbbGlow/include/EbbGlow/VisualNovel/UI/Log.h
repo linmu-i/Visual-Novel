@@ -23,15 +23,15 @@ namespace ebbglow::visualnovel
 		}
 	};
 
-	class ItemDraw : public core::DrawBase
-	{
-	private:
-		const Item& com;
-
-	public:
-		ItemDraw(const Item& com) : com(com) {}
-		void draw() override;
-	};
+	//class ItemDraw : public core::DrawBase
+	//{
+	//private:
+	//	const Item& com;
+	//
+	//public:
+	//	ItemDraw(const Item& com) : com(com) {}
+		//void draw() override;
+	//};
 
 	void DrawItem(const Item& item) noexcept;
 
