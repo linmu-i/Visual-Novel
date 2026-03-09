@@ -707,7 +707,7 @@ namespace ebbglow::visualnovel
 	void ScriptLoader::loadScene(rsc::SharedFile::Iterator& it) noexcept
 	{
 		if (!IsKeyWord(it, "Scene")) return;
-		//logTmp.clear();
+		
 		for (auto id : idList)
 		{
 			world.deleteUnit(id);

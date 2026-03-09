@@ -37,10 +37,10 @@ namespace ebbglow::visualnovel
 			Vec2 textureSize = utils::MeasureTextSize(font, text, textSize, spacing);
 			rsc::SharedRenderTexture2D tmpTexture(static_cast<int>(textureSize.x), static_cast<int>(textureSize.y));
 			BeginTextureMode(tmpTexture);
-			//BeginShaderMode(gfx::GetDefaultAAShader());
+			
 			gfx::ClearBackground(colors::Blank);
 			gfx::DrawTextCodepoints(font, s, { 0,0 }, textSize, spacing, textColor);
-			//EndShaderMode();
+			
 			EndTextureMode();
 			this->textL1.push_back(utils::TakeTextureFromRenderTexture(std::move(tmpTexture)));
 		}

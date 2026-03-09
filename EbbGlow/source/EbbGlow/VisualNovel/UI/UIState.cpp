@@ -17,7 +17,7 @@ namespace ebbglow::visualnovel
 							scLoader->backLogRetName = scLoader->sceneName;
 							auto logViewSceneIt = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), it->second);
 							scLoader->loadScene(logViewSceneIt);
-							//ina.retScene = scLoader->sceneName;
+							
 							
 							ina.logActive = false;
 						}

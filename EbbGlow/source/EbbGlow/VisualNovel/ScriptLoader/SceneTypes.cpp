@@ -59,8 +59,6 @@ namespace ebbglow::visualnovel
 					{
 						if (textBoxComs->active()->get(scLoader->exIdList.back())->activePixel >= textBoxComs->active()->get(scLoader->exIdList.back())->totalPixel)
 						{
-							//scLoader->addLog(std::move(scLoader->logTmp));
-							//scLoader->logTmp.clear();
 							auto next = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), scLoader->sceneView.find(scLoader->sceneArgs.front())->second);
 							scLoader->loadScene(next);
 						}
@@ -76,19 +74,6 @@ namespace ebbglow::visualnovel
 
 	void SceneType_TextScene(ScriptLoader* scLoader, std::vector<std::string> args) noexcept
 	{
-		for (auto id : scLoader->idList)
-		{
-			scLoader->world.deleteUnit(id);
-			scLoader->world.getEntityManager()->recycleId(id);
-		}
-		scLoader->idList.clear();
-		for (auto id : scLoader->exIdList)
-		{
-			scLoader->world.deleteUnit(id);
-			scLoader->world.getEntityManager()->recycleId(id);
-		}
-		scLoader->exIdList.clear();
-
 		if (!scLoader->backLogTmp.empty()) scLoader->addToBackLog(std::move(scLoader->backLogTmp));
 		scLoader->backLogTmp.clear();
 
@@ -141,18 +126,6 @@ namespace ebbglow::visualnovel
 
 	void SceneType_SelectScene(ScriptLoader* scLoader, std::vector<std::string> args) noexcept
 	{
-		for (auto id : scLoader->idList)
-		{
-			scLoader->world.deleteUnit(id);
-			scLoader->world.getEntityManager()->recycleId(id);
-		}
-		scLoader->idList.clear();
-		for (auto id : scLoader->exIdList)
-		{
-			scLoader->world.deleteUnit(id);
-			scLoader->world.getEntityManager()->recycleId(id);
-		}
-		scLoader->exIdList.clear();
 		auto id = scLoader->world.getEntityManager()->getId();
 		scLoader->world.createUnit(id, SelectSceneCom());
 		scLoader->idList.push_back(id);
@@ -179,19 +152,6 @@ namespace ebbglow::visualnovel
 
 	void SceneType_DelayScene(ScriptLoader* scLoader, std::vector<std::string> args) noexcept
 	{
-		for (auto id : scLoader->idList)
-		{
-			scLoader->world.deleteUnit(id);
-			scLoader->world.getEntityManager()->recycleId(id);
-		}
-		scLoader->idList.clear();
-		for (auto id : scLoader->exIdList)
-		{
-			scLoader->world.deleteUnit(id);
-			scLoader->world.getEntityManager()->recycleId(id);
-		}
-		scLoader->exIdList.clear();
-		auto id = scLoader->world.getEntityManager()->getId();
 		float delay = 0.0f;
 		try
 		{
@@ -201,23 +161,11 @@ namespace ebbglow::visualnovel
 		{
 			delay = 0.0f;
 		}
+
+		auto id = scLoader->world.getEntityManager()->getId();
 		scLoader->world.createUnit(id, DelaySceneCom(delay));
 		scLoader->idList.push_back(id);
 	}
 
-	void SceneType_BlankScene(ScriptLoader* scLoader, std::vector<std::string> args) noexcept
-	{
-		for (auto id : scLoader->idList)
-		{
-			scLoader->world.deleteUnit(id);
-			scLoader->world.getEntityManager()->recycleId(id);
-		}
-		scLoader->idList.clear();
-		for (auto id : scLoader->exIdList)
-		{
-			scLoader->world.deleteUnit(id);
-			scLoader->world.getEntityManager()->recycleId(id);
-		}
-		scLoader->exIdList.clear();
-	}
+	void SceneType_BlankScene(ScriptLoader* scLoader, std::vector<std::string> args) noexcept {}
 }

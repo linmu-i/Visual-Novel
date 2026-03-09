@@ -208,8 +208,6 @@ namespace ebbglow::visualnovel
 
 				if (input::KeyPressed(input::Keyboard::Escape) || input::MousePressed(input::MouseButton::Right))
 				{
-					world->deleteUnit(id);
-					world->getEntityManager()->recycleId(id);
 					auto indexIt = scLoader->sceneView.find(act.returnName);
 					if (indexIt != scLoader->sceneView.end())
 					{
