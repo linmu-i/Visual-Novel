@@ -1,5 +1,6 @@
 Global
 BeginScene("scMenu")
+BackLogScene("backLogScene")
 String(str)
 Macro BasicButton(x, y, text)
 {
@@ -9,6 +10,7 @@ Include("Script2.txt")
 
 
 Scene scMenu(SelectScene : sc_0_1, load_0_1)
+ColorTween(0, 0, 0, 255,   0, 0, 0, 0,   500,   15)
 &BasicButton(0.5, 0.5, "场景1-语言1")
 &BasicButton(0.5, 0.6, "场景2-语言1")
 ImageBox(0.5, 0.5, 16 / 9, 0.5, "resource\\img\\Unicode测试.png", @Contain, @Center, 1)

@@ -1,6 +1,5 @@
 #include <EbbGlow/VisualNovel/UI/UIState.h>
 #include <EbbGlow/Utils/Input.h>
-#include <EbbGlow/VisualNovel/UI/Log.h>
 
 namespace ebbglow::visualnovel
 {
@@ -11,18 +10,17 @@ namespace ebbglow::visualnovel
 				auto& ina = *state->inactive()->get(id);
 				if (act.logActive && input::MouseWheelDelta() > 0)
 				{
-					ina.retScene = scLoader->sceneName;
-					ina.logActive = false;
-					world->createUnit(world->getEntityManager()->getId(), LogCom(*cfg, &((*world->getUiLayer())[15]), scLoader->sceneName, *scLoader));
-					for (core::entity id : scLoader->idList)
 					{
-						world->deleteUnit(id);
-						world->getEntityManager()->recycleId(id);
-					}
-					for (core::entity id : scLoader->exIdList)
-					{
-						world->deleteUnit(id);
-						world->getEntityManager()->recycleId(id);
+						auto it = scLoader->sceneView.find(scLoader->backLogScene);
+						if (it != scLoader->sceneView.end())
+						{
+							scLoader->backLogRetName = scLoader->sceneName;
+							auto logViewSceneIt = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), it->second);
+							scLoader->loadScene(logViewSceneIt);
+							//ina.retScene = scLoader->sceneName;
+							
+							ina.logActive = false;
+						}
 					}
 				}
 			});

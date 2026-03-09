@@ -1,2 +1,10 @@
 Scene sc_0_4(TextScene : scMenu)
 TextScene("回去循环吧", "语言1", "语言2", "语言3", "resource\\img\\backGround.png", @Cover)
+
+Scene backLogScene(DelayScene : backLogScene_, 5000)
+ImageBox(0.5, 0.5, 16 / 9, 1.0, "resource\\img\\backGround.png", @Contain, @Center, 1)
+ColorTween(0, 0, 0, 255,  0, 0, 0, 0,  500,  15)
+//BackLogCom()
+
+Scene backLogScene_(BlankScene : aaa, 110000)
+BackLogCom()

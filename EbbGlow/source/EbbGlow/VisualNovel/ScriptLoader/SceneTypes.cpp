@@ -59,8 +59,8 @@ namespace ebbglow::visualnovel
 					{
 						if (textBoxComs->active()->get(scLoader->exIdList.back())->activePixel >= textBoxComs->active()->get(scLoader->exIdList.back())->totalPixel)
 						{
-							scLoader->addLog(std::move(scLoader->logTmp));
-							scLoader->logTmp.clear();
+							//scLoader->addLog(std::move(scLoader->logTmp));
+							//scLoader->logTmp.clear();
 							auto next = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), scLoader->sceneView.find(scLoader->sceneArgs.front())->second);
 							scLoader->loadScene(next);
 						}
@@ -88,6 +88,10 @@ namespace ebbglow::visualnovel
 			scLoader->world.getEntityManager()->recycleId(id);
 		}
 		scLoader->exIdList.clear();
+
+		if (!scLoader->backLogTmp.empty()) scLoader->addToBackLog(std::move(scLoader->backLogTmp));
+		scLoader->backLogTmp.clear();
+
 		auto id = scLoader->world.getEntityManager()->getId();
 		scLoader->world.createUnit(id, TextSceneCom());
 		scLoader->idList.push_back(id);
@@ -109,7 +113,7 @@ namespace ebbglow::visualnovel
 							auto it = scLoader->sceneView.find(scLoader->sceneArgs[i]);
 							if (it == scLoader->sceneView.end()) break;
 							auto scIt = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), it->second);
-							scLoader->loadScene(scIt);
+							
 							auto selectI18nIt = scLoader->i18nText.find("ExLogText_Select");
 							std::string exLogTextSelect;
 							if (selectI18nIt != scLoader->i18nText.end())
@@ -120,7 +124,14 @@ namespace ebbglow::visualnovel
 							{
 								exLogTextSelect = reinterpret_cast<const char*>(u8"Ñ¡Ôñ:");
 							}
-							scLoader->logTmp.exText = exLogTextSelect;
+							
+							if (!scLoader->backLogTmp.empty()) scLoader->addToBackLog(std::move(scLoader->backLogTmp));
+							BackLogView view;
+							view.exText = exLogTextSelect;
+							view.text = world->getDoubleBuffer<ui::ButtonExCom>()->active()->get(msg->getSender())->text;
+							scLoader->backLogTmp = std::move(view);
+
+							scLoader->loadScene(scIt);
 							return;
 						}
 					}
@@ -192,5 +203,21 @@ namespace ebbglow::visualnovel
 		}
 		scLoader->world.createUnit(id, DelaySceneCom(delay));
 		scLoader->idList.push_back(id);
+	}
+
+	void SceneType_BlankScene(ScriptLoader* scLoader, std::vector<std::string> args) noexcept
+	{
+		for (auto id : scLoader->idList)
+		{
+			scLoader->world.deleteUnit(id);
+			scLoader->world.getEntityManager()->recycleId(id);
+		}
+		scLoader->idList.clear();
+		for (auto id : scLoader->exIdList)
+		{
+			scLoader->world.deleteUnit(id);
+			scLoader->world.getEntityManager()->recycleId(id);
+		}
+		scLoader->exIdList.clear();
 	}
 }

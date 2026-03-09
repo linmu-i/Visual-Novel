@@ -183,7 +183,7 @@
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\MainTextBox.cpp">
       <Filter>源文件\VisualNovel\VisualNovel</Filter>
     </ClCompile>
-    <ClCompile Include="source\EbbGlow\VisualNovel\UI\Log.cpp">
+    <ClCompile Include="source\EbbGlow\VisualNovel\UI\BackLog.cpp">
       <Filter>源文件\VisualNovel\UI</Filter>
     </ClCompile>
     <ClCompile Include="source\EbbGlow\VisualNovel\UI\UIState.cpp">
@@ -191,6 +191,9 @@
     </ClCompile>
     <ClCompile Include="source\EbbGlow\UI\Button\MultiButton.cpp">
       <Filter>源文件\UI\Button</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\ColorTween.cpp">
+      <Filter>源文件\VisualNovel\VisualNovel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -338,7 +341,7 @@
     <ClInclude Include="include\EbbGlow\UI\UI.h">
       <Filter>头文件\UI</Filter>
     </ClInclude>
-    <ClInclude Include="include\EbbGlow\VisualNovel\UI\Log.h">
+    <ClInclude Include="include\EbbGlow\VisualNovel\UI\BackLog.h">
       <Filter>头文件\VisualNovel\UI</Filter>
     </ClInclude>
     <ClInclude Include="include\EbbGlow\Core\ECS\SubSystem.h">
@@ -349,6 +352,9 @@
     </ClInclude>
     <ClInclude Include="include\EbbGlow\UI\Button\MultiButton.h">
       <Filter>头文件\UI\Button</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\ColorTween.h">
+      <Filter>头文件\VisualNovel\VisualNovel</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

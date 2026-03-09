@@ -48,4 +48,9 @@ namespace ebbglow::visualnovel
 		}
 		loader->i18nText.emplace(args[0], std::move(text));
 	}
+	void Global_BackLogScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	{
+		if (args.size() < 1) return;
+		loader->backLogScene = GetString(args[0], *loader);
+	}
 }

@@ -100,4 +100,6 @@ namespace ebbglow::visualnovel
 		world.addPool<DelaySceneCom>();
 		world.addSystem(DelaySceneSystem(world, scLoader));
 	}
+
+	void SceneType_BlankScene(ScriptLoader* scLoader, std::vector<std::string> args) noexcept;
 }

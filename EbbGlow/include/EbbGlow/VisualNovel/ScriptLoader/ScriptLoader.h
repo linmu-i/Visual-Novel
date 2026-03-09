@@ -44,11 +44,12 @@ namespace ebbglow::visualnovel
 		std::unordered_map<std::string, int64_t> sceneView;
 
 		//文本回看
-		std::vector<LogView> logView;
+		std::vector<BackLogView> backLogViews;
 
 		//初始化数据
 		ScriptData scriptData;
 		std::string beginScene;
+		std::string backLogScene;
 
 		//运行时数据
 		std::vector<core::entity> idList;
@@ -57,7 +58,8 @@ namespace ebbglow::visualnovel
 		std::string sceneName;
 		std::string sceneType;
 		rsc::SharedFile::Iterator scIt;//解析时使用的迭代器，供追加文本时更新迭代器使用
-		LogView logTmp;
+		BackLogView backLogTmp;
+		std::string backLogRetName;
 
 		//设置
 		VisualNovelConfig& cfg;
@@ -72,10 +74,10 @@ namespace ebbglow::visualnovel
 		void registerSceneType(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
 		void registerSceneFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
 		void registerGlobalFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
-		void addLog(const LogView& logView) noexcept;
-		void addLog(LogView&& logView) noexcept;
+		void addToBackLog(const BackLogView& backLogView) noexcept;
+		void addToBackLog(BackLogView&& backLogView) noexcept;
 	};
-	 
+	
 	void SkipSpace(rsc::SharedFile::Iterator& ptr);
 	double ParsePrimary(rsc::SharedFile::Iterator& ptr, unsigned char stop, ScriptLoader& scLoader);
 	double ParseTerm(rsc::SharedFile::Iterator& ptr, unsigned char stop, ScriptLoader& scLoader);

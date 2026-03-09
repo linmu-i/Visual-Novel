@@ -13,6 +13,7 @@ namespace ebbglow
 {
 	static unsigned char* u8LoadFileData(const char* u8FileName, int* dataSize)
 	{
+		*dataSize = 0;
 		if (u8FileName == nullptr) return nullptr;
 		std::filesystem::path filePath(reinterpret_cast<const char8_t*>(u8FileName));
 		
@@ -51,7 +52,7 @@ namespace ebbglow
 
 		if (file.read(reinterpret_cast<char*>(data), size))
 		{
-			data[size] = '\0'; // Null-terminate the text
+			data[size] = '\0';
 			return data;
 		}
 		RL_FREE(data);
@@ -87,6 +88,7 @@ namespace ebbglow
 		::SetLoadFileTextCallback(u8LoadFileText);
 		::SetSaveFileDataCallback(u8SaveFileData);
 		::SetSaveFileTextCallback(u8SaveFileText);
+		::SetExitKey(::KEY_NULL);
 	}
 
 	bool WindowShouldClose() noexcept

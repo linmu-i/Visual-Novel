@@ -9,6 +9,10 @@
 
 namespace ebbglow::visualnovel
 {
+	struct UIResources
+	{
+		//rsc::SharedTexture2D textBoxBackGround;
+	};
 	struct VisualNovelConfig
 	{
 		uint8_t mainLanguage = 0;
@@ -25,8 +29,8 @@ namespace ebbglow::visualnovel
 		rsc::SharedTexture2D chrNameBackGround;
 		float chrNameOffsetX = 0.0f;
 
-		int ScreenWidth = 0;
-		int ScreenHeight = 0;
+		int VirtualScreenWidth = 0;
+		int VirtualScreenHeight = 0;
 
 		static struct LayerDef
 		{
@@ -48,6 +52,7 @@ namespace ebbglow::visualnovel
 
 		bool secondLanguageShow = true;
 
+		//rsc::Shared
 	};
 }
 

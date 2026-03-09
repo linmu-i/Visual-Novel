@@ -35,7 +35,7 @@ namespace ebbglow::visualnovel
 
 	void DrawItem(const Item& item) noexcept;
 
-	struct LogCom
+	struct BackLogCom
 	{
 		float wheelDeltaCount;
 		int32_t index;
@@ -55,25 +55,27 @@ namespace ebbglow::visualnovel
 
 		std::string returnName;
 
-		LogCom(const VisualNovelConfig& cfg, core::Layer* layer, std::string_view returnName, ScriptLoader& scLoader);
+		core::entity returnButtonId;
+
+		BackLogCom(const VisualNovelConfig& cfg, core::Layer* layer, std::string_view returnName, ScriptLoader& scLoader);
 	};
 
-	class LogDraw : public core::DrawBase
+	class BackLogDraw : public core::DrawBase
 	{
 	private:
-		const LogCom& com;
+		const BackLogCom& com;
 		const VisualNovelConfig& cfg;
 
 	public:
-		LogDraw(const LogCom& com, const VisualNovelConfig& cfg) : com(com), cfg(cfg) {}
+		BackLogDraw(const BackLogCom& com, const VisualNovelConfig& cfg) : com(com), cfg(cfg) {}
 		void draw() override;
 	};
 
-	class LogSystem : public core::SystemBase
+	class BackLogSystem : public core::SystemBase
 	{
 	private:
 		core::World2D* world;
-		core::DoubleComs<LogCom>* coms;
+		core::DoubleComs<BackLogCom>* coms;
 		ScriptLoader* scLoader;
 
 		core::Layer layerBuf;
@@ -81,9 +83,9 @@ namespace ebbglow::visualnovel
 		//core::SubSystem<ui::ButtonExCom, ui::ButtonExSystem> buttonSubSys;
 
 	public:
-		LogSystem(ScriptLoader* scLoader) :
+		BackLogSystem(ScriptLoader* scLoader) :
 			scLoader(scLoader), world(&scLoader->world),
-			coms(scLoader->world.getDoubleBuffer<LogCom>()) {}
+			coms(scLoader->world.getDoubleBuffer<BackLogCom>()) {}
 		
 
 		void update() override;
@@ -91,7 +93,7 @@ namespace ebbglow::visualnovel
 
 	inline void ApplyLogView(core::World2D& world, ScriptLoader& scLoader)
 	{
-		world.addPool<LogCom>();
-		world.addSystem(LogSystem(&scLoader));
+		world.addPool<BackLogCom>();
+		world.addSystem(BackLogSystem(&scLoader));
 	}
 }

@@ -76,13 +76,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(RAYLIB_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;D:\Program Files\raylib-5.5_win32_msvc16\raylib-5.5_win32_msvc16\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(RAYLIB_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Program Files\raylib-5.5_win32_msvc16\raylib-5.5_win32_msvc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>raylib.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -94,13 +94,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)include;$(RAYLIB_DIR)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;D:\Program Files\raylib-5.5_win32_msvc16\raylib-5.5_win32_msvc16\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(RAYLIB_DIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Program Files\raylib-5.5_win32_msvc16\raylib-5.5_win32_msvc16\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>raylib.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -165,8 +165,9 @@
     <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\SceneTypes.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\ScriptData.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\ScriptLoader.cpp" />
-    <ClCompile Include="source\EbbGlow\VisualNovel\UI\Log.cpp" />
+    <ClCompile Include="source\EbbGlow\VisualNovel\UI\BackLog.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\UI\UIState.cpp" />
+    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\ColorTween.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\MainTextBox.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -214,9 +215,10 @@
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\ScriptData.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\ScriptLoader.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\ScriptLoaderTypes.h" />
-    <ClInclude Include="include\EbbGlow\VisualNovel\UI\Log.h" />
+    <ClInclude Include="include\EbbGlow\VisualNovel\UI\BackLog.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\UI\UIState.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel.h" />
+    <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\ColorTween.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\MainTextBox.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\VisualNovel.h" />
     <ClInclude Include="source\EbbGlow\Utils\ResourceCreator.h" />

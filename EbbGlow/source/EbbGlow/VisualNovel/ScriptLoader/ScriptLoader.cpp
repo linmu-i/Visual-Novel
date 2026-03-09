@@ -504,7 +504,7 @@ namespace ebbglow::visualnovel
 		while (!it.eof() && *it != ':') ++it;
 		++it;
 		SkipSpace(it);
-		if (*it == ')') return SceneInfo(std::move(sceneType), std::move(sceneName), std::move(std::vector<std::string>()));
+		if (*it == ')') return SceneInfo(std::move(sceneName), std::move(sceneType), std::move(std::vector<std::string>()));
 		std::vector<std::string> args;
 		args.push_back("");
 		while (!it.eof() && *it != ')')
@@ -707,7 +707,20 @@ namespace ebbglow::visualnovel
 	void ScriptLoader::loadScene(rsc::SharedFile::Iterator& it) noexcept
 	{
 		if (!IsKeyWord(it, "Scene")) return;
-		logTmp.clear();
+		//logTmp.clear();
+		for (auto id : idList)
+		{
+			world.deleteUnit(id);
+			world.getEntityManager()->recycleId(id);
+		}
+		idList.clear();
+		for (auto id : exIdList)
+		{
+			world.deleteUnit(id);
+			world.getEntityManager()->recycleId(id);
+		}
+		exIdList.clear();
+
 		auto scInfo = ReadSceneInfo(it);
 		sceneName = std::move(scInfo.name);
 		sceneType = std::move(scInfo.type);
@@ -734,13 +747,13 @@ namespace ebbglow::visualnovel
 		globalFunctions.emplace(name, function);
 	}
 
-	void ScriptLoader::addLog(const LogView& logView) noexcept
+	void ScriptLoader::addToBackLog(const BackLogView& logView) noexcept
 	{
-		this->logView.push_back(logView);
+		this->backLogViews.push_back(logView);
 	}
-	void ScriptLoader::addLog(LogView&& logView) noexcept
+	void ScriptLoader::addToBackLog(BackLogView&& logView) noexcept
 	{
-		this->logView.push_back(std::move(logView));
+		this->backLogViews.push_back(std::move(logView));
 	}
 
 	void ScriptLoader::start() noexcept

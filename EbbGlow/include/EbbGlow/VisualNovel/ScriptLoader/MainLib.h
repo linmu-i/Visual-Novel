@@ -4,7 +4,8 @@
 #include <EbbGlow/VisualNovel/ScriptLoader/SceneFunctions.h>
 #include <EbbGlow/VisualNovel/ScriptLoader/SceneTypes.h>
 #include <EbbGlow/VisualNovel/UI/UIState.h>
-#include <EbbGlow/VisualNovel/UI/Log.h>
+#include <EbbGlow/VisualNovel/UI/BackLog.h>
+#include <EbbGlow/VisualNovel/VisualNovel/ColorTween.h>
 
 
 namespace ebbglow::visualnovel
@@ -16,10 +17,12 @@ namespace ebbglow::visualnovel
 		scLoader.registerGlobalFunction("Include", Global_Include);
 		scLoader.registerGlobalFunction("BeginScene", Global_BeginScene);
 		scLoader.registerGlobalFunction("I18nText", Global_I18nText);
+		scLoader.registerGlobalFunction("BackLogScene", Global_BackLogScene);
 
 		scLoader.registerSceneType("TextScene", SceneType_TextScene);
 		scLoader.registerSceneType("SelectScene", SceneType_SelectScene);
 		scLoader.registerSceneType("DelayScene", SceneType_DelayScene);
+		scLoader.registerSceneType("BlankScene", SceneType_BlankScene);
 
 		scLoader.registerSceneFunction("TextScene", Scene_TextScene);
 		scLoader.registerSceneFunction("Chr", Scene_Chr);
@@ -32,6 +35,8 @@ namespace ebbglow::visualnovel
 		scLoader.registerSceneFunction("EndKeyFrameAnimation", Scene_EndKeyFrameAnimation);
 		scLoader.registerSceneFunction("SetBgm", Scene_SetBgm);
 		scLoader.registerSceneFunction("SetVoice", Scene_SetVoice);
+		scLoader.registerSceneFunction("ColorTween", Scene_ColorTween);
+		scLoader.registerSceneFunction("BackLogCom", Scene_BackLogCom);
 	}
 
 	inline void ApplyVisualNovel(core::World2D& world, VisualNovelConfig& cfg, ScriptLoader& scLoader)
@@ -47,5 +52,6 @@ namespace ebbglow::visualnovel
 		ApplyDelayScene(world, scLoader);
 		ApplyUIState(world, cfg, scLoader);
 		ApplyLogView(world, scLoader);
+		ApplyColorTween(world, scLoader);
 	}
 }

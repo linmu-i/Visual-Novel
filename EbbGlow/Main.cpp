@@ -15,7 +15,7 @@ int main()
 	CFG.fontData = ebbglow::rsc::SharedFile(FONT_PATH);
 	CFG.textBoxBackGround = ebbglow::rsc::SharedTexture2D("resource\\img\\TextBoxBackground.png");
 	CFG.chrNameBackGround = ebbglow::rsc::SharedTexture2D("resource\\img\\ChrBoxBackground.png");
-	CFG.textSize = 36;
+	CFG.textSize = 40;
 	CFG.readTextColor = { 170, 230, 255, 255 };
 	CFG.chrNameOffsetX = 0.5f;
 	CFG.mainLanguage = 0;
@@ -28,18 +28,18 @@ int main()
 
 	if (ScX / ScY > 16.0f / 9.0f)
 	{
-		CFG.ScreenHeight = static_cast<int>(ScY);
-		CFG.ScreenWidth = static_cast<int>(ScY * (16.0f / 9.0f));
-		CFG.drawOffset = { (ScX - CFG.ScreenWidth) / 2.0f, 0.0f };
+		CFG.VirtualScreenHeight = static_cast<int>(ScY);
+		CFG.VirtualScreenWidth = static_cast<int>(ScY * (16.0f / 9.0f));
+		CFG.drawOffset = { (ScX - CFG.VirtualScreenWidth) / 2.0f, 0.0f };
 	}
 	else
 	{
-		CFG.ScreenWidth = static_cast<int>(ScX);
-		CFG.ScreenHeight = static_cast<int>(ScX / (16.0f / 9.0f));
-		CFG.drawOffset = { 0.0f, (ScY - CFG.ScreenHeight) / 2.0f };
+		CFG.VirtualScreenWidth = static_cast<int>(ScX);
+		CFG.VirtualScreenHeight = static_cast<int>(ScX / (16.0f / 9.0f));
+		CFG.drawOffset = { 0.0f, (ScY - CFG.VirtualScreenHeight) / 2.0f };
 	}
 
-	ebbglow::core::World2D mainWorld(CFG.ScreenWidth, CFG.ScreenHeight);
+	ebbglow::core::World2D mainWorld(ScX, ScY);
 	mainWorld.addSystem<ebbglow::vn::MusicManager>(ebbglow::vn::MusicManager(CFG));
 	ebbglow::vn::ScriptLoader scLoader(mainWorld, CFG, mainWorld.getSystem<ebbglow::vn::MusicManager>());
 	ebbglow::vn::ApplyVisualNovel(mainWorld, CFG, scLoader);

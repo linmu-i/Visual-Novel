@@ -36,13 +36,17 @@ namespace ebbglow::visualnovel
 		std::string body;
 	};
 
-	struct LogView
+	struct BackLogView
 	{
 		std::string sceneName;
 		std::string text;
 		std::string exText;
 		std::string voice;
 		std::string music;
+		bool empty() const
+		{
+			return sceneName.empty() && text.empty() && exText.empty() && voice.empty() && music.empty();
+		}
 		void clear()
 		{
 			sceneName.clear();
