@@ -239,29 +239,21 @@ namespace ebbglow::visualnovel
 		if (name.empty()) return nullptr;
 
 		int32_t offset = 0;
-		size_t posOfIndex = name.find_last_of('[');
+		size_t posOfIndex = name.find_first_of('[');
+		std::string varName = name.substr(0, posOfIndex);
 		if (name.back() == ']')
 		{
 			std::string offsetText = name.substr(posOfIndex + 1, name.length() - posOfIndex - 2);
 			offset = static_cast<int32_t>(round(GetNumber(offsetText, '\0', scLoader)));
 		}
 
-		if (name.length() >= 15)
+		auto predefinedIt = scLoader.predefinedTextVariableRef.find(varName);
+		if (predefinedIt != scLoader.predefinedTextVariableRef.end())
 		{
-			if (!memcmp(name.c_str(), "SCENE_ARGS_LIST", 15) && (name[15] == '[' || name[15] == '\0' || isspace(static_cast<unsigned char>(name[15]))))
-			{
-				if (offset >= 0 && offset < scLoader.sceneArgs.size())
-				{
-					return &scLoader.sceneArgs[offset];
-				}
-				else
-				{
-					return nullptr;
-				}
-			}
+			return predefinedIt->second(&scLoader, offset);
 		}
 
-		auto varViewIt = scLoader.textView.find(name.substr(0, posOfIndex));
+		auto varViewIt = scLoader.textView.find(varName);
 		if (varViewIt == scLoader.textView.end()) return nullptr;
 		int32_t index = varViewIt->second.index;
 		index += offset;
@@ -272,14 +264,21 @@ namespace ebbglow::visualnovel
 	{
 		if (name.empty()) return nullptr;
 		int32_t offset = 0;
-		size_t posOfIndex = name.find_last_of('[');
+		size_t posOfIndex = name.find_first_of('[');
+		std::string varName = name.substr(0, posOfIndex);
 		if (name.back() == ']')
 		{
 			std::string offsetText = name.substr(posOfIndex + 1, name.length() - posOfIndex - 2);
 			offset = static_cast<int32_t>(round(GetNumber(offsetText, '\0', scLoader)));
 		}
 
-		auto varViewIt = scLoader.numberView.find(name.substr(0, posOfIndex));
+		auto predefinedIt = scLoader.predefinedNumberVariableRef.find(varName);
+		if (predefinedIt != scLoader.predefinedNumberVariableRef.end())
+		{
+			return predefinedIt->second(&scLoader, offset);
+		}
+
+		auto varViewIt = scLoader.numberView.find(varName);
 		if (varViewIt == scLoader.numberView.end()) return nullptr;
 		int32_t index = varViewIt->second.index;
 		index += offset;
@@ -745,6 +744,14 @@ namespace ebbglow::visualnovel
 	void ScriptLoader::registerGlobalFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept
 	{
 		globalFunctions.emplace(name, function);
+	}
+	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, int32_t)> function) noexcept
+	{
+		predefinedTextVariableRef.emplace(name, function);
+	}
+	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, int32_t)> function) noexcept
+	{
+		predefinedNumberVariableRef.emplace(name, function);
 	}
 
 	void ScriptLoader::addToBackLog(const BackLogView& logView) noexcept

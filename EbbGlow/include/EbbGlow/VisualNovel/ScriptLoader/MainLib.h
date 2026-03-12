@@ -37,6 +37,8 @@ namespace ebbglow::visualnovel
 		scLoader.registerSceneFunction("SetVoice", Scene_SetVoice);
 		scLoader.registerSceneFunction("ColorTween", Scene_ColorTween);
 		scLoader.registerSceneFunction("BackLogCom", Scene_BackLogCom);
+		
+		scLoader.registerPredefinedVariable("SCENE_ARGS_LIST", [](ScriptLoader* scLoader, int32_t offset) { return &(scLoader->sceneArgs[offset]); });
 	}
 
 	inline void ApplyVisualNovel(core::World2D& world, VisualNovelConfig& cfg, ScriptLoader& scLoader)

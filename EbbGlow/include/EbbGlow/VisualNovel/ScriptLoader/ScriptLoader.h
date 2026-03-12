@@ -37,6 +37,9 @@ namespace ebbglow::visualnovel
 		std::unordered_map<std::string, VariableView> numberView;
 		std::unordered_map<std::string, VariableView> textView;
 
+		std::unordered_map<std::string, std::function<std::string* (ScriptLoader*, int32_t)>> predefinedTextVariableRef;
+		std::unordered_map<std::string, std::function<double* (ScriptLoader*, int32_t)>> predefinedNumberVariableRef;
+
 		//ºêº¯Êý
 		std::unordered_map<std::string, MacroView> macroView;
 
@@ -74,6 +77,8 @@ namespace ebbglow::visualnovel
 		void registerSceneType(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
 		void registerSceneFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
 		void registerGlobalFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
+		void registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, int32_t)> function) noexcept;
+		void registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, int32_t)> function) noexcept;
 		void addToBackLog(const BackLogView& backLogView) noexcept;
 		void addToBackLog(BackLogView&& backLogView) noexcept;
 	};
