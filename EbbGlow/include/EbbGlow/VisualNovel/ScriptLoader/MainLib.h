@@ -39,6 +39,7 @@ namespace ebbglow::visualnovel
 		scLoader.registerSceneFunction("BackLogCom", Scene_BackLogCom);
 		
 		scLoader.registerPredefinedVariable("SCENE_ARGS_LIST", [](ScriptLoader* scLoader, int32_t offset) { return &(scLoader->sceneArgs[offset]); });
+		scLoader.registerPredefinedVariable("BACK_LOG_RETURN_NAME", [](ScriptLoader* scLoader, int32_t offset) { return &(scLoader->backLogRetName); });
 	}
 
 	inline void ApplyVisualNovel(core::World2D& world, VisualNovelConfig& cfg, ScriptLoader& scLoader)
