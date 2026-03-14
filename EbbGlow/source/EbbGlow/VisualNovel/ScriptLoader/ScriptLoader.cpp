@@ -172,26 +172,7 @@ namespace ebbglow::visualnovel
 					++it;
 				}
 			}
-			/*int32_t index = 0;
-			if (*it == '[')
-			{
-				++it;
-				std::string indexBuf;
-				while (*it != ']' && !it.eof())
-				{
-					indexBuf += *it;
-					++it;
-				}
-				if (!indexBuf.empty())
-					index = static_cast<int32_t>(std::stoi(indexBuf));
-				if (*it == ']')
-					++it;
-			}
-			auto varViewIt = scLoader.textView.find(varName);
-			if (varViewIt == scLoader.textView.end()) return "";
-			index += varViewIt->second.index;
-			if (index < 0 || index >= scLoader.textStorage.size()) return "";
-			return scLoader.textStorage[index];*/
+			
 			auto* var = GetTextVariable(varName, scLoader);
 			if (var == nullptr) return "";
 			return *var;
@@ -237,7 +218,20 @@ namespace ebbglow::visualnovel
 	std::string* GetTextVariable(const std::string& name, ScriptLoader& scLoader) noexcept
 	{
 		if (name.empty()) return nullptr;
-
+		
+		auto nameTmp = name;
+		for (auto& c : nameTmp)
+		{
+			if (c == '[') c = '(';
+			else if (c == ']') c = ')';
+		}
+		if (nameTmp.find('(') == nameTmp.npos)
+		{
+			nameTmp += "()";
+		}
+		auto cmd = Tokenizer(nameTmp);
+		auto varName = cmd.name;
+		/*
 		int32_t offset = 0;
 		size_t posOfIndex = name.find_first_of('[');
 		std::string varName = name.substr(0, posOfIndex);
@@ -252,7 +246,18 @@ namespace ebbglow::visualnovel
 		{
 			return predefinedIt->second(&scLoader, offset);
 		}
+		*/
+		auto predefinedIt = scLoader.predefinedTextVariableRef.find(varName);
+		if (predefinedIt != scLoader.predefinedTextVariableRef.end())
+		{
+			return predefinedIt->second(&scLoader, cmd.args);
+		}
 
+		int32_t offset = 0;
+		if (!cmd.args.empty())
+		{
+			offset = static_cast<int32_t>(round(GetNumber(cmd.args[0], '\0', scLoader)));
+		}
 		auto varViewIt = scLoader.textView.find(varName);
 		if (varViewIt == scLoader.textView.end()) return nullptr;
 		int32_t index = varViewIt->second.index;
@@ -263,6 +268,20 @@ namespace ebbglow::visualnovel
 	double* GetNumberVariable(const std::string& name, ScriptLoader& scLoader) noexcept
 	{
 		if (name.empty()) return nullptr;
+
+		auto nameTmp = name;
+		for (auto& c : nameTmp)
+		{
+			if (c == '[') c = '(';
+			else if (c == ']') c = ')';
+		}
+		if (nameTmp.find('(') == nameTmp.npos)
+		{
+			nameTmp += "()";
+		}
+		auto cmd = Tokenizer(name);
+		auto varName = cmd.name;
+		/*
 		int32_t offset = 0;
 		size_t posOfIndex = name.find_first_of('[');
 		std::string varName = name.substr(0, posOfIndex);
@@ -272,10 +291,22 @@ namespace ebbglow::visualnovel
 			offset = static_cast<int32_t>(round(GetNumber(offsetText, '\0', scLoader)));
 		}
 
+		auto predefinedIt = scLoader.predefinedTextVariableRef.find(varName);
+		if (predefinedIt != scLoader.predefinedTextVariableRef.end())
+		{
+			return predefinedIt->second(&scLoader, offset);
+		}
+		*/
 		auto predefinedIt = scLoader.predefinedNumberVariableRef.find(varName);
 		if (predefinedIt != scLoader.predefinedNumberVariableRef.end())
 		{
-			return predefinedIt->second(&scLoader, offset);
+			return predefinedIt->second(&scLoader, cmd.args);
+		}
+
+		int32_t offset = 0;
+		if (!cmd.args.empty())
+		{
+			offset = static_cast<int32_t>(round(GetNumber(cmd.args[0], '\0', scLoader)));
 		}
 
 		auto varViewIt = scLoader.numberView.find(varName);
@@ -410,7 +441,7 @@ namespace ebbglow::visualnovel
 			});
 	}
 
-	Command ScriptLoader::Tokenizer(rsc::SharedFile::Iterator& it) noexcept
+	Command Tokenizer(rsc::SharedFile::Iterator& it) noexcept
 	{
 		SkipSpace(it);
 		std::string funcName;
@@ -418,10 +449,16 @@ namespace ebbglow::visualnovel
 		SkipSpace(it);
 		++it;
 		SkipSpace(it);
-		if (*it == ')') return Command(std::move(funcName), std::move(std::vector<std::string>()));
+		if (*it == ')')
+		{
+			while (!it.eof() && !(*it == ';' || *it == '\n')) ++it;
+			++it;
+			return Command(std::move(funcName), std::move(std::vector<std::string>()));
+		}
 		std::vector<std::string> args;
 		args.push_back("");
-		while (*it != ')' && !it.eof())
+		int32_t bracketCount = 1;
+		while (bracketCount > 0 && !it.eof())
 		{
 			switch (*it)
 			{
@@ -442,10 +479,18 @@ namespace ebbglow::visualnovel
 				++it;
 				break;
 			case ',':
-				while (!args.back().empty() && isspace(args.back().back())) args.back().pop_back();
-				args.push_back("");
-				++it;
-				SkipSpace(it);
+				if (bracketCount == 1)
+				{
+					while (!args.back().empty() && isspace(args.back().back())) args.back().pop_back();
+					args.push_back("");
+					++it;
+					SkipSpace(it);
+				}
+				else
+				{
+					args.back() += *it;
+					++it;
+				}
 				break;
 
 			case '"':
@@ -463,14 +508,36 @@ namespace ebbglow::visualnovel
 				args.back() += '"';
 				++it;
 				break;
+
+			case '(':
+				bracketCount++;
+				args.back() += '(';
+				++it;
+				break;
+
+			case ')':
+				bracketCount--;
+				if (bracketCount > 0)
+				{
+					args.back() += ')';
+					++it;
+				}
+				break;
+				
 			default:
 				args.back() += *it;
 				++it;
 			}
 		}
-		while (!it.eof() && (*it == ';' || *it == '\n')) ++it;
+		while (!it.eof() && !(*it == ';' || *it == '\n')) ++it;
 		++it;
 		return Command(std::move(funcName), std::move(args));
+	}
+
+	Command Tokenizer(std::string_view cmd) noexcept
+	{
+		auto it = rsc::SharedFile::Iterator(cmd.size(), reinterpret_cast<unsigned char*>(const_cast<char*>(cmd.data())), 0);
+		return Tokenizer(it);
 	}
 
 	void ScriptLoader::Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept
@@ -745,11 +812,11 @@ namespace ebbglow::visualnovel
 	{
 		globalFunctions.emplace(name, function);
 	}
-	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, int32_t)> function) noexcept
+	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, const std::vector<std::string>&)> function) noexcept
 	{
 		predefinedTextVariableRef.emplace(name, function);
 	}
-	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, int32_t)> function) noexcept
+	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, const std::vector<std::string>&)> function) noexcept
 	{
 		predefinedNumberVariableRef.emplace(name, function);
 	}

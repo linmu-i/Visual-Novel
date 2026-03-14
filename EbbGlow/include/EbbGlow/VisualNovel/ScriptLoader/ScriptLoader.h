@@ -21,7 +21,7 @@ namespace ebbglow::visualnovel
 		std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>> sceneFunctions;
 		std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>> sceneCreator;
 
-		Command Tokenizer(rsc::SharedFile::Iterator& it) noexcept;
+		
 		void Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept;
 		void ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept;
 		void ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept;
@@ -37,8 +37,8 @@ namespace ebbglow::visualnovel
 		std::unordered_map<std::string, VariableView> numberView;
 		std::unordered_map<std::string, VariableView> textView;
 
-		std::unordered_map<std::string, std::function<std::string* (ScriptLoader*, int32_t)>> predefinedTextVariableRef;
-		std::unordered_map<std::string, std::function<double* (ScriptLoader*, int32_t)>> predefinedNumberVariableRef;
+		std::unordered_map<std::string, std::function<std::string* (ScriptLoader*, const std::vector<std::string>&)>> predefinedTextVariableRef;
+		std::unordered_map<std::string, std::function<double* (ScriptLoader*, const std::vector<std::string>&)>> predefinedNumberVariableRef;
 
 		//ºêº¯Êý
 		std::unordered_map<std::string, MacroView> macroView;
@@ -77,8 +77,8 @@ namespace ebbglow::visualnovel
 		void registerSceneType(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
 		void registerSceneFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
 		void registerGlobalFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
-		void registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, int32_t)> function) noexcept;
-		void registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, int32_t)> function) noexcept;
+		void registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, const std::vector<std::string>&)> function) noexcept;
+		void registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, const std::vector<std::string>&)> function) noexcept;
 		void addToBackLog(const BackLogView& backLogView) noexcept;
 		void addToBackLog(BackLogView&& backLogView) noexcept;
 	};
@@ -87,6 +87,10 @@ namespace ebbglow::visualnovel
 	double ParsePrimary(rsc::SharedFile::Iterator& ptr, unsigned char stop, ScriptLoader& scLoader);
 	double ParseTerm(rsc::SharedFile::Iterator& ptr, unsigned char stop, ScriptLoader& scLoader);
 	double ParseExpression(rsc::SharedFile::Iterator& ptr, unsigned char stop, ScriptLoader& scLoader);
+
+	Command Tokenizer(rsc::SharedFile::Iterator& it) noexcept;
+	Command Tokenizer(std::string_view cmd) noexcept;
+
 	std::string GetStateTag(std::string_view token);
 	std::string GetNextString(rsc::SharedFile::Iterator& it, ScriptLoader& scLoader);
 	std::string GetString(std::string_view token, ScriptLoader& scLoader);

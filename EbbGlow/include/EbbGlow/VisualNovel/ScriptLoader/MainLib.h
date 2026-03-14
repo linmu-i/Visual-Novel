@@ -38,8 +38,26 @@ namespace ebbglow::visualnovel
 		scLoader.registerSceneFunction("ColorTween", Scene_ColorTween);
 		scLoader.registerSceneFunction("BackLogCom", Scene_BackLogCom);
 		
-		scLoader.registerPredefinedVariable("SCENE_ARGS_LIST", [](ScriptLoader* scLoader, int32_t offset) { return &(scLoader->sceneArgs[offset]); });
-		scLoader.registerPredefinedVariable("BACK_LOG_RETURN_NAME", [](ScriptLoader* scLoader, int32_t offset) { return &(scLoader->backLogRetName); });
+		scLoader.registerPredefinedVariable("SCENE_ARGS_LIST", [](ScriptLoader* scLoader, const std::vector<std::string>& args)
+			{
+				int32_t offset = 0;
+				if (args.size() > 0) offset = static_cast<int32_t>(round(GetNumber(args[0], '\0', *scLoader)));//std::stoi(args[0]);
+				return &(scLoader->sceneArgs[offset]);
+			});
+		scLoader.registerPredefinedVariable("BACK_LOG_RETURN_NAME", [](ScriptLoader* scLoader, const std::vector<std::string>& args) { return &(scLoader->backLogRetName); });
+		scLoader.registerPredefinedVariable("to_string", [](ScriptLoader* scLoader, const std::vector<std::string>& args)
+			{
+				thread_local static std::string buffer;
+				if (args.size() < 1)
+				{
+					buffer = "";
+				}
+				else
+				{
+					buffer = std::to_string(GetNumber(args[0], '\0', *scLoader));
+				}
+				return &buffer;
+			});
 	}
 
 	inline void ApplyVisualNovel(core::World2D& world, VisualNovelConfig& cfg, ScriptLoader& scLoader)
