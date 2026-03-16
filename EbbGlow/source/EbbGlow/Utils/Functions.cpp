@@ -17,7 +17,7 @@ namespace ebbglow::utils
 		return { result.x, result.y };
 	}
 
-	///**;--%{'#"""<!-- SDF¹¦ÄÜ´ıÓÅ»¯ -->"""*/%}
+	///**;--%{'#"""<!-- SDFåŠŸèƒ½å¾…ä¼˜åŒ– -->"""*/%}
 	rsc::SharedFont DynamicLoadFont(const rsc::SharedFile& fontData, const std::string& text, float fontSize, rsc::FontType type) noexcept
 	{
 		if (!fontData.valid()) return rsc::SharedFont();
@@ -31,7 +31,7 @@ namespace ebbglow::utils
 		{
 			std::unordered_set<int> seen;
 			for (int i = 0; i < codePointsCount; ++i) {
-				if (seen.insert(codePoints[i]).second) { // ²åÈë³É¹¦=Î´¼û¹ı
+				if (seen.insert(codePoints[i]).second) { // æ’å…¥æˆåŠŸ=æœªè§è¿‡
 					uniqueCodePoints.push_back(codePoints[i]);
 				}
 			}
@@ -41,8 +41,8 @@ namespace ebbglow::utils
 		uniqueCodePoints.push_back(0x4E00);
 		uniqueCodePoints.push_back(0x4E00);
 		uniqueCodePoints.push_back(0x4E00);
-		//raylibÉñÃØbug£¬¾İissue·´À¡£¬¿ÉÄÜÒòÎª×ÖÌå´óĞ¡Ô¤²â²»×¼È·µ¼ÖÂÄ©Î²×Ö·û¶ªÊ§
-		//ÇÒ´ËÎÊÌâÒ»Ö±Î´ĞŞ¸´£¬Òò´Ë²ÉÈ¡ÁÙÊ±·½°¸£¬ÔÚÄ©Î²Ìí¼Ó¼¸¸ö×Ö·û£¬È·±£ÕıÈ·¼ÓÔØ
+		//raylibç¥ç§˜bugï¼Œæ®issueåé¦ˆï¼Œå¯èƒ½å› ä¸ºå­—ä½“å¤§å°é¢„æµ‹ä¸å‡†ç¡®å¯¼è‡´æœ«å°¾å­—ç¬¦ä¸¢å¤±
+		//ä¸”æ­¤é—®é¢˜ä¸€ç›´æœªä¿®å¤ï¼Œå› æ­¤é‡‡å–ä¸´æ—¶æ–¹æ¡ˆï¼Œåœ¨æœ«å°¾æ·»åŠ å‡ ä¸ªå­—ç¬¦ï¼Œç¡®ä¿æ­£ç¡®åŠ è½½
 
 		rsc::ResourceCreator creator;
 		if (type == rsc::FontType::Default)
@@ -78,29 +78,29 @@ namespace ebbglow::utils
 		const Font& font;
 		float fontSize;
 		float spacing;
-		mutable std::unordered_map<int, float> cache; // mutable ÔÊĞí const ·½·¨ĞŞ¸Ä
+		mutable std::unordered_map<int, float> cache; // mutable å…è®¸ const æ–¹æ³•ä¿®æ”¹
 
 		WidthCache(const Font& f, float fs, float sp) : font(f), fontSize(fs), spacing(sp) {}
 
-		// ·µ»Øµ¥¸ö×Ö·ûµÄ advance ¿í¶È£¨²»º¬ºóĞø spacing£©
+		// è¿”å›å•ä¸ªå­—ç¬¦çš„ advance å®½åº¦ï¼ˆä¸å«åç»­ spacingï¼‰
 		float getWidth(int codepoint) const {
 			auto it = cache.find(codepoint);
 			if (it != cache.end()) return it->second;
 
 			float width = 0.0f;
 
-			// ³¢ÊÔÓÃ GetGlyphInfo£¨Raylib 4.2+£©
+			// å°è¯•ç”¨ GetGlyphInfoï¼ˆRaylib 4.2+ï¼‰
 			GlyphInfo gi = GetGlyphInfo(font, codepoint);
 			if (gi.advanceX > 0) {
-				// Raylib µÄ GlyphInfo.advanceX ÊÇ 0..1 ·¶Î§£¿²»£¬ÊÇÏñËØµ¥Î»£¬µ«»ùÓÚ font.baseSize
-				// Êµ¼Ê¿í¶È = advanceX * (fontSize / font.baseSize)
+				// Raylib çš„ GlyphInfo.advanceX æ˜¯ 0..1 èŒƒå›´ï¼Ÿä¸ï¼Œæ˜¯åƒç´ å•ä½ï¼Œä½†åŸºäº font.baseSize
+				// å®é™…å®½åº¦ = advanceX * (fontSize / font.baseSize)
 				width = gi.advanceX * fontSize / static_cast<float>(font.baseSize);
 			}
 			else {
-				// Fallback: ¹¹Ôìµ¥×Ö·û UTF-8 ²¢²âÁ¿£¨½öÒ»´Î£©
+				// Fallback: æ„é€ å•å­—ç¬¦ UTF-8 å¹¶æµ‹é‡ï¼ˆä»…ä¸€æ¬¡ï¼‰
 				char* u8 = LoadUTF8(&codepoint, 1);
 				if (u8) {
-					Vector2 size = MeasureTextEx(font, u8, fontSize, 0.0f); // ×¢Òâ£ºspacing µ¥¶À¼Ó£¡
+					Vector2 size = MeasureTextEx(font, u8, fontSize, 0.0f); // æ³¨æ„ï¼šspacing å•ç‹¬åŠ ï¼
 					width = size.x;
 					UnloadUTF8(u8);
 				}
@@ -109,18 +109,18 @@ namespace ebbglow::utils
 				}
 			}
 
-			// »º´æ£¨Ïß³Ì²»°²È«£¬ÈçĞè²¢·¢¿É¼Ó mutex£¬µ«ÅÅ°æÍ¨³£µ¥Ïß³Ì£©
+			// ç¼“å­˜ï¼ˆçº¿ç¨‹ä¸å®‰å…¨ï¼Œå¦‚éœ€å¹¶å‘å¯åŠ  mutexï¼Œä½†æ’ç‰ˆé€šå¸¸å•çº¿ç¨‹ï¼‰
 			cache[codepoint] = width;
 			return width;
 		}
 
-		// ¼ÆËãÒ»¶Î [begin, end) µÄ×Ü¿í¶È£¨º¬ spacing£©
+		// è®¡ç®—ä¸€æ®µ [begin, end) çš„æ€»å®½åº¦ï¼ˆå« spacingï¼‰
 		float measureRange(const int* cp, int begin, int end) const {
 			if (begin >= end) return 0.0f;
 			float sum = 0.0f;
 			for (int i = begin; i < end; ++i) {
 				sum += getWidth(cp[i]);
-				if (i > begin) sum += spacing; // µÚÒ»¸ö×Ö·ûºó²Å¼Ó spacing
+				if (i > begin) sum += spacing; // ç¬¬ä¸€ä¸ªå­—ç¬¦åæ‰åŠ  spacing
 			}
 			return sum;
 		}
@@ -137,21 +137,21 @@ namespace ebbglow::utils
 			return {};
 		}
 
-		// Step 1: ¼ÓÔØ Codepoints
+		// Step 1: åŠ è½½ Codepoints
 		int codepointsCount = 0;
 		int* codepoints = ::LoadCodepoints(text.c_str(), &codepointsCount);
 		if (codepointsCount <= 0 || !codepoints) {
 			return {};
 		}
 
-		// Step 2: ¹¹½¨¿í¶È»º´æ
+		// Step 2: æ„å»ºå®½åº¦ç¼“å­˜
 		WidthCache wcache(*static_cast<Font*>(font.get()), fontSize, spacing);
 
 		std::vector<std::vector<int>> result;
 		int begin = 0;
 
 		while (begin < codepointsCount) {
-			// === 1. ²éÕÒ×î½üµÄÓ²»»ĞĞ·û '\n' ===
+			// === 1. æŸ¥æ‰¾æœ€è¿‘çš„ç¡¬æ¢è¡Œç¬¦ '\n' ===
 			int hardBreak = -1;
 			for (int i = begin; i < codepointsCount; ++i) {
 				if (codepoints[i] == '\n') {
@@ -160,19 +160,19 @@ namespace ebbglow::utils
 				}
 			}
 
-			// === 2. È·¶¨³õÊ¼¶Ïµã ===
+			// === 2. ç¡®å®šåˆå§‹æ–­ç‚¹ ===
 			int end = codepointsCount;
 			if (hardBreak != -1) {
-				end = hardBreak + 1; // °üº¬ '\n'
+				end = hardBreak + 1; // åŒ…å« '\n'
 			}
 
-			// === 3. ²âÁ¿µ±Ç°¶Î£¬Èô³¬³¤Ôò³¢ÊÔÈí¶Ï ===
+			// === 3. æµ‹é‡å½“å‰æ®µï¼Œè‹¥è¶…é•¿åˆ™å°è¯•è½¯æ–­ ===
 			float lineWidth = wcache.measureRange(codepoints, begin, end);
 			if (lineWidth > maxLength) {
-				// Çé¿ö A: ÓĞÓ²»»ĞĞµ«³¬³¤ ¡ú ºöÂÔÓ²»»ĞĞ£¬³¢ÊÔÈí¶Ï£¨Êµ¼Êº±¼û£©
-				// Çé¿ö B: ÎŞÓ²»»ĞĞ ¡ú ³¢ÊÔÕÒ¿Õ¸ñ»òÇ¿ÖÆ½Ø¶Ï
+				// æƒ…å†µ A: æœ‰ç¡¬æ¢è¡Œä½†è¶…é•¿ â†’ å¿½ç•¥ç¡¬æ¢è¡Œï¼Œå°è¯•è½¯æ–­ï¼ˆå®é™…ç½•è§ï¼‰
+				// æƒ…å†µ B: æ— ç¡¬æ¢è¡Œ â†’ å°è¯•æ‰¾ç©ºæ ¼æˆ–å¼ºåˆ¶æˆªæ–­
 
-				// ÏÈÕÒ [begin, min(end, codepointsCount)) ÖĞ×îºóÒ»¸ö¿Õ¸ñ
+				// å…ˆæ‰¾ [begin, min(end, codepointsCount)) ä¸­æœ€åä¸€ä¸ªç©ºæ ¼
 				int lastSpace = -1;
 				int limit = std::min(end, codepointsCount);
 				for (int i = begin; i < limit; ++i) {
@@ -182,16 +182,16 @@ namespace ebbglow::utils
 				}
 
 				if (lastSpace != -1) {
-					// ³¢ÊÔ¶ÏÔÚ¿Õ¸ñºó
+					// å°è¯•æ–­åœ¨ç©ºæ ¼å
 					end = lastSpace + 1;
 					lineWidth = wcache.measureRange(codepoints, begin, end);
 				}
 
-				// ÈôÈÔ³¬³¤£¨»òÎŞ¿Õ¸ñ£©£¬Ç¿ÖÆÌ°ĞÄ½Ø¶Ï
+				// è‹¥ä»è¶…é•¿ï¼ˆæˆ–æ— ç©ºæ ¼ï¼‰ï¼Œå¼ºåˆ¶è´ªå¿ƒæˆªæ–­
 				if (lineWidth > maxLength) {
 					end = begin;
 					lineWidth = 0.0f;
-					// Ì°ĞÄÌí¼Ó×Ö·ûÖ±µ½ÔÙ¼ÓÒ»¸ö¾Í³¬
+					// è´ªå¿ƒæ·»åŠ å­—ç¬¦ç›´åˆ°å†åŠ ä¸€ä¸ªå°±è¶…
 					while (end < codepointsCount) {
 						float nextWidth = lineWidth
 							+ wcache.getWidth(codepoints[end])
@@ -200,43 +200,43 @@ namespace ebbglow::utils
 						lineWidth = nextWidth;
 						end++;
 					}
-					// ÖÁÉÙ±£ÁôÒ»¸ö×Ö·û£¨·ÀËÀÑ­»·£©
+					// è‡³å°‘ä¿ç•™ä¸€ä¸ªå­—ç¬¦ï¼ˆé˜²æ­»å¾ªç¯ï¼‰
 					if (end == begin && begin < codepointsCount) {
 						end = begin + 1;
 					}
 				}
 			}
 
-			// === 4. Trim Ê×Î²¿Õ¸ñ£¨²»Ó°ÏìÔ­Ê¼Ë÷Òı£©===
+			// === 4. Trim é¦–å°¾ç©ºæ ¼ï¼ˆä¸å½±å“åŸå§‹ç´¢å¼•ï¼‰===
 			int trimBegin = begin;
 			int trimEnd = end;
 
-			// Ìø¹ıĞĞÊ×¿Õ¸ñ
+			// è·³è¿‡è¡Œé¦–ç©ºæ ¼
 			while (trimBegin < trimEnd && codepoints[trimBegin] == ' ') {
 				trimBegin++;
 			}
-			// Ìø¹ıĞĞÎ²¿Õ¸ñ£¨×¢Òâ£º'\n' ÒÑ°üº¬ÔÚ [begin, end) ÖĞ£¬µ« trim Ê±Ó¦È¥µô£©
+			// è·³è¿‡è¡Œå°¾ç©ºæ ¼ï¼ˆæ³¨æ„ï¼š'\n' å·²åŒ…å«åœ¨ [begin, end) ä¸­ï¼Œä½† trim æ—¶åº”å»æ‰ï¼‰
 			while (trimEnd > trimBegin &&
 				(codepoints[trimEnd - 1] == ' ' || codepoints[trimEnd - 1] == '\n')) {
 				trimEnd--;
 			}
 
-			// === 5. Ñ¹Èë·Ç¿ÕĞĞ ===
+			// === 5. å‹å…¥éç©ºè¡Œ ===
 			if (trimEnd > trimBegin) {
 				result.emplace_back(codepoints + trimBegin, codepoints + trimEnd);
 			}
 
-			// === 6. ¸üĞÂ begin ===
+			// === 6. æ›´æ–° begin ===
 			begin = end;
 
-			// Ìø¹ı¸Õ´¦ÀíµÄ '\n'£¨Èç¹û end Ö¹ÓÚ '\n'£©
+			// è·³è¿‡åˆšå¤„ç†çš„ '\n'ï¼ˆå¦‚æœ end æ­¢äº '\n'ï¼‰
 			if (begin > 0 && begin <= codepointsCount && codepoints[begin - 1] == '\n') {
-				// ÒÑ°üº¬ \n£¬Ç°½øÒ»Î»
-				// £¨×¢Òâ£ºtrim Ê±ÒÑÈ¥³ı£¬µ« begin ÈÔÖ¸Ïò \n ºó£©
-				// Êµ¼ÊÉÏ£ºÈô end = i+1 ÇÒ codepoints[i]=='\n'£¬Ôò begin = i+1£¬ÒÑÌø¹ı
+				// å·²åŒ…å« \nï¼Œå‰è¿›ä¸€ä½
+				// ï¼ˆæ³¨æ„ï¼štrim æ—¶å·²å»é™¤ï¼Œä½† begin ä»æŒ‡å‘ \n åï¼‰
+				// å®é™…ä¸Šï¼šè‹¥ end = i+1 ä¸” codepoints[i]=='\n'ï¼Œåˆ™ begin = i+1ï¼Œå·²è·³è¿‡
 			}
 
-			// Ìø¹ıÏÂÒ»ĞĞ¿ªÍ·µÄ¿Õ¸ñ£¨ÎªÏÂÒ»ÂÖ×¼±¸£©
+			// è·³è¿‡ä¸‹ä¸€è¡Œå¼€å¤´çš„ç©ºæ ¼ï¼ˆä¸ºä¸‹ä¸€è½®å‡†å¤‡ï¼‰
 			while (begin < codepointsCount && codepoints[begin] == ' ') {
 				begin++;
 			}
@@ -271,14 +271,14 @@ struct WidthCache {
 		auto it = cache.find(codepoint);
 		if (it != cache.end()) return it->second;
 
-		// »ñÈ¡×Ö·û¿í¶È (Raylib Âß¼­)
+		// è·å–å­—ç¬¦å®½åº¦ (Raylib é€»è¾‘)
 		GlyphInfo gi = GetGlyphInfo(font, codepoint);
 		float width = 0.0f;
 		if (gi.advanceX > 0) {
 			width = gi.advanceX * fontSize / static_cast<float>(font.baseSize);
 		}
 		else {
-			// Fallback ²âÁ¿
+			// Fallback æµ‹é‡
 			int cp = codepoint;
 			char* u8 = LoadUTF8(&cp, 1);
 			if (u8) {
@@ -321,39 +321,39 @@ std::vector<std::vector<int>> TextLineCalculateWithWordWrap(
 	int cursor = 0;
 
 	while (cursor < totalCount) {
-		// 1. ´¦ÀíÏÔÊ½»»ĞĞ·û (Hard Break)
+		// 1. å¤„ç†æ˜¾å¼æ¢è¡Œç¬¦ (Hard Break)
 		if (codepoints[cursor] == '\n') {
-			result.emplace_back(); // Ñ¹ÈëÒ»¸ö¿ÕĞĞ
+			result.emplace_back(); // å‹å…¥ä¸€ä¸ªç©ºè¡Œ
 			cursor++;
 			continue;
 		}
 
-		// 2. ÕÒµ½µ±Ç°¶ÎÂäµÄÖÕµã£¨Ö±µ½ÏÂÒ»¸ö \n »òÎÄ±¾Ä©Î²£©
+		// 2. æ‰¾åˆ°å½“å‰æ®µè½çš„ç»ˆç‚¹ï¼ˆç›´åˆ°ä¸‹ä¸€ä¸ª \n æˆ–æ–‡æœ¬æœ«å°¾ï¼‰
 		int paragraphEnd = cursor;
 		while (paragraphEnd < totalCount && codepoints[paragraphEnd] != '\n') {
 			paragraphEnd++;
 		}
 
-		// 3. ¶Ô¸Ã¶ÎÂä½øĞĞÈí»»ĞĞ¼ÆËã (Soft Wrap)
+		// 3. å¯¹è¯¥æ®µè½è¿›è¡Œè½¯æ¢è¡Œè®¡ç®— (Soft Wrap)
 		int lineStart = cursor;
 		while (lineStart < paragraphEnd) {
 			int lineEnd = lineStart;
 			float currentWidth = 0.0f;
 			int lastSpaceIdx = -1;
 
-			// ³¢ÊÔÏòµ±Ç°ĞĞÌí¼Ó×Ö·û
+			// å°è¯•å‘å½“å‰è¡Œæ·»åŠ å­—ç¬¦
 			while (lineEnd < paragraphEnd) {
 				float charW = wcache.getWidth(codepoints[lineEnd]);
 				float addW = (lineEnd > lineStart ? spacing : 0.0f) + charW;
 
 				if (currentWidth + addW > maxLength) {
-					// ³¬³¤ÁË£¡
+					// è¶…é•¿äº†ï¼
 					if (lastSpaceIdx != -1) {
-						// Èç¹ûÕâÒ»ĞĞÓĞ¿Õ¸ñ£¬¶ÏÔÚ×îºóÒ»¸ö¿Õ¸ñ´¦
+						// å¦‚æœè¿™ä¸€è¡Œæœ‰ç©ºæ ¼ï¼Œæ–­åœ¨æœ€åä¸€ä¸ªç©ºæ ¼å¤„
 						lineEnd = lastSpaceIdx + 1;
 					}
-					// Èç¹ûÃ»¿Õ¸ñ»òÕßÊÇµ¥´ÊÌ«³¤£¬¾ÍÇ¿ÖÆÔÚ´Ë´¦¶Ï¿ª
-					// Èç¹û lineEnd == lineStart£¬ËµÃ÷µÚÒ»¸ö×Ö·û¾Í³¬³¤ÁË£¬Ç¿ÖÆ±£ÁôÒ»¸ö
+					// å¦‚æœæ²¡ç©ºæ ¼æˆ–è€…æ˜¯å•è¯å¤ªé•¿ï¼Œå°±å¼ºåˆ¶åœ¨æ­¤å¤„æ–­å¼€
+					// å¦‚æœ lineEnd == lineStartï¼Œè¯´æ˜ç¬¬ä¸€ä¸ªå­—ç¬¦å°±è¶…é•¿äº†ï¼Œå¼ºåˆ¶ä¿ç•™ä¸€ä¸ª
 					if (lineEnd == lineStart) lineEnd++;
 					break;
 				}
@@ -366,38 +366,38 @@ std::vector<std::vector<int>> TextLineCalculateWithWordWrap(
 				lineEnd++;
 			}
 
-			// 4. ÌáÈ¡µ±Ç°ĞĞÄÚÈİ²¢½øĞĞ Trim
+			// 4. æå–å½“å‰è¡Œå†…å®¹å¹¶è¿›è¡Œ Trim
 			int trimEnd = lineEnd;
-			// È¥µôĞĞÄ©¿Õ¸ñ£¨²»Ó°ÏìÏÂÒ»ĞĞ¶ÁÈ¡£©
+			// å»æ‰è¡Œæœ«ç©ºæ ¼ï¼ˆä¸å½±å“ä¸‹ä¸€è¡Œè¯»å–ï¼‰
 			while (trimEnd > lineStart && codepoints[trimEnd - 1] == ' ') {
 				trimEnd--;
 			}
 
-			// ¼´Ê¹ÊÇ¿ÕĞĞ£¨Èç¹ûÔ­ÎÄ±¾´Ë´¦ÓĞ×Ö·ûµ«±»trimÁË£©£¬ÎÒÃÇÒ²Ñ¹Èë£¬³ı·ÇÕæµÄÃ»ÄÚÈİ
-			// µ«ÔÚ¶ÎÂäÄÚ²¿Ñ­»·£¬Í¨³£ÄÜ±£Ö¤ÓĞÄÚÈİ
+			// å³ä½¿æ˜¯ç©ºè¡Œï¼ˆå¦‚æœåŸæ–‡æœ¬æ­¤å¤„æœ‰å­—ç¬¦ä½†è¢«trimäº†ï¼‰ï¼Œæˆ‘ä»¬ä¹Ÿå‹å…¥ï¼Œé™¤éçœŸçš„æ²¡å†…å®¹
+			// ä½†åœ¨æ®µè½å†…éƒ¨å¾ªç¯ï¼Œé€šå¸¸èƒ½ä¿è¯æœ‰å†…å®¹
 			result.emplace_back(codepoints + lineStart, codepoints + trimEnd);
 
-			// 5. ¸üĞÂ lineStart
+			// 5. æ›´æ–° lineStart
 			lineStart = lineEnd;
 
-			// ×Ô¶¯»»ĞĞÓÅ»¯£ºÈç¹ûÏÂÒ»ĞĞ¿ªÍ·ÊÇ¿Õ¸ñ£¬Ìø¹ıËü£¨±ÜÃâÎÄ×Ö¿¿×ó²»¶ÔÆë£©
-			// ×¢Òâ£ºÕâÖ»Õë¶Ô¡°×Ô¶¯»»ĞĞ¡±²úÉúµÄĞĞÊ×¿Õ¸ñ£¬ÊÖ¶¯»»ĞĞ \n ºóµÄ¿Õ¸ñÔÚÏÂÒ»²½´¦Àí
+			// è‡ªåŠ¨æ¢è¡Œä¼˜åŒ–ï¼šå¦‚æœä¸‹ä¸€è¡Œå¼€å¤´æ˜¯ç©ºæ ¼ï¼Œè·³è¿‡å®ƒï¼ˆé¿å…æ–‡å­—é å·¦ä¸å¯¹é½ï¼‰
+			// æ³¨æ„ï¼šè¿™åªé’ˆå¯¹â€œè‡ªåŠ¨æ¢è¡Œâ€äº§ç”Ÿçš„è¡Œé¦–ç©ºæ ¼ï¼Œæ‰‹åŠ¨æ¢è¡Œ \n åçš„ç©ºæ ¼åœ¨ä¸‹ä¸€æ­¥å¤„ç†
 			while (lineStart < paragraphEnd && codepoints[lineStart] == ' ') {
 				lineStart++;
 			}
 		}
 
-		// 6. ÒÆ¶¯ÓÎ±êµ½¶ÎÂäÄ©Î²£¨Ìø¹ıÒÑ¾­´¦ÀíÍê±ÏµÄ¶ÎÂäÄÚÈİ£©
+		// 6. ç§»åŠ¨æ¸¸æ ‡åˆ°æ®µè½æœ«å°¾ï¼ˆè·³è¿‡å·²ç»å¤„ç†å®Œæ¯•çš„æ®µè½å†…å®¹ï¼‰
 		cursor = paragraphEnd;
 		if (cursor < totalCount && codepoints[cursor] == '\n') {
-			cursor++; // Ìø¹ı¸Ã¶ÎÂä½áÎ²µÄ»»ĞĞ·û£¬½øÈëÏÂÒ»ÂÖ´¦Àí
+			cursor++; // è·³è¿‡è¯¥æ®µè½ç»“å°¾çš„æ¢è¡Œç¬¦ï¼Œè¿›å…¥ä¸‹ä¸€è½®å¤„ç†
 		}
 	}
 
 	return result;
 }
 
-	//¾¯¸æ£¬»áÆÆ»µRenderTexture£¬µ÷ÓÃÇëÈ·±£RenderTextureÎŞÆäËû¸±±¾
+	//è­¦å‘Šï¼Œä¼šç ´åRenderTextureï¼Œè°ƒç”¨è¯·ç¡®ä¿RenderTextureæ— å…¶ä»–å‰¯æœ¬
 	rsc::SharedTexture2D TakeTextureFromRenderTexture(rsc::SharedRenderTexture2D&& renderTexture) noexcept
 	{
 		if (!renderTexture.valid()) return rsc::SharedTexture2D();

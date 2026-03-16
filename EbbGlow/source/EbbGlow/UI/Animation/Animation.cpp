@@ -78,13 +78,13 @@ namespace ebbglow::ui
 				if (!animationInactive.stop)
 				{
 
-					//²¥·Åµ±Ç°Ö¡
+					//æ’­æ”¾å½“å‰å¸§
 					(*animationActive.layer).push_back(std::make_unique<AnimationDraw>(AnimationDraw(animationActive.framesSequence[animationActive.activeFrame], animationActive.position)));
 
 					animationActive.frameTimeCount += GetFrameTime();
 					animationInactive.frameTimeCount += GetFrameTime();
 
-					if (animationInactive.frameTimeCount >= animationInactive.frameTime[animationInactive.activeFrame])//²¥·ÅÊ±¼äµ½´ï£¬ÇĞ»»ÏÂÒ»Ö¡
+					if (animationInactive.frameTimeCount >= animationInactive.frameTime[animationInactive.activeFrame])//æ’­æ”¾æ—¶é—´åˆ°è¾¾ï¼Œåˆ‡æ¢ä¸‹ä¸€å¸§
 					{
 						++(animationInactive.activeFrame);
 						animationInactive.frameTimeCount = 0.0f;
@@ -92,7 +92,7 @@ namespace ebbglow::ui
 					if (animationInactive.activeFrame >= animationInactive.framesSequence.size())
 					{
 						animationInactive.activeFrame = 0;
-						if (!animationInactive.loop)//·ÇÑ­»·²¥·Å£¬²¥·ÅÍê±Ïºó¸´Î»»îÔ¾Ö¡²¢Í£Ö¹²¥·Å£¬Ñ­»·²¥·ÅÔò½ö¸´Î»»îÔ¾Ö¡
+						if (!animationInactive.loop)//éå¾ªç¯æ’­æ”¾ï¼Œæ’­æ”¾å®Œæ¯•åå¤ä½æ´»è·ƒå¸§å¹¶åœæ­¢æ’­æ”¾ï¼Œå¾ªç¯æ’­æ”¾åˆ™ä»…å¤ä½æ´»è·ƒå¸§
 						{
 							animationInactive.stop = true;
 							animationActive.stop = true;

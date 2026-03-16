@@ -7,26 +7,26 @@
 #include <string>
 
 Font LoadFont_cn(const char* fileName, int fontSize) {
-	// ¶¨ÒåĞèÒª¼ÓÔØµÄ×Ö·û·¶Î§
+	// å®šä¹‰éœ€è¦åŠ è½½çš„å­—ç¬¦èŒƒå›´
 	std::vector<std::pair<int, int>> ranges = {
-		// »ù±¾ASCII×Ö·û (32-126)
+		// åŸºæœ¬ASCIIå­—ç¬¦ (32-126)
 		{32, 126},
 
-		// ÖĞÎÄ³£ÓÃ×Ö·û
-		{0x4E00, 0x9FFF},   // CJKÍ³Ò»ºº×Ö»ù±¾Çø
-		{0x3400, 0x4DBF},   // CJKÀ©Õ¹AÇø
-		{0x3000, 0x303F},   // ÖĞÎÄ±êµã·ûºÅ
+		// ä¸­æ–‡å¸¸ç”¨å­—ç¬¦
+		{0x4E00, 0x9FFF},   // CJKç»Ÿä¸€æ±‰å­—åŸºæœ¬åŒº
+		{0x3400, 0x4DBF},   // CJKæ‰©å±•AåŒº
+		{0x3000, 0x303F},   // ä¸­æ–‡æ ‡ç‚¹ç¬¦å·
 
-		// È«½Ç×Ö·û (°üÀ¨È«½Ç×ÖÄ¸¡¢Êı×Ö¡¢±êµã)
-		{0xFF01, 0xFF5E},   // È«½ÇASCII±äÌå
+		// å…¨è§’å­—ç¬¦ (åŒ…æ‹¬å…¨è§’å­—æ¯ã€æ•°å­—ã€æ ‡ç‚¹)
+		{0xFF01, 0xFF5E},   // å…¨è§’ASCIIå˜ä½“
 
-		// ¶îÍâÖĞÎÄ·ûºÅÖ§³Ö
-		{0x2010, 0x2027},   // Á¬×Ö·û¡¢ÏîÄ¿·ûºÅµÈ
-		{0x2E80, 0x2EFF},   // CJK²¿Ê×²¹³ä
-		{0x3000, 0x303F}    // ÖØ¸´È·±£¸²¸Ç
+		// é¢å¤–ä¸­æ–‡ç¬¦å·æ”¯æŒ
+		{0x2010, 0x2027},   // è¿å­—ç¬¦ã€é¡¹ç›®ç¬¦å·ç­‰
+		{0x2E80, 0x2EFF},   // CJKéƒ¨é¦–è¡¥å……
+		{0x3000, 0x303F}    // é‡å¤ç¡®ä¿è¦†ç›–
 	};
 
-	// ÊÕ¼¯ËùÓĞÂëµã
+	// æ”¶é›†æ‰€æœ‰ç ç‚¹
 	std::vector<int> codepoints;
 
 	for (const auto& range : ranges) {
@@ -35,29 +35,29 @@ Font LoadFont_cn(const char* fileName, int fontSize) {
 		}
 	}
 
-	// Ìí¼Ó¶îÍâ³£ÓÃ×Ö·û£¨È·±£¸²¸Ç£©
+	// æ·»åŠ é¢å¤–å¸¸ç”¨å­—ç¬¦ï¼ˆç¡®ä¿è¦†ç›–ï¼‰
 	const int extraChars[] = {
-		0x00B7,  // ¼ä¸ôµã (¡¤)
-		0x2014,  // ÆÆÕÛºÅ (¡ª)
-		0x2018,  // ×óµ¥ÒıºÅ (¡®)
-		0x2019,  // ÓÒµ¥ÒıºÅ (¡¯)
-		0x201C,  // ×óË«ÒıºÅ (¡°)
-		0x201D,  // ÓÒË«ÒıºÅ (¡±)
-		0x2026,  // Ê¡ÂÔºÅ (¡­)
-		0x3001,  // ¶ÙºÅ (¡¢)
-		0x3002,  // ¾äºÅ (¡£)
-		0xFF0D,  // È«½ÇÁ¬×Ö·û (£­)
-		0xFFE5   // ÈËÃñ±Ò·ûºÅ (£¤)
+		0x00B7,  // é—´éš”ç‚¹ (Â·)
+		0x2014,  // ç ´æŠ˜å· (â€”)
+		0x2018,  // å·¦å•å¼•å· (â€˜)
+		0x2019,  // å³å•å¼•å· (â€™)
+		0x201C,  // å·¦åŒå¼•å· (â€œ)
+		0x201D,  // å³åŒå¼•å· (â€)
+		0x2026,  // çœç•¥å· (â€¦)
+		0x3001,  // é¡¿å· (ã€)
+		0x3002,  // å¥å· (ã€‚)
+		0xFF0D,  // å…¨è§’è¿å­—ç¬¦ (ï¼)
+		0xFFE5   // äººæ°‘å¸ç¬¦å· (ï¿¥)
 	};
 
 	for (int ch : extraChars) {
 		codepoints.push_back(ch);
 	}
 
-	// ¼ÓÔØ×ÖÌå
+	// åŠ è½½å­—ä½“
 	Font font = LoadFontEx(fileName, fontSize, codepoints.data(), static_cast<int>(codepoints.size()));
 
-	// ÉèÖÃ×ÖÌåÎÆÀí¹ıÂËÎªË«ÏßĞÔ(Ìá¸ßäÖÈ¾ÖÊÁ¿)
+	// è®¾ç½®å­—ä½“çº¹ç†è¿‡æ»¤ä¸ºåŒçº¿æ€§(æé«˜æ¸²æŸ“è´¨é‡)
 	SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
 
 	return font;
@@ -75,17 +75,17 @@ uniform sampler2D texture0;
 uniform vec4 colDiffuse;
 
 void main() {
-	// ¶ÁÈ¡SDFÎÆÀíµÄalphaÍ¨µÀ£¨¾àÀë³¡Öµ£©
+	// è¯»å–SDFçº¹ç†çš„alphaé€šé“ï¼ˆè·ç¦»åœºå€¼ï¼‰
 	float sdfValue = texture(texture0, fragTexCoord).a;
 	
-	// ºËĞÄSDFËã·¨£º½«¾àÀë³¡×ª»»ÎªÆ½»¬µÄalphaÖµ
-	float smoothing = 0.02;  // ¿ØÖÆ±ßÔµÈñÀû¶È
+	// æ ¸å¿ƒSDFç®—æ³•ï¼šå°†è·ç¦»åœºè½¬æ¢ä¸ºå¹³æ»‘çš„alphaå€¼
+	float smoothing = 0.02;  // æ§åˆ¶è¾¹ç¼˜é”åˆ©åº¦
 	float alpha = smoothstep(0.42 - smoothing, 0.42 + smoothing, sdfValue);
 	
-	// Ó¦ÓÃÑÕÉ«ºÍÍ¸Ã÷¶È
+	// åº”ç”¨é¢œè‰²å’Œé€æ˜åº¦
 	vec4 texelColor = vec4(fragColor.rgb, fragColor.a * alpha);
 	
-	// ×îÖÕÊä³ö
+	// æœ€ç»ˆè¾“å‡º
 	finalColor0 = texelColor * colDiffuse;
 }
 )";
@@ -93,7 +93,7 @@ void main() {
 
 
 Font LoadSDFFontEx(const char* fontInfoFile, const char* textureFile) {
-	// ¼ÓÔØÎÄ¼şÊı¾İ
+	// åŠ è½½æ–‡ä»¶æ•°æ®
 	int bytesRead = 0;
 	unsigned char* data = LoadFileData(fontInfoFile, &bytesRead);
 
@@ -106,12 +106,12 @@ Font LoadSDFFontEx(const char* fontInfoFile, const char* textureFile) {
 	Font font = { 0 };
 	unsigned char* ptr = data;
 
-	// ¶ÁÈ¡Í·²¿
+	// è¯»å–å¤´éƒ¨
 	font.baseSize = *(int*)ptr; ptr += sizeof(int);
 	font.glyphCount = *(int*)ptr; ptr += sizeof(int);
 	font.glyphPadding = *(int*)ptr; ptr += sizeof(int);
 
-	// ¼ì²éÊı¾İÍêÕûĞÔ
+	// æ£€æŸ¥æ•°æ®å®Œæ•´æ€§
 	int expectedSize = sizeof(int) * 3 + font.glyphCount * (sizeof(int) * 4 + sizeof(float) * 4);
 	if (bytesRead != expectedSize) {
 		TraceLog(LOG_ERROR, "FONT IMPORT: Data size mismatch (%d vs %d)", bytesRead, expectedSize);
@@ -119,28 +119,28 @@ Font LoadSDFFontEx(const char* fontInfoFile, const char* textureFile) {
 		return GetFontDefault();
 	}
 
-	// ·ÖÅäÄÚ´æ
+	// åˆ†é…å†…å­˜
 	font.recs = (Rectangle*)RL_MALLOC(font.glyphCount * sizeof(Rectangle));
 	font.glyphs = (GlyphInfo*)RL_MALLOC(font.glyphCount * sizeof(GlyphInfo));
 
-	// ¶ÁÈ¡×Ö·ûÊı¾İ
+	// è¯»å–å­—ç¬¦æ•°æ®
 	for (int i = 0; i < font.glyphCount; i++) {
-		// GlyphInfo ²¿·Ö
+		// GlyphInfo éƒ¨åˆ†
 		font.glyphs[i].value = *(int*)ptr; ptr += sizeof(int);
 		font.glyphs[i].offsetX = *(int*)ptr; ptr += sizeof(int);
 		font.glyphs[i].offsetY = *(int*)ptr; ptr += sizeof(int);
 		font.glyphs[i].advanceX = *(int*)ptr; ptr += sizeof(int);
-		font.glyphs[i].image = Image{ 0 }; // Çå¿ÕÍ¼ÏñÊı¾İ
+		font.glyphs[i].image = Image{ 0 }; // æ¸…ç©ºå›¾åƒæ•°æ®
 
-		// Rectangle ²¿·Ö
+		// Rectangle éƒ¨åˆ†
 		font.recs[i].x = *(float*)ptr; ptr += sizeof(float);
 		font.recs[i].y = *(float*)ptr; ptr += sizeof(float);
 		font.recs[i].width = *(float*)ptr; ptr += sizeof(float);
 		font.recs[i].height = *(float*)ptr; ptr += sizeof(float);
 	}
-	// ¼ÓÔØÎÆÀí
+	// åŠ è½½çº¹ç†
 	font.texture = LoadTexture(textureFile);
-	SetTextureFilter(font.texture, TEXTURE_FILTER_TRILINEAR); // SDF±ØĞè
+	SetTextureFilter(font.texture, TEXTURE_FILTER_TRILINEAR); // SDFå¿…éœ€
 
 	UnloadFileData(data);
 
@@ -162,17 +162,17 @@ uniform sampler2D texture0;
 uniform vec4 colDiffuse;
 
 void main() {
-    // ¶ÁÈ¡SDFÎÆÀíµÄalphaÍ¨µÀ£¨¾àÀë³¡Öµ£©
+    // è¯»å–SDFçº¹ç†çš„alphaé€šé“ï¼ˆè·ç¦»åœºå€¼ï¼‰
     float sdfValue = texture(texture0, fragTexCoord).a;
     
-    // ºËĞÄSDFËã·¨£º½«¾àÀë³¡×ª»»ÎªÆ½»¬µÄalphaÖµ
-    float smoothing = 0.01;  // ¿ØÖÆ±ßÔµÈñÀû¶È
+    // æ ¸å¿ƒSDFç®—æ³•ï¼šå°†è·ç¦»åœºè½¬æ¢ä¸ºå¹³æ»‘çš„alphaå€¼
+    float smoothing = 0.01;  // æ§åˆ¶è¾¹ç¼˜é”åˆ©åº¦
     float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, sdfValue);
     
-    // Ó¦ÓÃÑÕÉ«ºÍÍ¸Ã÷¶È
+    // åº”ç”¨é¢œè‰²å’Œé€æ˜åº¦
     vec4 texelColor = vec4(fragColor.rgb, fragColor.a * alpha);
     
-    // ×îÖÕÊä³ö
+    // æœ€ç»ˆè¾“å‡º
     finalColor0 = texelColor * colDiffuse;
 }
 )";
@@ -194,38 +194,38 @@ std::vector<int> GetUnicodePoints(const char* text) {
 	while (*text != '\0') {
 		uint8_t lead = static_cast<uint8_t>(*text);
 
-		// µ¥×Ö½Ú×Ö·û (ASCII)
+		// å•å­—èŠ‚å­—ç¬¦ (ASCII)
 		if (lead < 0x80) {
 			codePoints.push_back(lead);
 			text++;
 			continue;
 		}
 
-		// ¶à×Ö½Ú×Ö·û´¦Àí
+		// å¤šå­—èŠ‚å­—ç¬¦å¤„ç†
 		int numBytes = 0;
 		int codePoint = 0;
 
-		// È·¶¨×Ö½ÚÊıºÍ³õÊ¼ÑÚÂë
-		if ((lead & 0xE0) == 0xC0) {  // 2×Ö½Ú
+		// ç¡®å®šå­—èŠ‚æ•°å’Œåˆå§‹æ©ç 
+		if ((lead & 0xE0) == 0xC0) {  // 2å­—èŠ‚
 			numBytes = 2;
 			codePoint = lead & 0x1F;
 		}
-		else if ((lead & 0xF0) == 0xE0) {  // 3×Ö½Ú
+		else if ((lead & 0xF0) == 0xE0) {  // 3å­—èŠ‚
 			numBytes = 3;
 			codePoint = lead & 0x0F;
 		}
-		else if ((lead & 0xF8) == 0xF0) {  // 4×Ö½Ú
+		else if ((lead & 0xF8) == 0xF0) {  // 4å­—èŠ‚
 			numBytes = 4;
 			codePoint = lead & 0x07;
 		}
 		else {
-			// ÎŞĞ§µÄÊ××Ö½Ú£ºÊ¹ÓÃÌæ»»×Ö·û²¢Ìø¹ı
+			// æ— æ•ˆçš„é¦–å­—èŠ‚ï¼šä½¿ç”¨æ›¿æ¢å­—ç¬¦å¹¶è·³è¿‡
 			codePoints.push_back(0xFFFD);
 			text++;
 			continue;
 		}
 
-		// ¼ì²éºóĞø×Ö½ÚÓĞĞ§ĞÔ
+		// æ£€æŸ¥åç»­å­—èŠ‚æœ‰æ•ˆæ€§
 		bool valid = true;
 		for (int i = 1; i < numBytes; ++i) {
 			text++;
@@ -236,16 +236,16 @@ std::vector<int> GetUnicodePoints(const char* text) {
 			codePoint = (codePoint << 6) | (static_cast<uint8_t>(*text) & 0x3F);
 		}
 
-		// ´¦ÀíÎŞĞ§ĞòÁĞ
+		// å¤„ç†æ— æ•ˆåºåˆ—
 		if (!valid) {
-			// »ØÍËµ½´íÎó·¢Éúµã
-			text -= (numBytes - 1) - 1;  // »Øµ½´íÎó×Ö½ÚÎ»ÖÃ
+			// å›é€€åˆ°é”™è¯¯å‘ç”Ÿç‚¹
+			text -= (numBytes - 1) - 1;  // å›åˆ°é”™è¯¯å­—èŠ‚ä½ç½®
 			codePoints.push_back(0xFFFD);
 			text++;
 			continue;
 		}
 
-		// ÑéÖ¤Âëµã·¶Î§
+		// éªŒè¯ç ç‚¹èŒƒå›´
 		bool rangeValid = true;
 		if (numBytes == 2 && codePoint < 0x80) rangeValid = false;
 		else if (numBytes == 3 && codePoint < 0x800) rangeValid = false;
@@ -258,7 +258,7 @@ std::vector<int> GetUnicodePoints(const char* text) {
 			codePoints.push_back(0xFFFD);
 		}
 
-		text++;  // ÒÆ¶¯µ½ÏÂÒ»¸ö×Ö·û
+		text++;  // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªå­—ç¬¦
 	}
 
 	return codePoints;
@@ -268,15 +268,15 @@ std::vector<int> GetUnicodePoints(const char* text) {
 
 std::vector<int> GetUnicodePointsUnique(const char* text) {
 	std::vector<int> codePoints;
-	std::unordered_set<int> seen;  //ĞÂÔö£º¼ÇÂ¼ÒÑ¼ûÂëµã
+	std::unordered_set<int> seen;  //æ–°å¢ï¼šè®°å½•å·²è§ç ç‚¹
 
 	while (*text != '\0') {
 		uint8_t lead = static_cast<uint8_t>(*text);
 
-		// µ¥×Ö½Ú×Ö·û (ASCII)
+		// å•å­—èŠ‚å­—ç¬¦ (ASCII)
 		if (lead < 0x80) {
 			int cp = lead;
-			//È¥ÖØÅĞ¶Ï
+			//å»é‡åˆ¤æ–­
 			if (seen.find(cp) == seen.end()) {
 				seen.insert(cp);
 				codePoints.push_back(cp);
@@ -285,24 +285,24 @@ std::vector<int> GetUnicodePointsUnique(const char* text) {
 			continue;
 		}
 
-		// ¶à×Ö½Ú×Ö·û´¦Àí
+		// å¤šå­—èŠ‚å­—ç¬¦å¤„ç†
 		int numBytes = 0;
 		int codePoint = 0;
 
-		if ((lead & 0xE0) == 0xC0) {  // 2×Ö½Ú
+		if ((lead & 0xE0) == 0xC0) {  // 2å­—èŠ‚
 			numBytes = 2;
 			codePoint = lead & 0x1F;
 		}
-		else if ((lead & 0xF0) == 0xE0) {  // 3×Ö½Ú
+		else if ((lead & 0xF0) == 0xE0) {  // 3å­—èŠ‚
 			numBytes = 3;
 			codePoint = lead & 0x0F;
 		}
-		else if ((lead & 0xF8) == 0xF0) {  // 4×Ö½Ú
+		else if ((lead & 0xF8) == 0xF0) {  // 4å­—èŠ‚
 			numBytes = 4;
 			codePoint = lead & 0x07;
 		}
 		else {
-			// ÎŞĞ§Ê××Ö½Ú£ºÊ¹ÓÃÌæ»»×Ö·û²¢Ìø¹ı
+			// æ— æ•ˆé¦–å­—èŠ‚ï¼šä½¿ç”¨æ›¿æ¢å­—ç¬¦å¹¶è·³è¿‡
 			int cp = 0xFFFD;
 			if (seen.find(cp) == seen.end()) {
 				seen.insert(cp);
@@ -312,7 +312,7 @@ std::vector<int> GetUnicodePointsUnique(const char* text) {
 			continue;
 		}
 
-		// ¼ì²éºóĞø×Ö½ÚÓĞĞ§ĞÔ
+		// æ£€æŸ¥åç»­å­—èŠ‚æœ‰æ•ˆæ€§
 		bool valid = true;
 		for (int i = 1; i < numBytes; ++i) {
 			text++;
@@ -334,7 +334,7 @@ std::vector<int> GetUnicodePointsUnique(const char* text) {
 			continue;
 		}
 
-		// ÑéÖ¤Âëµã·¶Î§
+		// éªŒè¯ç ç‚¹èŒƒå›´
 		bool rangeValid = true;
 		if (numBytes == 2 && codePoint < 0x80) rangeValid = false;
 		else if (numBytes == 3 && codePoint < 0x800) rangeValid = false;
@@ -342,13 +342,13 @@ std::vector<int> GetUnicodePointsUnique(const char* text) {
 
 		int cp = rangeValid ? codePoint : 0xFFFD;
 
-		//¹Ø¼ü£º½öµ±Ê×´Î³öÏÖÊ±¼ÓÈë
+		//å…³é”®ï¼šä»…å½“é¦–æ¬¡å‡ºç°æ—¶åŠ å…¥
 		if (seen.find(cp) == seen.end()) {
 			seen.insert(cp);
 			codePoints.push_back(cp);
 		}
 
-		text++;  // ÒÆ¶¯µ½ÏÂÒ»¸ö×Ö·û
+		text++;  // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªå­—ç¬¦
 	}
 
 	return codePoints;
@@ -392,7 +392,7 @@ Font DynamicLoadFontFromMemory(const char* text, const char* fileName, const uns
 
 std::string GenerateGaussianBlurShaderCode(int radius)
 {
-	// ¼ÆËã¸ßË¹ºËÈ¨ÖØ
+	// è®¡ç®—é«˜æ–¯æ ¸æƒé‡
 	std::vector<float> weights;
 	float sum = 0.0f;
 
@@ -403,26 +403,26 @@ std::string GenerateGaussianBlurShaderCode(int radius)
 		sum += weight;
 	}
 
-	// ¹éÒ»»¯È¨ÖØ
+	// å½’ä¸€åŒ–æƒé‡
 	for (auto& weight : weights)
 	{
 		weight /= sum;
 	}
 
-	// ¹¹½¨×ÅÉ«Æ÷´úÂë
+	// æ„å»ºç€è‰²å™¨ä»£ç 
 	std::string shaderCode = R"(
 #version 330
 
-// ÊäÈë uniforms
+// è¾“å…¥ uniforms
 uniform sampler2D inputTexture;
 uniform vec2 direction;
 uniform vec2 textureSize;
 
-// ÊäÈë¶¥µãÊı¾İ
+// è¾“å…¥é¡¶ç‚¹æ•°æ®
 in vec2 fragTexCoord;
 out vec4 finalColor;
 
-// ¸ßË¹ºËÈ¨ÖØ
+// é«˜æ–¯æ ¸æƒé‡
 const float weights[)";
 
 	shaderCode += std::to_string(weights.size());
@@ -464,85 +464,85 @@ void main()
 	return shaderCode;
 }
 
-// ¸ßË¹Ä£ºıº¯Êı - Ö§³Ö¿Éµ÷°ë¾¶
+// é«˜æ–¯æ¨¡ç³Šå‡½æ•° - æ”¯æŒå¯è°ƒåŠå¾„
 rsc::SharedTexture2D TextureBlurGaussian(const Texture2D& inputTexture, int radius)
 {
 
-	// ÑéÖ¤°ë¾¶Öµ
+	// éªŒè¯åŠå¾„å€¼
 	if (radius < 1) radius = 1;
-	if (radius > 20) radius = 20; // ÉèÖÃÉÏÏŞ·ÀÖ¹ĞÔÄÜÎÊÌâ
+	if (radius > 20) radius = 20; // è®¾ç½®ä¸Šé™é˜²æ­¢æ€§èƒ½é—®é¢˜
 
-	// ´´½¨Á½¸öRenderTexture£¬±ÜÃâ¶ÁĞ´³åÍ»
+	// åˆ›å»ºä¸¤ä¸ªRenderTextureï¼Œé¿å…è¯»å†™å†²çª
 	RenderTexture2D horizontalBlurRT = LoadRenderTexture(inputTexture.width, inputTexture.height);
 	RenderTexture2D verticalBlurRT = LoadRenderTexture(inputTexture.width, inputTexture.height);
 
 
-	// ÉèÖÃÎÆÀí»·ÈÆÄ£Ê½ÎªCLAMP£¬·ÀÖ¹±ßÔµ²ÉÑùÎÊÌâ
+	// è®¾ç½®çº¹ç†ç¯ç»•æ¨¡å¼ä¸ºCLAMPï¼Œé˜²æ­¢è¾¹ç¼˜é‡‡æ ·é—®é¢˜
 	SetTextureWrap(horizontalBlurRT.texture, TEXTURE_WRAP_CLAMP);
 	SetTextureWrap(verticalBlurRT.texture, TEXTURE_WRAP_CLAMP);
 
-	// Éú³É×ÅÉ«Æ÷´úÂë
+	// ç”Ÿæˆç€è‰²å™¨ä»£ç 
 	std::string shaderCode = GenerateGaussianBlurShaderCode(radius);
 
-	// ´ÓÄÚ´æ¼ÓÔØ×ÅÉ«Æ÷
+	// ä»å†…å­˜åŠ è½½ç€è‰²å™¨
 	Shader blurShader = LoadShaderFromMemory(nullptr, shaderCode.c_str());
 
-	// »ñÈ¡×ÅÉ«Æ÷uniformÎ»ÖÃ
+	// è·å–ç€è‰²å™¨uniformä½ç½®
 	int directionLoc = GetShaderLocation(blurShader, "direction");
 	int textureSizeLoc = GetShaderLocation(blurShader, "textureSize");
 	int inputTextureLoc = GetShaderLocation(blurShader, "inputTexture");
 
 
-	// ÉèÖÃÎÆÀí³ß´çuniform
+	// è®¾ç½®çº¹ç†å°ºå¯¸uniform
 	float textureSize[2] = { (float)inputTexture.width, (float)inputTexture.height };
 	SetShaderValue(blurShader, textureSizeLoc, textureSize, SHADER_UNIFORM_VEC2);
 
-	// µÚÒ»±é: Ë®Æ½Ä£ºı
+	// ç¬¬ä¸€é: æ°´å¹³æ¨¡ç³Š
 	float horizontal[2] = { 1.0f, 0.0f };
 	SetShaderValue(blurShader, directionLoc, horizontal, SHADER_UNIFORM_VEC2);
 
-	// äÖÈ¾µ½Ë®Æ½Ä£ºıRenderTexture
+	// æ¸²æŸ“åˆ°æ°´å¹³æ¨¡ç³ŠRenderTexture
 	BeginTextureMode(horizontalBlurRT);
 	ClearBackground(BLANK);
 	BeginShaderMode(blurShader);
 
-	// ÉèÖÃÊäÈëÎÆÀí
+	// è®¾ç½®è¾“å…¥çº¹ç†
 	SetShaderValueTexture(blurShader, inputTextureLoc, inputTexture);
 
-	// »æÖÆÈ«ÆÁ¾ØĞÎÓ¦ÓÃ×ÅÉ«Æ÷
+	// ç»˜åˆ¶å…¨å±çŸ©å½¢åº”ç”¨ç€è‰²å™¨
 	DrawTexture(inputTexture, 0, 0, WHITE);
 
 	EndShaderMode();
 	EndTextureMode();
 
-	// µÚ¶ş±é: ´¹Ö±Ä£ºı
+	// ç¬¬äºŒé: å‚ç›´æ¨¡ç³Š
 	float vertical[2] = { 0.0f, 1.0f };
 	SetShaderValue(blurShader, directionLoc, vertical, SHADER_UNIFORM_VEC2);
 
-	// äÖÈ¾µ½´¹Ö±Ä£ºıRenderTexture£¨Ê¹ÓÃË®Æ½Ä£ºıµÄ½á¹û×÷ÎªÊäÈë£©
+	// æ¸²æŸ“åˆ°å‚ç›´æ¨¡ç³ŠRenderTextureï¼ˆä½¿ç”¨æ°´å¹³æ¨¡ç³Šçš„ç»“æœä½œä¸ºè¾“å…¥ï¼‰
 	BeginTextureMode(verticalBlurRT);
 	ClearBackground(BLANK);
 	BeginShaderMode(blurShader);
 
-	// Ê¹ÓÃË®Æ½Ä£ºıµÄ½á¹û×÷ÎªÊäÈë
+	// ä½¿ç”¨æ°´å¹³æ¨¡ç³Šçš„ç»“æœä½œä¸ºè¾“å…¥
 	SetShaderValueTexture(blurShader, inputTextureLoc, horizontalBlurRT.texture);
 
-	// »æÖÆÈ«ÆÁ¾ØĞÎÓ¦ÓÃ×ÅÉ«Æ÷
+	// ç»˜åˆ¶å…¨å±çŸ©å½¢åº”ç”¨ç€è‰²å™¨
 	DrawTexture(horizontalBlurRT.texture, 0, 0, WHITE);
 
 	EndShaderMode();
 	EndTextureMode();
 
-	// ¹Ø¼ü²½Öè: ÌáÈ¡ÎÆÀí²¢ÖÃ¿ÕRenderTextureµÄÎÆÀíÒıÓÃ
+	// å…³é”®æ­¥éª¤: æå–çº¹ç†å¹¶ç½®ç©ºRenderTextureçš„çº¹ç†å¼•ç”¨
 	Texture2D blurredTexture = verticalBlurRT.texture;
-	verticalBlurRT.texture = {}; // ÖÃ¿Õ£¬·ÀÖ¹UnloadRenderTextureÊÍ·ÅÎÆÀí
+	verticalBlurRT.texture = {}; // ç½®ç©ºï¼Œé˜²æ­¢UnloadRenderTextureé‡Šæ”¾çº¹ç†
 
-	// Ğ¶ÔØ²»ÔÙĞèÒªµÄ×ÊÔ´
+	// å¸è½½ä¸å†éœ€è¦çš„èµ„æº
 	UnloadShader(blurShader);
 	UnloadRenderTexture(horizontalBlurRT);
-	UnloadRenderTexture(verticalBlurRT); // Õâ»áÊÍ·ÅÖ¡»º³åÇø£¬µ«²»»áÊÍ·ÅÎÆÀí
+	UnloadRenderTexture(verticalBlurRT); // è¿™ä¼šé‡Šæ”¾å¸§ç¼“å†²åŒºï¼Œä½†ä¸ä¼šé‡Šæ”¾çº¹ç†
 
-	// Ê¹ÓÃÌáÈ¡µÄÎÆÀí´´½¨RAII¶ÔÏó
+	// ä½¿ç”¨æå–çš„çº¹ç†åˆ›å»ºRAIIå¯¹è±¡
 	return rsc::SharedTexture2D(blurredTexture);
 }
 
@@ -550,36 +550,36 @@ std::string CodepointToUtf8(int codepoint) {
 	std::string result;
 
 	if (codepoint <= 0x7F) {
-		// 1 ×Ö½Ú UTF-8
+		// 1 å­—èŠ‚ UTF-8
 		result += static_cast<char>(codepoint);
 	}
 	else if (codepoint <= 0x7FF) {
-		// 2 ×Ö½Ú UTF-8
+		// 2 å­—èŠ‚ UTF-8
 		result += static_cast<char>(0xC0 | ((codepoint >> 6) & 0x1F));
 		result += static_cast<char>(0x80 | (codepoint & 0x3F));
 	}
 	else if (codepoint <= 0xFFFF) {
-		// 3 ×Ö½Ú UTF-8
+		// 3 å­—èŠ‚ UTF-8
 		result += static_cast<char>(0xE0 | ((codepoint >> 12) & 0x0F));
 		result += static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F));
 		result += static_cast<char>(0x80 | (codepoint & 0x3F));
 	}
 	else if (codepoint <= 0x10FFFF) {
-		// 4 ×Ö½Ú UTF-8
+		// 4 å­—èŠ‚ UTF-8
 		result += static_cast<char>(0xF0 | ((codepoint >> 18) & 0x07));
 		result += static_cast<char>(0x80 | ((codepoint >> 12) & 0x3F));
 		result += static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F));
 		result += static_cast<char>(0x80 | (codepoint & 0x3F));
 	}
 	else {
-		// ÎŞĞ§µÄ Unicode Âëµã
+		// æ— æ•ˆçš„ Unicode ç ç‚¹
 		result += '?';
 	}
 
 	return result;
 }
 
-// ½«ÂëµãÊı×é×ª»»Îª UTF-8 ×Ö·û´® (std::string °æ±¾)
+// å°†ç ç‚¹æ•°ç»„è½¬æ¢ä¸º UTF-8 å­—ç¬¦ä¸² (std::string ç‰ˆæœ¬)
 std::string CodepointsToString(int* codepoints, int codepointsCount) {
 	std::string result;
 
@@ -602,9 +602,9 @@ std::vector<std::vector<int>> TextLineCaculateWithWordWrap(std::string text, flo
 	{
 		int tmpCount = codepointsCount - begin;
 		float lineLengthTmp;
-		int lastSpace = -1; // ¼ÇÂ¼×îºóÒ»¸ö¿Õ¸ñµÄÎ»ÖÃ
+		int lastSpace = -1; // è®°å½•æœ€åä¸€ä¸ªç©ºæ ¼çš„ä½ç½®
 
-		// Ê×ÏÈ³¢ÊÔÕÒµ½×îºóÒ»¸ö¿Õ¸ñÎ»ÖÃ
+		// é¦–å…ˆå°è¯•æ‰¾åˆ°æœ€åä¸€ä¸ªç©ºæ ¼ä½ç½®
 		for (int i = 0; i < tmpCount; i++)
 		{
 			if (codepoints[begin + i] == ' ' || codepoints[begin + i] == '\n')
@@ -613,7 +613,7 @@ std::vector<std::vector<int>> TextLineCaculateWithWordWrap(std::string text, flo
 			}
 		}
 
-		// ²âÁ¿µ±Ç°ĞĞµÄ³¤¶È
+		// æµ‹é‡å½“å‰è¡Œçš„é•¿åº¦
 		do
 		{
 			std::string lineText = CodepointsToString(codepoints + begin, tmpCount);
@@ -621,10 +621,10 @@ std::vector<std::vector<int>> TextLineCaculateWithWordWrap(std::string text, flo
 
 			if (lineLengthTmp > maxLength)
 			{
-				// Èç¹ûÓĞ¿Õ¸ñ²¢ÇÒ¿ÉÒÔÔÚ¿Õ¸ñ´¦¶Ï¿ª
+				// å¦‚æœæœ‰ç©ºæ ¼å¹¶ä¸”å¯ä»¥åœ¨ç©ºæ ¼å¤„æ–­å¼€
 				if (lastSpace != -1 && lastSpace < tmpCount)
 				{
-					tmpCount = lastSpace + 1; // °üÀ¨¿Õ¸ñ
+					tmpCount = lastSpace + 1; // åŒ…æ‹¬ç©ºæ ¼
 					break;
 				}
 				else if (tmpCount > 1)
@@ -642,20 +642,20 @@ std::vector<std::vector<int>> TextLineCaculateWithWordWrap(std::string text, flo
 			}
 		} while (true);
 
-		// ´¦ÀíÌØÊâÇé¿ö
+		// å¤„ç†ç‰¹æ®Šæƒ…å†µ
 		if (tmpCount == 0 && begin < codepointsCount)
 		{
 			tmpCount = 1;
 		}
 
-		// Ìø¹ıĞĞÊ×¿Õ¸ñ
+		// è·³è¿‡è¡Œé¦–ç©ºæ ¼
 		while (tmpCount > 0 && codepoints[begin] == ' ')
 		{
 			begin++;
 			tmpCount--;
 		}
 
-		// Ìø¹ıĞĞÎ²¿Õ¸ñ
+		// è·³è¿‡è¡Œå°¾ç©ºæ ¼
 		while (tmpCount > 0 && codepoints[begin + tmpCount - 1] == ' ')
 		{
 			tmpCount--;
@@ -669,7 +669,7 @@ std::vector<std::vector<int>> TextLineCaculateWithWordWrap(std::string text, flo
 
 		begin += tmpCount;
 
-		// Ìø¹ıÏÂÒ»ĞĞµÄ¿ªÍ·¿Õ¸ñ
+		// è·³è¿‡ä¸‹ä¸€è¡Œçš„å¼€å¤´ç©ºæ ¼
 		while (begin < codepointsCount && codepoints[begin] == ' ')
 		{
 			begin++;

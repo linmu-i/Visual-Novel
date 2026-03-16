@@ -80,17 +80,17 @@ namespace ebbglow::core
 		return messageList.get(id);
 	}
 
-	void MessageManager::subscribe(entity id)//������Ϣ���κ�δ������Ϣ��ʵ�岻���յ��κ���Ϣ�����ĺ󽫽��չ㲥��Ϣ����ΪĿ��ʱ�����鲥/������Ϣ
+	void MessageManager::subscribe(entity id)//订阅消息，任何未订阅消息的实体不会收到任何消息，订阅后将接收广播消息，作为目标时接收组播/单播消息
 	{
 		messageList.add(id, std::vector<MessageBase*>());
 	}
 
-	void MessageManager::unsubscribe(entity id)//ȡ�����ģ��������յ��κ���Ϣ
+	void MessageManager::unsubscribe(entity id)//取消订阅，将不会收到任何消息
 	{
 		messageList.remove(id);
 	}
 
-	void MessageManager::sendAll()//����������Ϣ��Ŀ����Ϣ�б�
+	void MessageManager::sendAll()//发送所有消息到目标消息列表
 	{
 		std::lock_guard lock(mutex);
 		for (size_t i = 0; i < unicastActive().size(); ++i)
@@ -107,7 +107,7 @@ namespace ebbglow::core
 		}
 	}
 
-	void MessageManager::sendAll(utils::ThreadPool& tp)//����������Ϣ��Ŀ����Ϣ�б�
+	void MessageManager::sendAll(utils::ThreadPool& tp)//发送所有消息到目标消息列表
 	{
 		std::lock_guard lock(mutex);
 
@@ -146,7 +146,7 @@ namespace ebbglow::core
 		r3.wait();
 	}
 
-	void MessageManager::swap()//�����Ծ��Ϣ���ѷ�����Ϣ���У����л���Ծ��
+	void MessageManager::swap()//清除活跃消息及已发送消息队列，并切换活跃区
 	{
 		std::lock_guard lock(mutex);
 		messageList.forEach

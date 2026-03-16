@@ -8,7 +8,7 @@
 
 namespace ebbglow::resource
 {
-	// SharedImage 实现
+	// SharedImage 瀹炵幇
 	SharedImage::SharedImage() noexcept : image(nullptr), ref(nullptr) {}
 
 	SharedImage::SharedImage(const char* imagePath) noexcept
@@ -158,7 +158,7 @@ namespace ebbglow::resource
 		return static_cast<Image*>(image)->height;
 	}
 
-	// SharedTexture 实现
+	// SharedTexture 瀹炵幇
 	SharedTexture::SharedTexture() noexcept : texture(nullptr), ref(nullptr) {}
 
 	SharedTexture::SharedTexture(const char* texturePath) noexcept
@@ -314,7 +314,7 @@ namespace ebbglow::resource
 		return Vec2{ static_cast<float>(static_cast<Texture*>(texture)->width), static_cast<float>(static_cast<Texture*>(texture)->height) };
 	}
 
-	// SharedFont 实现
+	// SharedFont 瀹炵幇
 	SharedFont::SharedFont() noexcept : font(nullptr), ref(nullptr) {}
 
 	SharedFont::SharedFont(const char* fontPath) noexcept
@@ -422,7 +422,7 @@ namespace ebbglow::resource
 		return *this;
 	}
 
-	// SharedMusic 实现
+	// SharedMusic 瀹炵幇
 	SharedMusic::SharedMusic() noexcept : music(nullptr), ref(nullptr) {}
 
 	SharedMusic::SharedMusic(const SharedMusic& other) noexcept
@@ -537,7 +537,7 @@ namespace ebbglow::resource
 		}
 	}
 
-	// SharedShader 实现
+	// SharedShader 瀹炵幇
 	SharedShader::SharedShader() noexcept : shader(nullptr), ref(nullptr) {}
 
 	SharedShader::SharedShader(const SharedShader& other) noexcept
@@ -650,7 +650,7 @@ namespace ebbglow::resource
 		}
 	}
 
-	// SharedFile 实现
+	// SharedFile 瀹炵幇
 	SharedFile::SharedFile() noexcept : ref(nullptr), fileData(nullptr), dataSize(0), name(nullptr) {}
 
 	SharedFile::SharedFile(const char* filePath) noexcept : fileData(nullptr), ref(nullptr), dataSize(0), name(nullptr)
@@ -849,7 +849,7 @@ namespace ebbglow::resource
 		return Iterator(*this, dataSize);
 	}
 
-	// SharedFile::Iterator 实现
+	// SharedFile::Iterator 瀹炵幇
 	SharedFile::Iterator::Iterator() : fileSize(0), offset(0), pointer(nullptr) {}
 
 	SharedFile::Iterator::Iterator(size_t size, unsigned char* data, int64_t offset)
@@ -1066,7 +1066,7 @@ namespace ebbglow::resource
 		return pointer;
 	}
 
-	// SharedRenderTexture 实现
+	// SharedRenderTexture 瀹炵幇
 	SharedRenderTexture::SharedRenderTexture() noexcept : renderTexture(nullptr), ref(nullptr) {}
 
 	SharedRenderTexture::SharedRenderTexture(const SharedRenderTexture& other) noexcept
@@ -1196,7 +1196,7 @@ namespace ebbglow::resource
 					 static_cast<float>(static_cast<::RenderTexture*>(renderTexture)->texture.height) };
 	}
 
-	// SharedSound 实现
+	// SharedSound 瀹炵幇
 	SharedSound::SharedSound() noexcept : sound(nullptr), ref(nullptr) {}
 
 	SharedSound::SharedSound(const SharedSound& other) noexcept

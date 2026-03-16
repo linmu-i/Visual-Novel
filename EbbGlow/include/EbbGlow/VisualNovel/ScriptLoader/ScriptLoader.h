@@ -16,7 +16,7 @@ namespace ebbglow::visualnovel
 	class ScriptLoader
 	{
 	private:
-		//´¦Àíº¯Êı
+		//å¤„ç†å‡½æ•°
 		std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>> globalFunctions;
 		std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>> sceneFunctions;
 		std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>> sceneCreator;
@@ -31,7 +31,7 @@ namespace ebbglow::visualnovel
 		core::World2D& world;
 		MusicManager& musicMgr;
 
-		//±äÁ¿´æ´¢
+		//å˜é‡å­˜å‚¨
 		std::vector<double> numberStorage;
 		std::vector<std::string> textStorage;
 		std::unordered_map<std::string, VariableView> numberView;
@@ -40,34 +40,34 @@ namespace ebbglow::visualnovel
 		std::unordered_map<std::string, std::function<std::string* (ScriptLoader*, const std::vector<std::string>&)>> predefinedTextVariableRef;
 		std::unordered_map<std::string, std::function<double* (ScriptLoader*, const std::vector<std::string>&)>> predefinedNumberVariableRef;
 
-		//ºêº¯Êı
+		//å®å‡½æ•°
 		std::unordered_map<std::string, MacroView> macroView;
 
-		//¶¨Î»»º´æ
+		//å®šä½ç¼“å­˜
 		std::unordered_map<std::string, int64_t> sceneView;
 
-		//ÎÄ±¾»Ø¿´
+		//æ–‡æœ¬å›çœ‹
 		std::vector<BackLogView> backLogViews;
 
-		//³õÊ¼»¯Êı¾İ
+		//åˆå§‹åŒ–æ•°æ®
 		ScriptData scriptData;
 		std::string beginScene;
 		std::string backLogScene;
 
-		//ÔËĞĞÊ±Êı¾İ
+		//è¿è¡Œæ—¶æ•°æ®
 		std::vector<core::entity> idList;
 		std::vector<core::entity> exIdList;
 		std::vector<std::string> sceneArgs;
 		std::string sceneName;
 		std::string sceneType;
-		rsc::SharedFile::Iterator scIt;//½âÎöÊ±Ê¹ÓÃµÄµü´úÆ÷£¬¹©×·¼ÓÎÄ±¾Ê±¸üĞÂµü´úÆ÷Ê¹ÓÃ
+		rsc::SharedFile::Iterator scIt;//è§£ææ—¶ä½¿ç”¨çš„è¿­ä»£å™¨ï¼Œä¾›è¿½åŠ æ–‡æœ¬æ—¶æ›´æ–°è¿­ä»£å™¨ä½¿ç”¨
 		BackLogView backLogTmp;
 		std::string backLogRetName;
 
-		//ÉèÖÃ
+		//è®¾ç½®
 		VisualNovelConfig& cfg;
 
-		//¶àÓïÑÔÎÄ±¾
+		//å¤šè¯­è¨€æ–‡æœ¬
 		std::unordered_map<std::string, std::vector<std::string>> i18nText;
 
 		ScriptLoader(core::World2D& world, VisualNovelConfig& cfg, MusicManager* musicMgr) : world(world), cfg(cfg), musicMgr(*musicMgr) {}

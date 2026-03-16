@@ -4,11 +4,11 @@
 
 #include <EbbGlow/Utils/Types.h>
 
-//ÓÉÓÚ±¾ÏîÄ¿×îÔç»ùÓÚraylib¿ª·¢£¬Òò´ËÔÚapiÉè¼ÆÉÏ´óÁ¿²Î¿¼½è¼øraylibµÄÉè¼Æ
-//ÔÚ´Ë¸ĞĞ»raylibÏîÄ¿¼°Æä¿ª·¢ÕßÃÇ
+//ç”±äºæœ¬é¡¹ç›®æœ€æ—©åŸºäºraylibå¼€å‘ï¼Œå› æ­¤åœ¨apiè®¾è®¡ä¸Šå¤§é‡å‚è€ƒå€Ÿé‰´raylibçš„è®¾è®¡
+//åœ¨æ­¤æ„Ÿè°¢raylibé¡¹ç›®åŠå…¶å¼€å‘è€…ä»¬
 //https://www.raylib.com/
 
-// API design inspired by raylib (https://www.raylib.com) ¡ª a simple and easy-to-use library for videogames programming.
+// API design inspired by raylib (https://www.raylib.com) â€” a simple and easy-to-use library for videogames programming.
 // Thanks to Ramon Santamaria (@raysan5) and the raylib community.
 
 namespace ebbglow::input

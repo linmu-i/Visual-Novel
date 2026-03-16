@@ -378,7 +378,7 @@ namespace ebbglow::visualnovel
 						}
 						sceneView.emplace(std::move(scName), offset);
 
-						while (!scIt.eof())//Ìø¹ýËùÓÐ×Ö·ûÖ±µ½ÏÂÒ»¶Î
+						while (!scIt.eof())//è·³è¿‡æ‰€æœ‰å­—ç¬¦ç›´åˆ°ä¸‹ä¸€æ®µ
 						{
 							if (*scIt == 'G' || *scIt == 'S')
 							{

@@ -11,7 +11,7 @@ namespace ebbglow::utils
 	rsc::SharedFont DynamicLoadFont(const rsc::SharedFile& fontData, const std::string& text, float fontSize, rsc::FontType type = rsc::FontType::Default) noexcept;
 	std::vector<std::vector<int>> TextLineCalculateWithWordWrap(const std::string& text, float fontSize, float spacing, const rsc::SharedFont& font, float maxLength) noexcept;
 
-	//¾¯¸æ£¬»áÆÆ»µRenderTexture£¬µ÷ÓÃÇëÈ·±£RenderTextureÎŞÆäËû¸±±¾
+	//è­¦å‘Šï¼Œä¼šç ´åRenderTextureï¼Œè°ƒç”¨è¯·ç¡®ä¿RenderTextureæ— å…¶ä»–å‰¯æœ¬
 	rsc::SharedTexture2D TakeTextureFromRenderTexture(rsc::SharedRenderTexture2D&& renderTexture) noexcept;
 
 	float GetFrameTime() noexcept;

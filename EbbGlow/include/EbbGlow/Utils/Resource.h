@@ -213,7 +213,7 @@ namespace ebbglow::resource
 
 		SharedFile() noexcept;
 		SharedFile(const char* filePath) noexcept;
-		SharedFile(unsigned char* fileData, int dataSize, const char* name) noexcept;//ÓÉnew·ÖÅä
+		SharedFile(unsigned char* fileData, int dataSize, const char* name) noexcept;//ç”±newåˆ†é…
 		SharedFile(std::u8string_view filePath) noexcept;
 		SharedFile(const SharedFile& other) noexcept;
 		SharedFile(SharedFile&& other) noexcept;

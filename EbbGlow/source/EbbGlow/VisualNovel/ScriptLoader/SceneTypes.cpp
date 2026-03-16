@@ -107,7 +107,7 @@ namespace ebbglow::visualnovel
 							}
 							else
 							{
-								exLogTextSelect = reinterpret_cast<const char*>(u8"Ñ¡Ôñ:");
+								exLogTextSelect = reinterpret_cast<const char*>(u8"é€‰æ‹©:");
 							}
 							
 							if (!scLoader->backLogTmp.empty()) scLoader->addToBackLog(std::move(scLoader->backLogTmp));

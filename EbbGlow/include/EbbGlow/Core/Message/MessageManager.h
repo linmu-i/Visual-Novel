@@ -59,13 +59,13 @@ namespace ebbglow::core
 
 		MessageTypeManager& getMessageTypeManager() { return messageTypeManager; };
 
-		void subscribe(entity id);//������Ϣ���κ�δ������Ϣ��ʵ�岻���յ��κ���Ϣ�����ĺ󽫽��չ㲥��Ϣ����ΪĿ��ʱ�����鲥/������Ϣ
-		void unsubscribe(entity id);//ȡ�����ģ��������յ��κ���Ϣ
+		void subscribe(entity id);//订阅消息，任何未订阅消息的实体不会收到任何消息，订阅后将接收广播消息，作为目标时接收组播/单播消息
+		void unsubscribe(entity id);//取消订阅，将不会收到任何消息
 
-		void sendAll();//����������Ϣ��Ŀ����Ϣ�б�
+		void sendAll();//发送所有消息到目标消息列表
 
-		void sendAll(utils::ThreadPool& tp);//����������Ϣ��Ŀ����Ϣ�б�
+		void sendAll(utils::ThreadPool& tp);//发送所有消息到目标消息列表
 
-		void swap();//�����Ծ��Ϣ���ѷ�����Ϣ���У����л���Ծ��
+		void swap();//清除活跃消息及已发送消息队列，并切换活跃区
 	};
 }

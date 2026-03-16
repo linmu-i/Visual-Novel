@@ -22,7 +22,7 @@ namespace ebbglow::core
 			auto it = typeToId.find(std::type_index(typeid(T)));
 			if (it != typeToId.end())
 			{
-				return it->second;//ÒÑÓĞÏî²»ÖØ¸´×¢²á
+				return it->second;//å·²æœ‰é¡¹ä¸é‡å¤æ³¨å†Œ
 			}
 			else
 			{
@@ -31,7 +31,7 @@ namespace ebbglow::core
 
 				if (id >= idToType.size())
 				{
-					idToType.resize(id + 10, std::type_index(typeid(void)));//Ô¤·ÖÅä
+					idToType.resize(id + 10, std::type_index(typeid(void)));//é¢„åˆ†é…
 				}
 				idToType[id] = std::type_index(typeid(T));
 

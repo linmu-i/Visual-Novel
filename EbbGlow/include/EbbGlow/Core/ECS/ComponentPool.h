@@ -167,7 +167,7 @@ namespace ebbglow::core
 		{
 			return dataVector.empty();
 		}
-		//必须接收锁以维持
+		//蹇呴』鎺ユ敹閿佷互缁存寔
 		std::unique_lock<std::mutex> getLock()
 		{
 			return std::unique_lock<std::mutex>(mtx);
