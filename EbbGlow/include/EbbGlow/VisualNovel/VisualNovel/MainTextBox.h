@@ -62,7 +62,7 @@ namespace ebbglow::visualnovel
 		const VisualNovelConfig& cfg;
 
 	public:
-		MainTextBoxSystem(core::DoubleComs<MainTextBoxCom>* textBoxs, const VisualNovelConfig& cfg) : textBoxs(textBoxs), textureTmp(rsc::SharedRenderTexture(cfg.VirtualScreenWidth, cfg.VirtualScreenHeight)), cfg(cfg) {}
+		MainTextBoxSystem(core::DoubleComs<MainTextBoxCom>* textBoxs, const VisualNovelConfig& cfg) : textBoxs(textBoxs), textureTmp(rsc::SharedRenderTexture(cfg.virtualScreenWidth, cfg.virtualScreenHeight)), cfg(cfg) {}
 
 		void update() override;
 

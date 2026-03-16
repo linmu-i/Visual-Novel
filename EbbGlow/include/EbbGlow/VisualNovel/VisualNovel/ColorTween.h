@@ -38,7 +38,7 @@ namespace ebbglow::visualnovel
 
 	public:
 		ColorTweenSystem(core::World2D* world, ScriptLoader* scLoader) : coms(world->getDoubleBuffer<ColorTweenCom>()),
-			dest(scLoader->cfg.drawOffset, Vec2{ static_cast<float>(scLoader->cfg.VirtualScreenWidth), static_cast<float>(scLoader->cfg.VirtualScreenHeight) }) {
+			dest(scLoader->cfg.drawOffset, Vec2{ static_cast<float>(scLoader->cfg.virtualScreenWidth), static_cast<float>(scLoader->cfg.virtualScreenHeight) }) {
 		}
 
 		void update() override;

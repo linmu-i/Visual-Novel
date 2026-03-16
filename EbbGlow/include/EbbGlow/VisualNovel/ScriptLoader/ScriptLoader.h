@@ -17,14 +17,14 @@ namespace ebbglow::visualnovel
 	{
 	private:
 		//´¦Àíº¯Êý
-		std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>> globalFunctions;
-		std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>> sceneFunctions;
-		std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>> sceneCreator;
+		std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>> globalFunctions;
+		std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>> sceneFunctions;
+		std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>> sceneCreator;
 
 		
-		void Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept;
-		void ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept;
-		void ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept;
+		void Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept;
+		void ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept;
+		void ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept;
 		SceneInfo ReadSceneInfo(rsc::SharedFile::Iterator& it) noexcept;
 
 	public:

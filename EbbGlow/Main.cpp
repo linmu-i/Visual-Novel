@@ -28,15 +28,15 @@ int main()
 
 	if (ScX / ScY > 16.0f / 9.0f)
 	{
-		CFG.VirtualScreenHeight = static_cast<int>(ScY);
-		CFG.VirtualScreenWidth = static_cast<int>(ScY * (16.0f / 9.0f));
-		CFG.drawOffset = { (ScX - CFG.VirtualScreenWidth) / 2.0f, 0.0f };
+		CFG.virtualScreenHeight = static_cast<int>(ScY);
+		CFG.virtualScreenWidth = static_cast<int>(ScY * (16.0f / 9.0f));
+		CFG.drawOffset = { (ScX - CFG.virtualScreenWidth) / 2.0f, 0.0f };
 	}
 	else
 	{
-		CFG.VirtualScreenWidth = static_cast<int>(ScX);
-		CFG.VirtualScreenHeight = static_cast<int>(ScX / (16.0f / 9.0f));
-		CFG.drawOffset = { 0.0f, (ScY - CFG.VirtualScreenHeight) / 2.0f };
+		CFG.virtualScreenWidth = static_cast<int>(ScX);
+		CFG.virtualScreenHeight = static_cast<int>(ScX / (16.0f / 9.0f));
+		CFG.drawOffset = { 0.0f, (ScY - CFG.virtualScreenHeight) / 2.0f };
 	}
 
 	ebbglow::core::World2D mainWorld(ScX, ScY);

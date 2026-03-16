@@ -10,8 +10,8 @@ namespace ebbglow::visualnovel
 	void DrawItem(const Item& item) noexcept
 	{
 		auto& cfg = *item.cfg;
-		auto texts = utils::TextLineCalculateWithWordWrap(item.text, cfg.textSize, cfg.textSize * 0.1f, item.font, cfg.VirtualScreenWidth * 0.6666667f);
-		auto exText = utils::TextLineCalculateWithWordWrap(item.exText, cfg.textSize, cfg.textSize * 0.1f, item.font, cfg.VirtualScreenWidth * 0.6666667f);
+		auto texts = utils::TextLineCalculateWithWordWrap(item.text, cfg.textSize, cfg.textSize * 0.1f, item.font, cfg.virtualScreenWidth * 0.6666667f);
+		auto exText = utils::TextLineCalculateWithWordWrap(item.exText, cfg.textSize, cfg.textSize * 0.1f, item.font, cfg.virtualScreenWidth * 0.6666667f);
 		if (exText.size() > 1)
 		{
 			auto tmp = utils::ToCodepoints(".");
@@ -27,7 +27,7 @@ namespace ebbglow::visualnovel
 			heightCount += utils::MeasureTextSize(item.font, utils::ToUTF8Text(exText[0]), cfg.textSize, cfg.textSize * 0.1f).y;
 			gfx::DrawRectangleGradientH
 			(
-				Rect{ item.region.x, item.region.y + spacing + heightCount - 0.8f, item.region.x + cfg.VirtualScreenWidth * 0.3333333f, 1.6f },
+				Rect{ item.region.x, item.region.y + spacing + heightCount - 0.8f, item.region.x + cfg.virtualScreenWidth * 0.3333333f, 1.6f },
 				ColorR8G8B8A8(255, 255, 255, 255),
 				ColorR8G8B8A8(255, 255, 255, 0)
 			);
@@ -53,7 +53,7 @@ namespace ebbglow::visualnovel
 				break;
 			}
 		}
-		gfx::DrawLine(Vec2{ item.region.x, item.region.y + item.region.height }, Vec2{ item.region.x + cfg.VirtualScreenWidth * 0.6666667f, item.region.y + item.region.height }, ColorR8G8B8A8(128, 128, 128, 255), 1.0f);
+		gfx::DrawLine(Vec2{ item.region.x, item.region.y + item.region.height }, Vec2{ item.region.x + cfg.virtualScreenWidth * 0.6666667f, item.region.y + item.region.height }, ColorR8G8B8A8(128, 128, 128, 255), 1.0f);
 	}
 
 	static Item CreateItem(const BackLogView& logView, ScriptLoader& loader, int index, Vec2 texSize) noexcept
@@ -91,7 +91,7 @@ namespace ebbglow::visualnovel
 		: wheelDeltaCount(0.0f), index(0),
 		animationUp(false), animationDown(false), animationTime(0.0f),
 		drawOffsetY(0.0f), returnName(returnName),
-		textureBuf(cfg.VirtualScreenWidth, cfg.VirtualScreenHeight * 5.0f / 6.0f),
+		textureBuf(cfg.virtualScreenWidth, cfg.virtualScreenHeight * 5.0f / 6.0f),
 		layer(layer)
 	{
 		auto& views = scLoader.backLogViews;
@@ -108,7 +108,7 @@ namespace ebbglow::visualnovel
 	void BackLogDraw::draw()
 	{
 		Rect origin{0, com.drawOffsetY, static_cast<float>(com.textureBuf.width()), -com.textureBuf.height() * 5.0f / 6.0f};
-		gfx::DrawTextureRegionToRegion(com.textureBuf, origin, Rect{ 0, cfg.VirtualScreenHeight / 6.0f, static_cast<float>(cfg.VirtualScreenWidth), cfg.VirtualScreenHeight * 0.75f });
+		gfx::DrawTextureRegionToRegion(com.textureBuf, origin, Rect{ 0, cfg.virtualScreenHeight / 6.0f, static_cast<float>(cfg.virtualScreenWidth), cfg.virtualScreenHeight * 0.75f });
 	}
 
 	void BackLogSystem::update()

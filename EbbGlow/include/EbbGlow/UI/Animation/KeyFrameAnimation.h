@@ -9,10 +9,10 @@ namespace ebbglow::ui
 	{
 		Vec2 position;
 		Vec2 origin;
-		float scale;
-		float rotation;
-		float duration;
-		uint8_t alpha;
+		float scale = 1.0f;
+		float rotation = 0.0f;
+		float duration = 0.0f;
+		uint8_t alpha = 0;
 	};
 
 	struct KeyFramesAnimationCom

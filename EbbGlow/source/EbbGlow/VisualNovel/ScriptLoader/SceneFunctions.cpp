@@ -35,14 +35,14 @@ namespace ebbglow::visualnovel
 		(
 			GetString(args[cfg.mainLanguage], *loader),
 			GetString(args[cfg.secondaryLanguage], *loader),
-			cfg.textSize, cfg.fontData, cfg.textSpeed, Vec2({ cfg.VirtualScreenWidth * 0.1666667f, cfg.VirtualScreenHeight * 0.75f }) + cfg.drawOffset, cfg.VirtualScreenWidth * 0.6666667f,
+			cfg.textSize, cfg.fontData, cfg.textSpeed, Vec2({ cfg.virtualScreenWidth * 0.1666667f, cfg.virtualScreenHeight * 0.75f }) + cfg.drawOffset, cfg.virtualScreenWidth * 0.6666667f,
 			cfg.showReadText && readIt != cfg.readTextSet.end() ? cfg.readTextColor : colors::White,
 			&(*world.getUiLayer())[cfg.LayerDefine.textBoxLayer]
 		));
 
 		rsc::SharedTexture2D backGround(reinterpret_cast<const char8_t*>(GetString(args[4], *loader).c_str()));
-		float scaleX = static_cast<float>(cfg.VirtualScreenWidth) / static_cast<float>(backGround.width());
-		float scaleY = static_cast<float>(cfg.VirtualScreenHeight) / static_cast<float>(backGround.height());
+		float scaleX = static_cast<float>(cfg.virtualScreenWidth) / static_cast<float>(backGround.width());
+		float scaleY = static_cast<float>(cfg.virtualScreenHeight) / static_cast<float>(backGround.height());
 
 		float bgScale;
 		Vec2 bgPosition;
@@ -52,11 +52,11 @@ namespace ebbglow::visualnovel
 			bgScale = std::max(scaleX, scaleY);
 			if (scaleX < scaleY)
 			{
-				bgPosition = { (cfg.VirtualScreenWidth - backGround.width() * bgScale) / 2.0f, 0.0f };
+				bgPosition = { (cfg.virtualScreenWidth - backGround.width() * bgScale) / 2.0f, 0.0f };
 			}
 			else
 			{
-				bgPosition = { 0.0f, (cfg.VirtualScreenHeight - backGround.height() * bgScale) / 2.0f };
+				bgPosition = { 0.0f, (cfg.virtualScreenHeight - backGround.height() * bgScale) / 2.0f };
 			}
 		}
 		else
@@ -64,11 +64,11 @@ namespace ebbglow::visualnovel
 			bgScale = std::min(scaleX, scaleY);
 			if (scaleX > scaleY)
 			{
-				bgPosition = { (cfg.VirtualScreenWidth - backGround.width() * bgScale) / 2.0f, 0.0f };
+				bgPosition = { (cfg.virtualScreenWidth - backGround.width() * bgScale) / 2.0f, 0.0f };
 			}
 			else
 			{
-				bgPosition = { 0.0f, (cfg.VirtualScreenHeight - backGround.height() * bgScale) / 2.0f };
+				bgPosition = { 0.0f, (cfg.virtualScreenHeight - backGround.height() * bgScale) / 2.0f };
 			}
 		}
 
@@ -80,9 +80,9 @@ namespace ebbglow::visualnovel
 		}
 		if (cfg.textBoxBackGround.valid())
 		{
-			float scale = std::max(float(cfg.VirtualScreenWidth) / cfg.textBoxBackGround.width(), float(cfg.VirtualScreenHeight * (0.25f + 0.03125f)) / cfg.textBoxBackGround.height());
+			float scale = std::max(float(cfg.virtualScreenWidth) / cfg.textBoxBackGround.width(), float(cfg.virtualScreenHeight * (0.25f + 0.03125f)) / cfg.textBoxBackGround.height());
 			loader->idList.push_back(idMgr->getId());
-			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ cfg.textBoxBackGround, Vec2{ (cfg.VirtualScreenWidth - cfg.textBoxBackGround.width() * scale) / 2, cfg.VirtualScreenHeight * (0.75f - 0.03125f)} + cfg.drawOffset, cfg.LayerDefine.textBoxBackGroundLayer, world.getUiLayer(), scale });
+			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ cfg.textBoxBackGround, Vec2{ (cfg.virtualScreenWidth - cfg.textBoxBackGround.width() * scale) / 2, cfg.virtualScreenHeight * (0.75f - 0.03125f)} + cfg.drawOffset, cfg.LayerDefine.textBoxBackGroundLayer, world.getUiLayer(), scale });
 		}
 
 		loader->backLogTmp.text = GetString(args[cfg.mainLanguage], *loader) + '\n' + GetString(args[cfg.secondaryLanguage], *loader);
@@ -94,10 +94,10 @@ namespace ebbglow::visualnovel
 		auto& cfg = loader->cfg;
 		auto& world = loader->world;
 
-		float offsetX = cfg.VirtualScreenWidth * (1.0f / 12.0f);
-		float offsetY = cfg.VirtualScreenHeight * 0.0625;
+		float offsetX = cfg.virtualScreenWidth * (1.0f / 12.0f);
+		float offsetY = cfg.virtualScreenHeight * 0.0625;
 		float x = offsetX * 1.5f;
-		float y = cfg.VirtualScreenHeight * 0.75f - offsetY;
+		float y = cfg.virtualScreenHeight * 0.75f - offsetY;
 		float textOffsetX = cfg.chrNameOffsetX * offsetX;
 		if (cfg.chrNameBackGround.valid())
 		{
@@ -133,12 +133,12 @@ namespace ebbglow::visualnovel
 			static_cast<uint8_t>(round(GetNumber(args[12], '\0', *loader)))
 		};
 
-		float offsetX = cfg.VirtualScreenWidth * relativeX, offsetY = cfg.VirtualScreenHeight * relativeY;
+		float offsetX = cfg.virtualScreenWidth * relativeX, offsetY = cfg.virtualScreenHeight * relativeY;
 		float height = width / ratio;
 		if (args[8] == "@Center")
 		{
-			offsetX -= (width * cfg.VirtualScreenWidth) / 2.0f;
-			offsetY -= (height * cfg.VirtualScreenHeight) / 2.0f;
+			offsetX -= (width * cfg.virtualScreenWidth) / 2.0f;
+			offsetY -= (height * cfg.virtualScreenHeight) / 2.0f;
 		}
 
 		core::entity buttonId = world.getEntityManager()->getId();
@@ -153,13 +153,13 @@ namespace ebbglow::visualnovel
 		auto text = GetString(args[4 + cfg.uiLanguage], *loader);
 		world.createUnit(buttonId, ui::ButtonExCom
 			{
-				Rect{ Vec2{ offsetX, offsetY } + cfg.drawOffset, Vec2{ width * cfg.VirtualScreenWidth, height * cfg.VirtualScreenWidth } },
+				Rect{ Vec2{ offsetX, offsetY } + cfg.drawOffset, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
 				cfg.LayerDefine.ButtonLayer,
 				world.getUiLayer(),
 				normalImg,
 				hoverImg,
 				pressImg,
-				(width * cfg.VirtualScreenWidth) / normalImg.width(),
+				(width * cfg.virtualScreenWidth) / normalImg.width(),
 				utils::DynamicLoadFont(cfg.fontData, text, cfg.textSize),
 				text,
 				textColor,
@@ -182,22 +182,22 @@ namespace ebbglow::visualnovel
 		float scale;
 		if (args[5] == "@Cover")
 		{
-			scale = std::max(width * cfg.VirtualScreenWidth / img.width(), width / ratio * cfg.VirtualScreenWidth / img.height());
+			scale = std::max(width * cfg.virtualScreenWidth / img.width(), width / ratio * cfg.virtualScreenWidth / img.height());
 		}
 		else
 		{
-			scale = std::min(width * cfg.VirtualScreenWidth / img.width(), width / ratio * cfg.VirtualScreenWidth / img.height());
+			scale = std::min(width * cfg.virtualScreenWidth / img.width(), width / ratio * cfg.virtualScreenWidth / img.height());
 		}
 		float x, y;
 		if (args[6] == "@Center")
 		{
-			x = (relativeX * cfg.VirtualScreenWidth - img.width() * scale / 2);
-			y = (relativeY * cfg.VirtualScreenHeight - img.height() * scale / 2);
+			x = (relativeX * cfg.virtualScreenWidth - img.width() * scale / 2);
+			y = (relativeY * cfg.virtualScreenHeight - img.height() * scale / 2);
 		}
 		else
 		{
-			x = relativeX * cfg.VirtualScreenWidth;
-			y = relativeY * cfg.VirtualScreenHeight;
+			x = relativeX * cfg.virtualScreenWidth;
+			y = relativeY * cfg.virtualScreenHeight;
 		}
 		loader->idList.push_back(world.getEntityManager()->getId());
 		world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ img, Vec2{x, y} + cfg.drawOffset, cfg.LayerDefine.backGroundLayer, world.getUiLayer(), scale });
@@ -245,7 +245,7 @@ namespace ebbglow::visualnovel
 		auto& cfg = loader->cfg;
 		auto& world = loader->world;
 		rsc::SharedTexture2D img(reinterpret_cast<const char8_t*>(GetString(args[0], *loader).c_str()));
-		float scale = cfg.VirtualScreenWidth / 1920.0f;
+		float scale = cfg.virtualScreenWidth / 1920.0f;
 		uint8_t layerDepth = static_cast<uint8_t>(GetNumber(args[1], '\0', *loader));
 		bool isLoop = args[2] == "@Loop";
 		KeyframeAnimBuffer().id = world.getEntityManager()->getId();
@@ -273,11 +273,11 @@ namespace ebbglow::visualnovel
 		keyFrame.alpha = alpha;
 		if (args[8] == "@Center")
 		{
-			keyFrame.position = Vec2{ relativeX * loader->cfg.VirtualScreenWidth - animationActive.texture.width() * animationActive.scale / 2.0f * scale, relativeY * loader->cfg.VirtualScreenHeight - animationActive.texture.height() * animationActive.scale / 2.0f * scale };
+			keyFrame.position = Vec2{ relativeX * loader->cfg.virtualScreenWidth - animationActive.texture.width() * animationActive.scale / 2.0f * scale, relativeY * loader->cfg.virtualScreenHeight - animationActive.texture.height() * animationActive.scale / 2.0f * scale };
 		}
 		else
 		{
-			keyFrame.position = Vec2{ relativeX * loader->cfg.VirtualScreenWidth, relativeY * loader->cfg.VirtualScreenHeight };
+			keyFrame.position = Vec2{ relativeX * loader->cfg.virtualScreenWidth, relativeY * loader->cfg.virtualScreenHeight };
 		}
 		KeyframeAnimBuffer().com.keyFrames.push_back(keyFrame);
 	}

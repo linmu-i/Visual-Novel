@@ -230,24 +230,7 @@ namespace ebbglow::visualnovel
 			nameTmp += "()";
 		}
 		auto cmd = Tokenizer(nameTmp);
-		auto varName = cmd.name;
-		/*
-		int32_t offset = 0;
-		size_t posOfIndex = name.find_first_of('[');
-		std::string varName = name.substr(0, posOfIndex);
-		if (name.back() == ']')
-		{
-			std::string offsetText = name.substr(posOfIndex + 1, name.length() - posOfIndex - 2);
-			offset = static_cast<int32_t>(round(GetNumber(offsetText, '\0', scLoader)));
-		}
-
-		auto predefinedIt = scLoader.predefinedTextVariableRef.find(varName);
-		if (predefinedIt != scLoader.predefinedTextVariableRef.end())
-		{
-			return predefinedIt->second(&scLoader, offset);
-		}
-		*/
-		auto predefinedIt = scLoader.predefinedTextVariableRef.find(varName);
+		auto predefinedIt = scLoader.predefinedTextVariableRef.find(cmd.name);
 		if (predefinedIt != scLoader.predefinedTextVariableRef.end())
 		{
 			return predefinedIt->second(&scLoader, cmd.args);
@@ -258,7 +241,7 @@ namespace ebbglow::visualnovel
 		{
 			offset = static_cast<int32_t>(round(GetNumber(cmd.args[0], '\0', scLoader)));
 		}
-		auto varViewIt = scLoader.textView.find(varName);
+		auto varViewIt = scLoader.textView.find(cmd.name);
 		if (varViewIt == scLoader.textView.end()) return nullptr;
 		int32_t index = varViewIt->second.index;
 		index += offset;
@@ -280,24 +263,7 @@ namespace ebbglow::visualnovel
 			nameTmp += "()";
 		}
 		auto cmd = Tokenizer(name);
-		auto varName = cmd.name;
-		/*
-		int32_t offset = 0;
-		size_t posOfIndex = name.find_first_of('[');
-		std::string varName = name.substr(0, posOfIndex);
-		if (name.back() == ']')
-		{
-			std::string offsetText = name.substr(posOfIndex + 1, name.length() - posOfIndex - 2);
-			offset = static_cast<int32_t>(round(GetNumber(offsetText, '\0', scLoader)));
-		}
-
-		auto predefinedIt = scLoader.predefinedTextVariableRef.find(varName);
-		if (predefinedIt != scLoader.predefinedTextVariableRef.end())
-		{
-			return predefinedIt->second(&scLoader, offset);
-		}
-		*/
-		auto predefinedIt = scLoader.predefinedNumberVariableRef.find(varName);
+		auto predefinedIt = scLoader.predefinedNumberVariableRef.find(cmd.name);
 		if (predefinedIt != scLoader.predefinedNumberVariableRef.end())
 		{
 			return predefinedIt->second(&scLoader, cmd.args);
@@ -309,7 +275,7 @@ namespace ebbglow::visualnovel
 			offset = static_cast<int32_t>(round(GetNumber(cmd.args[0], '\0', scLoader)));
 		}
 
-		auto varViewIt = scLoader.numberView.find(varName);
+		auto varViewIt = scLoader.numberView.find(cmd.name);
 		if (varViewIt == scLoader.numberView.end()) return nullptr;
 		int32_t index = varViewIt->second.index;
 		index += offset;
@@ -494,6 +460,8 @@ namespace ebbglow::visualnovel
 				break;
 
 			case '"':
+				args.back() += '"';
+				++it;
 				while (!it.eof() && *it != '"')
 				{
 					if (*it == '\\')
@@ -540,7 +508,7 @@ namespace ebbglow::visualnovel
 		return Tokenizer(it);
 	}
 
-	void ScriptLoader::Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept
+	void ScriptLoader::Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept
 	{
 		auto func = functions.find(cmd.name);
 		if (func == functions.end()) return;
@@ -593,7 +561,7 @@ namespace ebbglow::visualnovel
 		return SceneInfo(std::move(sceneName), std::move(sceneType), std::move(args));
 	}
 
-	void ScriptLoader::ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept
+	void ScriptLoader::ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept
 	{
 		while (!IsKeyWord(it, "Scene") && !IsKeyWord(it, "Global") && !it.eof())
 		{
@@ -727,7 +695,7 @@ namespace ebbglow::visualnovel
 		}
 	}
 
-	void ScriptLoader::ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, std::vector<std::string>)>>& functions) noexcept
+	void ScriptLoader::ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept
 	{
 		auto macroCmd = Tokenizer(it);
 		auto viewIt = macroView.find(macroCmd.name);

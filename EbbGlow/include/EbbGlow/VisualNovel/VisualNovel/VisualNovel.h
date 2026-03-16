@@ -29,8 +29,8 @@ namespace ebbglow::visualnovel
 		rsc::SharedTexture2D chrNameBackGround;
 		float chrNameOffsetX = 0.0f;
 
-		int VirtualScreenWidth = 0;
-		int VirtualScreenHeight = 0;
+		int virtualScreenWidth = 0;
+		int virtualScreenHeight = 0;
 
 		static struct LayerDef
 		{
