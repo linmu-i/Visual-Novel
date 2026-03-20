@@ -55,8 +55,6 @@ namespace ebbglow::visualnovel
 
 		std::string returnName;
 
-		core::entity returnButtonId;
-
 		BackLogCom(const VisualNovelConfig& cfg, core::Layer* layer, std::string_view returnName, ScriptLoader& scLoader);
 	};
 

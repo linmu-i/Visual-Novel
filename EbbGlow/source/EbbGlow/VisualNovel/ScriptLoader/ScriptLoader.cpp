@@ -738,9 +738,9 @@ namespace ebbglow::visualnovel
 		ExecuteFunction(newIt, functions);
 	}
 
-	void ScriptLoader::loadScene(rsc::SharedFile::Iterator& it) noexcept
+	bool ScriptLoader::loadScene(rsc::SharedFile::Iterator& it) noexcept
 	{
-		if (!IsKeyWord(it, "Scene")) return;
+		if (!IsKeyWord(it, "Scene")) return false;
 		
 		for (auto id : idList)
 		{
@@ -762,10 +762,23 @@ namespace ebbglow::visualnovel
 		SkipSpace(it);
 
 		auto sceneTypeIt = sceneCreator.find(sceneType);
-		if (sceneTypeIt == sceneCreator.end()) return;
+		if (sceneTypeIt == sceneCreator.end()) return false;
 		(*sceneTypeIt).second(this, sceneArgs);
 
 		ExecuteFunction(it, sceneFunctions);
+		return true;
+	}
+
+	bool ScriptLoader::loadScene(const std::string& sceneName) noexcept
+	{
+		auto indexIt = sceneView.find(sceneName);
+		if (indexIt != sceneView.end())
+		{
+			auto retIt = rsc::SharedFile::Iterator(scriptData.getSize(), scriptData.getData(), indexIt->second);
+			loadScene(retIt);
+			return true;
+		}
+		return false;
 	}
 
 	void ScriptLoader::registerSceneType(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept

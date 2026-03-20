@@ -7,6 +7,10 @@ Macro BasicButton(x, y, text)
 {
 	Button($x, $y, 3.6585366, 0.15625, $text, $text, $text, $text, @Center, 255, 255, 255, 255, "resource\\img\\Button0.png", "resource\\img\\Button1.png", "resource\\img\\Button2.png")
 }
+Macro BasicJumpButton(x, y, text, target)
+{
+	JumpButton($x, $y, 3.6585366, 0.15625, $text, $text, $text, $text, @Center, 255, 255, 255, 255, "resource\\img\\Button0.png", "resource\\img\\Button1.png", "resource\\img\\Button2.png", $target)
+}
 Include("Script2.txt")
 
 

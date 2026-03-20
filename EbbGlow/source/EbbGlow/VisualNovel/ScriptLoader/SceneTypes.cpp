@@ -4,6 +4,15 @@
 
 namespace ebbglow::visualnovel
 {
+	static void GotoBackLogSupport(ScriptLoader& scLoader)
+	{
+		if (input::MouseWheelDelta() > 0)
+		{
+			scLoader.backLogRetName = scLoader.sceneName;
+			scLoader.loadScene(scLoader.backLogScene);
+		}
+	}
+
 	void TextSceneSystem::update()
 	{
 		bool processed = false;
@@ -69,7 +78,11 @@ namespace ebbglow::visualnovel
 					}
 					clicked = false;
 				}
+
+				GotoBackLogSupport(*scLoader);
 			});
+
+		
 	}
 
 	void SceneType_TextScene(ScriptLoader* scLoader, std::vector<std::string> args) noexcept
@@ -121,6 +134,8 @@ namespace ebbglow::visualnovel
 						}
 					}
 				}
+
+				GotoBackLogSupport(*scLoader);
 			});
 	}
 

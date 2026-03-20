@@ -9,6 +9,7 @@ ColorTween(0, 0, 0, 0,  0, 0, 0, 255,  250,  15)
 Scene backLogScene_(BlankScene :)
 ColorTween(0, 0, 0, 255,  0, 0, 0, 0,  250,  15)
 BackLogCom("backLogScene__")
+&BasicJumpButton(0.8, 0.9, "返回", "backLogScene__")
 
 Scene backLogScene__(DelayScene : sc_0_1, 250)
 SetString(SCENE_ARGS_LIST[0], $BACK_LOG_RETURN_NAME)

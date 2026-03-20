@@ -195,6 +195,9 @@
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\ColorTween.cpp">
       <Filter>源文件\VisualNovel\VisualNovel</Filter>
     </ClCompile>
+    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\JumpAttachment.cpp">
+      <Filter>源文件\VisualNovel\VisualNovel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\EbbGlow\Utils\ResourceCreator.h">
@@ -354,6 +357,9 @@
       <Filter>头文件\UI\Button</Filter>
     </ClInclude>
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\ColorTween.h">
+      <Filter>头文件\VisualNovel\VisualNovel</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\JumpAttachment.h">
       <Filter>头文件\VisualNovel\VisualNovel</Filter>
     </ClInclude>
   </ItemGroup>

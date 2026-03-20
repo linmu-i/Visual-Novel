@@ -185,7 +185,7 @@ namespace ebbglow::core
 			indexToEntity.clear();
 			entityToIndex.clear();
 		}
-		void shrink_to_fit()
+		void shrink_to_fit()//尽量不使用
 		{
 			std::lock_guard<std::mutex> lockMtx(mtx);
 			dataVector.shrink_to_fit();
@@ -196,7 +196,7 @@ namespace ebbglow::core
 			}
 			entityToIndex.shrink_to_fit();
 		}
-		void sync(const ComponentPool<T>* other)
+		void sync(const ComponentPool<T>* other)//仅对数据进行同步，请配合双缓冲使用
 		{
 			dataVector = other->dataVector;
 		}

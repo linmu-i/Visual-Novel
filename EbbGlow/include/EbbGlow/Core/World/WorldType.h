@@ -47,6 +47,7 @@ namespace ebbglow::core
 		AddBufferBase(ComponentPoolBase* pool0, ComponentPoolBase* pool1) : pool0(pool0), pool1(pool1) {}
 		virtual ~AddBufferBase() = default;
 		virtual void addToPool() = 0;
+		virtual void deleteUnit(core::entity id) = 0;
 	};
 
 	template<typename T>
@@ -73,6 +74,11 @@ namespace ebbglow::core
 				p1->add(id, std::move(data));
 			}
 			buffer.clear();
+		}
+
+		void deleteUnit(core::entity id) override
+		{
+			buffer.erase(std::remove_if(buffer.begin(), buffer.end(), [id](const std::pair<entity, T>& dat) {return dat.first == id; }), buffer.end());
 		}
 	};
 }

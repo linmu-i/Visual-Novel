@@ -6,6 +6,7 @@
 #include <EbbGlow/VisualNovel/UI/UIState.h>
 #include <EbbGlow/VisualNovel/UI/BackLog.h>
 #include <EbbGlow/VisualNovel/VisualNovel/ColorTween.h>
+#include <EbbGlow/VisualNovel/VisualNovel/JumpAttachment.h>
 
 
 namespace ebbglow::visualnovel
@@ -37,6 +38,7 @@ namespace ebbglow::visualnovel
 		scLoader.registerSceneFunction("SetVoice", Scene_SetVoice);
 		scLoader.registerSceneFunction("ColorTween", Scene_ColorTween);
 		scLoader.registerSceneFunction("BackLogCom", Scene_BackLogCom);
+		scLoader.registerSceneFunction("JumpButton", Scene_JumpButton);
 		
 		scLoader.registerPredefinedVariable("SCENE_ARGS_LIST", [](ScriptLoader* scLoader, const std::vector<std::string>& args)
 			{
@@ -74,5 +76,6 @@ namespace ebbglow::visualnovel
 		ApplyUIState(world, cfg, scLoader);
 		ApplyLogView(world, scLoader);
 		ApplyColorTween(world, scLoader);
+		ApplyJumpAttachment(world, scLoader);
 	}
 }

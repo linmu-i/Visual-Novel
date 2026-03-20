@@ -7,6 +7,7 @@ namespace ebbglow::visualnovel
 	{
 		state->active()->forEach([this](core::entity id, UIState& act)
 			{
+				/*
 				auto& ina = *state->inactive()->get(id);
 				if (act.logActive && input::MouseWheelDelta() > 0)
 				{
@@ -23,6 +24,7 @@ namespace ebbglow::visualnovel
 						}
 					}
 				}
+				*/
 			});
 	}
 }

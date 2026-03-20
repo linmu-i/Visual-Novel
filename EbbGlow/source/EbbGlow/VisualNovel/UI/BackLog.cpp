@@ -101,8 +101,6 @@ namespace ebbglow::visualnovel
 			items.push_back(CreateItem(views[views.size() - i - 1], scLoader, std::clamp<size_t>(views.size(), 1, 4) - i, textureBuf.size()));
 		}
 		auto& world = scLoader.world;
-		//returnButtonId = world.getEntityManager()->getId();
-		//world.createUnit(returnButtonId, ui::ButtonExCom{})
 	}
 
 	void BackLogDraw::draw()
@@ -177,7 +175,7 @@ namespace ebbglow::visualnovel
 
 					ina.animationTime += GetFrameTime();
 
-					if (act.animationTime > animationDuration)
+					if (act.animationTime > animationDuration)//动画结束
 					{
 						ina.animationTime = 0.0f;
 						ina.animationUp = false;
@@ -185,7 +183,7 @@ namespace ebbglow::visualnovel
 					}
 					else
 					{
-						if (act.animationUp)
+						if (act.animationUp)//动画插值
 							ina.drawOffsetY = itemHeight - act.animationTime / animationDuration * itemHeight;
 						else
 							ina.drawOffsetY = act.animationTime / animationDuration * itemHeight;
@@ -208,6 +206,8 @@ namespace ebbglow::visualnovel
 
 				if (input::KeyPressed(input::Keyboard::Escape) || input::MousePressed(input::MouseButton::Right))
 				{
+					scLoader->loadScene(act.returnName);
+					/*
 					auto indexIt = scLoader->sceneView.find(act.returnName);
 					if (indexIt != scLoader->sceneView.end())
 					{
@@ -215,6 +215,7 @@ namespace ebbglow::visualnovel
 						scLoader->loadScene(retIt);
 						world->getSystem<UIStateSystem>()->setLogActive(true);
 					}
+					*/
 				}
 			});
 	}

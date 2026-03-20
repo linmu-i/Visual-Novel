@@ -72,7 +72,8 @@ namespace ebbglow::visualnovel
 
 		ScriptLoader(core::World2D& world, VisualNovelConfig& cfg, MusicManager* musicMgr) : world(world), cfg(cfg), musicMgr(*musicMgr) {}
 		std::future<void> init(const std::string& filePath) noexcept;
-		void loadScene(rsc::SharedFile::Iterator& it) noexcept;
+		bool loadScene(rsc::SharedFile::Iterator& it) noexcept;
+		bool loadScene(const std::string& sceneName) noexcept;
 		void start() noexcept;
 		void registerSceneType(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
 		void registerSceneFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;

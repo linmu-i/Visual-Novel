@@ -146,6 +146,10 @@ namespace ebbglow::core
 		void deleteUnit(entity id)
 		{
 			waitDelete.push_back(id);
+			for (auto& buffer : waitAdd)
+			{
+				buffer.second->deleteUnit(id);//从添加缓冲区删除，处理一帧内被创建又被删除的实体
+			}
 		}
 		void draw();
 		void update();

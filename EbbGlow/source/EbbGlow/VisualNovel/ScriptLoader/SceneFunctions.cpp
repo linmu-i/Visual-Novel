@@ -1,6 +1,7 @@
 #include <EbbGlow/VisualNovel/ScriptLoader/SceneFunctions.h>
 #include <EbbGlow/VisualNovel/VisualNovel/MainTextBox.h>
 #include <EbbGlow/VisualNovel/VisualNovel/ColorTween.h>
+#include <EbbGlow/VisualNovel/VisualNovel/JumpAttachment.h>
 #include <EbbGlow/VisualNovel/UI/BackLog.h>
 #include <EbbGlow/Utils/Math.h>
 #include <EbbGlow/UI/UI.h>
@@ -331,5 +332,69 @@ namespace ebbglow::visualnovel
 		core::entity id = loader->world.getEntityManager()->getId();
 		loader->idList.push_back(id);
 		loader->world.createUnit(id, BackLogCom{ loader->cfg, &(*loader->world.getUiLayer())[10], GetString(args[0], *loader), *loader});
+	}
+
+	void Scene_JumpButton(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	{
+		if (args.size() < 17) return;
+		auto& cfg = loader->cfg;
+		auto& world = loader->world;
+
+		float relativeX = static_cast<float>(GetNumber(args[0], '\0', *loader));
+		float relativeY = static_cast<float>(GetNumber(args[1], '\0', *loader));
+		float ratio = static_cast<float>(GetNumber(args[2], '\0', *loader));
+		float width = static_cast<float>(GetNumber(args[3], '\0', *loader));
+		rsc::SharedTexture2D normalImg(reinterpret_cast<const char8_t*>(GetString(args[13], *loader).c_str()));
+		rsc::SharedTexture2D hoverImg(reinterpret_cast<const char8_t*>(GetString(args[14], *loader).c_str()));
+		rsc::SharedTexture2D pressImg(reinterpret_cast<const char8_t*>(GetString(args[15], *loader).c_str()));
+		ColorR8G8B8A8 textColor =
+		{
+			static_cast<uint8_t>(round(GetNumber(args[9], '\0', *loader))),
+			static_cast<uint8_t>(round(GetNumber(args[10], '\0', *loader))),
+			static_cast<uint8_t>(round(GetNumber(args[11], '\0', *loader))),
+			static_cast<uint8_t>(round(GetNumber(args[12], '\0', *loader)))
+		};
+
+		float offsetX = cfg.virtualScreenWidth * relativeX, offsetY = cfg.virtualScreenHeight * relativeY;
+		float height = width / ratio;
+		if (args[8] == "@Center")
+		{
+			offsetX -= (width * cfg.virtualScreenWidth) / 2.0f;
+			offsetY -= (height * cfg.virtualScreenHeight) / 2.0f;
+		}
+
+		core::entity buttonId = world.getEntityManager()->getId();
+		if (loader->sceneType == "SelectScene")
+		{
+			loader->exIdList.push_back(buttonId);
+		}
+		else
+		{
+			loader->idList.push_back(buttonId);
+		}
+		auto text = GetString(args[4 + cfg.uiLanguage], *loader);
+		auto sceneName = GetString(args[16], *loader);
+		world.createUnit(
+			buttonId,
+			ui::ButtonExCom
+			{
+				Rect{ Vec2{ offsetX, offsetY } + cfg.drawOffset, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
+				cfg.LayerDefine.ButtonLayer,
+				world.getUiLayer(),
+				normalImg,
+				hoverImg,
+				pressImg,
+				(width * cfg.virtualScreenWidth) / normalImg.width(),
+				utils::DynamicLoadFont(cfg.fontData, text, cfg.textSize),
+				text,
+				textColor,
+				static_cast<float>(cfg.textSize),
+				cfg.textSize * 0.1f
+			},
+			JumpAttachmentCom
+			{
+				sceneName
+			});
+		world.getMessageManager()->subscribe(buttonId);
 	}
 }

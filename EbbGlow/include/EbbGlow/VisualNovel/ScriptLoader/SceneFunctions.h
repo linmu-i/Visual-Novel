@@ -17,4 +17,5 @@ namespace ebbglow::visualnovel
 	void Scene_SetVoice(ScriptLoader* loader, const std::vector<std::string>& args) noexcept;
 	void Scene_ColorTween(ScriptLoader* loader, const std::vector<std::string>& args) noexcept;
 	void Scene_BackLogCom(ScriptLoader* loader, const std::vector<std::string>& args) noexcept;
+	void Scene_JumpButton(ScriptLoader* loader, const std::vector<std::string>& args) noexcept;
 }
