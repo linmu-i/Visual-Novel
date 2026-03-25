@@ -231,7 +231,7 @@ namespace ebbglow::utils
 	template<InStream IS>
 	bool Deserialize(IS& is, std::string& str)
 	{
-		uint64_t size;
+		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
 		str.clear();
@@ -242,7 +242,7 @@ namespace ebbglow::utils
 	template<InStream IS, typename DataT>
 	bool Deserialize(IS& is, std::vector<DataT>& vec)
 	{
-		uint64_t size;
+		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
 		vec.resize(size);
@@ -257,13 +257,13 @@ namespace ebbglow::utils
 	template<InStream IS, typename DataT>
 	bool Deserialize(IS& is, std::list<DataT>& lst)
 	{
-		uint64_t size;
+		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
 		lst.clear();
 		for (uint64_t i = 0; i < size; ++i)
 		{
-			DataT item;
+			DataT item = {};
 			if (!Deserialize(is, item))
 				return false;
 			lst.push_back(std::move(item));
@@ -274,13 +274,13 @@ namespace ebbglow::utils
 	template<InStream IS, typename DataT>
 	bool Deserialize(IS& is, std::set<DataT>& st)
 	{
-		uint64_t size;
+		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
 		st.clear();
 		for (uint64_t i = 0; i < size; ++i)
 		{
-			DataT item;
+			DataT item = {};
 			if (!Deserialize(is, item))
 				return false;
 			st.insert(std::move(item));
@@ -291,13 +291,13 @@ namespace ebbglow::utils
 	template<InStream IS, typename DataT>
 	bool Deserialize(IS& is, std::deque<DataT>& deq)
 	{
-		uint64_t size;
+		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
 		deq.clear();
 		for (uint64_t i = 0; i < size; ++i)
 		{
-			DataT item;
+			DataT item = {};
 			if (!Deserialize(is, item))
 				return false;
 			deq.push_back(std::move(item));
@@ -319,13 +319,13 @@ namespace ebbglow::utils
 	template<InStream IS, typename KeyT, typename ValueT>
 	bool Deserialize(IS& is, std::unordered_map<KeyT, ValueT>& map)
 	{
-		uint64_t size;
+		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
 		for (uint64_t i = 0; i < size; ++i)
 		{
-			KeyT key;
-			ValueT value;
+			KeyT key = {};
+			ValueT value = {};
 			if (!Deserialize(is, key))
 				return false;
 			if (!Deserialize(is, value))
