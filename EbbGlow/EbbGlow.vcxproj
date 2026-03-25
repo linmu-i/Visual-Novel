@@ -207,6 +207,7 @@
     <ClInclude Include="include\EbbGlow\Utils\Math.h" />
     <ClInclude Include="include\EbbGlow\Utils\Resource.h" />
     <ClInclude Include="include\EbbGlow\Utils\RLUtils.h" />
+    <ClInclude Include="include\EbbGlow\Utils\Serialization.h" />
     <ClInclude Include="include\EbbGlow\Utils\ThreadPool.h" />
     <ClInclude Include="include\EbbGlow\Utils\Types.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\GlobalFunctions.h" />

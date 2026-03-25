@@ -7,7 +7,6 @@
 
 namespace ebbglow::core
 {
-	//using Layer = std::vector<std::unique_ptr<DrawBase>>;
 	class Layer
 	{
 	private:

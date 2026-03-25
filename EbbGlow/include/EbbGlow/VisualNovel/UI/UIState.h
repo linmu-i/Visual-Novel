@@ -3,6 +3,7 @@
 
 namespace ebbglow::visualnovel
 {
+	//
 	struct UIState
 	{
 

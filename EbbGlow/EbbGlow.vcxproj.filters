@@ -362,6 +362,9 @@
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\JumpAttachment.h">
       <Filter>头文件\VisualNovel\VisualNovel</Filter>
     </ClInclude>
+    <ClInclude Include="include\EbbGlow\Utils\Serialization.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Script.txt">

@@ -73,7 +73,7 @@ namespace ebbglow::visualnovel
 		ApplyTextScene(world, scLoader);
 		ApplySelectScene(world, scLoader);
 		ApplyDelayScene(world, scLoader);
-		ApplyUIState(world, cfg, scLoader);
+		//ApplyUIState(world, cfg, scLoader);
 		ApplyLogView(world, scLoader);
 		ApplyColorTween(world, scLoader);
 		ApplyJumpAttachment(world, scLoader);

@@ -207,15 +207,6 @@ namespace ebbglow::visualnovel
 				if (input::KeyPressed(input::Keyboard::Escape) || input::MousePressed(input::MouseButton::Right))
 				{
 					scLoader->loadScene(act.returnName);
-					/*
-					auto indexIt = scLoader->sceneView.find(act.returnName);
-					if (indexIt != scLoader->sceneView.end())
-					{
-						auto retIt = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), indexIt->second);
-						scLoader->loadScene(retIt);
-						world->getSystem<UIStateSystem>()->setLogActive(true);
-					}
-					*/
 				}
 			});
 	}
