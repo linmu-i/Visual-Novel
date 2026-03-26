@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <deque>
 
 #include <EbbGlow/Core/World.h>
 #include <EbbGlow/VisualNovel/VisualNovel/VisualNovel.h>
@@ -22,10 +23,12 @@ namespace ebbglow::visualnovel
 		std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>> sceneCreator;
 
 		
-		void Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept;
-		void ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept;
-		void ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept;
-		SceneInfo ReadSceneInfo(rsc::SharedFile::Iterator& it) noexcept;
+		void Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions);
+		void ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions);
+		void ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions);
+		SceneInfo ReadSceneInfo(rsc::SharedFile::Iterator& it);
+
+		constexpr static int32_t maxBackLog = 500;
 
 	public:
 		core::World2D& world;
@@ -47,7 +50,7 @@ namespace ebbglow::visualnovel
 		std::unordered_map<std::string, int64_t> sceneView;
 
 		//文本回看
-		std::vector<BackLogView> backLogViews;
+		std::deque<BackLogView> backLogViews;
 
 		//初始化数据
 		ScriptData scriptData;
@@ -71,17 +74,17 @@ namespace ebbglow::visualnovel
 		std::unordered_map<std::string, std::vector<std::string>> i18nText;
 
 		ScriptLoader(core::World2D& world, VisualNovelConfig& cfg, MusicManager* musicMgr) : world(world), cfg(cfg), musicMgr(*musicMgr) {}
-		std::future<void> init(const std::string& filePath) noexcept;
-		bool loadScene(rsc::SharedFile::Iterator& it) noexcept;
-		bool loadScene(const std::string& sceneName) noexcept;
-		void start() noexcept;
-		void registerSceneType(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
-		void registerSceneFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
-		void registerGlobalFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept;
-		void registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, const std::vector<std::string>&)> function) noexcept;
-		void registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, const std::vector<std::string>&)> function) noexcept;
-		void addToBackLog(const BackLogView& backLogView) noexcept;
-		void addToBackLog(BackLogView&& backLogView) noexcept;
+		std::future<void> init(const std::string& filePath);
+		bool loadScene(rsc::SharedFile::Iterator& it);
+		bool loadScene(const std::string& sceneName);
+		void start();
+		void registerSceneType(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function);
+		void registerSceneFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function);
+		void registerGlobalFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function);
+		void registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, const std::vector<std::string>&)> function);
+		void registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, const std::vector<std::string>&)> function);
+		void addToBackLog(const BackLogView& backLogView);
+		void addToBackLog(BackLogView&& backLogView);
 	};
 	
 	void SkipSpace(rsc::SharedFile::Iterator& ptr);
@@ -89,13 +92,13 @@ namespace ebbglow::visualnovel
 	double ParseTerm(rsc::SharedFile::Iterator& ptr, unsigned char stop, ScriptLoader& scLoader);
 	double ParseExpression(rsc::SharedFile::Iterator& ptr, unsigned char stop, ScriptLoader& scLoader);
 
-	Command Tokenizer(rsc::SharedFile::Iterator& it) noexcept;
-	Command Tokenizer(std::string_view cmd) noexcept;
+	Command Tokenizer(rsc::SharedFile::Iterator& it);
+	Command Tokenizer(std::string_view cmd);
 
 	std::string GetStateTag(std::string_view token);
 	std::string GetNextString(rsc::SharedFile::Iterator& it, ScriptLoader& scLoader);
 	std::string GetString(std::string_view token, ScriptLoader& scLoader);
 	double GetNumber(std::string_view token, unsigned char stop, ScriptLoader& scLoader);
-	std::string* GetTextVariable(const std::string& name, ScriptLoader& scLoader) noexcept;
-	double* GetNumberVariable(const std::string& name, ScriptLoader& scLoader) noexcept;
+	std::string* GetTextVariable(const std::string& name, ScriptLoader& scLoader);
+	double* GetNumberVariable(const std::string& name, ScriptLoader& scLoader);
 }

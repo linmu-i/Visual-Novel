@@ -43,10 +43,11 @@ namespace ebbglow::visualnovel
 		scLoader.registerPredefinedVariable("SCENE_ARGS_LIST", [](ScriptLoader* scLoader, const std::vector<std::string>& args)
 			{
 				int32_t offset = 0;
-				if (args.size() > 0) offset = static_cast<int32_t>(round(GetNumber(args[0], '\0', *scLoader)));//std::stoi(args[0]);
+				if (args.size() > 0) offset = static_cast<int32_t>(round(GetNumber(args[0], '\0', *scLoader)));
 				return &(scLoader->sceneArgs[offset]);
 			});
 		scLoader.registerPredefinedVariable("BACK_LOG_RETURN_NAME", [](ScriptLoader* scLoader, const std::vector<std::string>& args) { return &(scLoader->backLogRetName); });
+		scLoader.registerPredefinedVariable("BEGIN_SCENE_NAME", [](ScriptLoader* scLoader, const std::vector<std::string>& args) { return &(scLoader->beginScene); });
 		scLoader.registerPredefinedVariable("to_string", [](ScriptLoader* scLoader, const std::vector<std::string>& args)
 			{
 				thread_local static std::string buffer;

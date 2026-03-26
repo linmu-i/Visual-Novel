@@ -215,7 +215,7 @@ namespace ebbglow::visualnovel
 		return result;
 	}
 
-	std::string* GetTextVariable(const std::string& name, ScriptLoader& scLoader) noexcept
+	std::string* GetTextVariable(const std::string& name, ScriptLoader& scLoader)
 	{
 		if (name.empty()) return nullptr;
 		
@@ -248,7 +248,7 @@ namespace ebbglow::visualnovel
 		if (index < 0 || index >= scLoader.textStorage.size()) return nullptr;
 		return &scLoader.textStorage[index];
 	}
-	double* GetNumberVariable(const std::string& name, ScriptLoader& scLoader) noexcept
+	double* GetNumberVariable(const std::string& name, ScriptLoader& scLoader)
 	{
 		if (name.empty()) return nullptr;
 
@@ -283,9 +283,9 @@ namespace ebbglow::visualnovel
 		return &scLoader.numberStorage[index];
 	}
 
-	std::future<void> ScriptLoader::init(const std::string& filePath) noexcept
+	std::future<void> ScriptLoader::init(const std::string& filePath)
 	{
-		return std::async(std::launch::async, [this, filePath]() noexcept
+		return std::async(std::launch::async, [this, filePath]()
 			{
 				scriptData = ScriptData(filePath);
 				scIt = scriptData.begin();
@@ -407,7 +407,7 @@ namespace ebbglow::visualnovel
 			});
 	}
 
-	Command Tokenizer(rsc::SharedFile::Iterator& it) noexcept
+	Command Tokenizer(rsc::SharedFile::Iterator& it)
 	{
 		SkipSpace(it);
 		std::string funcName;
@@ -502,20 +502,20 @@ namespace ebbglow::visualnovel
 		return Command(std::move(funcName), std::move(args));
 	}
 
-	Command Tokenizer(std::string_view cmd) noexcept
+	Command Tokenizer(std::string_view cmd)
 	{
 		auto it = rsc::SharedFile::Iterator(cmd.size(), reinterpret_cast<unsigned char*>(const_cast<char*>(cmd.data())), 0);
 		return Tokenizer(it);
 	}
 
-	void ScriptLoader::Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept
+	void ScriptLoader::Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions)
 	{
 		auto func = functions.find(cmd.name);
 		if (func == functions.end()) return;
 		(*func).second(this, cmd.args);
 	}
 
-	SceneInfo ScriptLoader::ReadSceneInfo(rsc::SharedFile::Iterator& it) noexcept
+	SceneInfo ScriptLoader::ReadSceneInfo(rsc::SharedFile::Iterator& it)
 	{
 		if (!(it.position() == 0 || isspace(it[-1])) || memcmp(it.get(), "Scene", 5) || !isspace(it[5])) return {};
 		it += 5;
@@ -561,7 +561,7 @@ namespace ebbglow::visualnovel
 		return SceneInfo(std::move(sceneName), std::move(sceneType), std::move(args));
 	}
 
-	void ScriptLoader::ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept
+	void ScriptLoader::ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions)
 	{
 		while (!IsKeyWord(it, "Scene") && !IsKeyWord(it, "Global") && !it.eof())
 		{
@@ -695,7 +695,7 @@ namespace ebbglow::visualnovel
 		}
 	}
 
-	void ScriptLoader::ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions) noexcept
+	void ScriptLoader::ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions)
 	{
 		auto macroCmd = Tokenizer(it);
 		auto viewIt = macroView.find(macroCmd.name);
@@ -738,7 +738,7 @@ namespace ebbglow::visualnovel
 		ExecuteFunction(newIt, functions);
 	}
 
-	bool ScriptLoader::loadScene(rsc::SharedFile::Iterator& it) noexcept
+	bool ScriptLoader::loadScene(rsc::SharedFile::Iterator& it)
 	{
 		if (!IsKeyWord(it, "Scene")) return false;
 		
@@ -769,7 +769,7 @@ namespace ebbglow::visualnovel
 		return true;
 	}
 
-	bool ScriptLoader::loadScene(const std::string& sceneName) noexcept
+	bool ScriptLoader::loadScene(const std::string& sceneName)
 	{
 		auto indexIt = sceneView.find(sceneName);
 		if (indexIt != sceneView.end())
@@ -781,37 +781,45 @@ namespace ebbglow::visualnovel
 		return false;
 	}
 
-	void ScriptLoader::registerSceneType(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept
+	void ScriptLoader::registerSceneType(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function)
 	{
 		sceneCreator.emplace(name, function);
 	}
-	void ScriptLoader::registerSceneFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept
+	void ScriptLoader::registerSceneFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function)
 	{
 		sceneFunctions.emplace(name, function);
 	}
-	void ScriptLoader::registerGlobalFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function) noexcept
+	void ScriptLoader::registerGlobalFunction(const std::string& name, const std::function<void(ScriptLoader*, std::vector<std::string>)>& function)
 	{
 		globalFunctions.emplace(name, function);
 	}
-	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, const std::vector<std::string>&)> function) noexcept
+	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<std::string* (ScriptLoader*, const std::vector<std::string>&)> function)
 	{
 		predefinedTextVariableRef.emplace(name, function);
 	}
-	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, const std::vector<std::string>&)> function) noexcept
+	void ScriptLoader::registerPredefinedVariable(const std::string& name, const std::function<double* (ScriptLoader*, const std::vector<std::string>&)> function)
 	{
 		predefinedNumberVariableRef.emplace(name, function);
 	}
 
-	void ScriptLoader::addToBackLog(const BackLogView& logView) noexcept
+	void ScriptLoader::addToBackLog(const BackLogView& logView)
 	{
+		while(backLogViews.size() >= maxBackLog)
+		{
+			backLogViews.pop_front();
+		}
 		this->backLogViews.push_back(logView);
 	}
-	void ScriptLoader::addToBackLog(BackLogView&& logView) noexcept
+	void ScriptLoader::addToBackLog(BackLogView&& logView)
 	{
+		while (backLogViews.size() >= maxBackLog)
+		{
+			backLogViews.pop_front();
+		}
 		this->backLogViews.push_back(std::move(logView));
 	}
 
-	void ScriptLoader::start() noexcept
+	void ScriptLoader::start()
 	{
 		auto view = sceneView.find(beginScene);
 		if (view == sceneView.end()) return;

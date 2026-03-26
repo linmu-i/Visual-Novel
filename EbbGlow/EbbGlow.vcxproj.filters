@@ -171,9 +171,6 @@
     <ClCompile Include="source\EbbGlow\Utils\Input_Raylib_Win32.cpp">
       <Filter>源文件\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="source\EbbGlow\Utils\ResourceCreator.cpp">
-      <Filter>源文件\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="source\EbbGlow\Utils\Resource.cpp">
       <Filter>源文件\Utils</Filter>
     </ClCompile>
@@ -197,6 +194,9 @@
     </ClCompile>
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\JumpAttachment.cpp">
       <Filter>源文件\VisualNovel\VisualNovel</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EbbGlow\Utils\ResourceCreator.cpp">
+      <Filter>源文件\VisualNovel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
