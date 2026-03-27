@@ -160,6 +160,7 @@
     <ClCompile Include="source\EbbGlow\Utils\ResourceCreator.cpp" />
     <ClCompile Include="source\EbbGlow\Utils\Resource.cpp" />
     <ClCompile Include="source\EbbGlow\Utils\ThreadPool.cpp" />
+    <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\SaveLoad.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\GlobalFunctions.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\MusicManager.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\SceneFunctions.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\GlobalFunctions.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\MainLib.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\MusicManager.h" />
+    <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\SaveLoad.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\SceneFunctions.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\SceneTypes.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\ScriptData.h" />

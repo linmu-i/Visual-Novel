@@ -198,6 +198,9 @@
     <ClCompile Include="source\EbbGlow\Utils\ResourceCreator.cpp">
       <Filter>源文件\VisualNovel</Filter>
     </ClCompile>
+    <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\SaveLoad.cpp">
+      <Filter>源文件\VisualNovel\ScriptLoader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\EbbGlow\Utils\ResourceCreator.h">
@@ -364,6 +367,9 @@
     </ClInclude>
     <ClInclude Include="include\EbbGlow\Utils\Serialization.h">
       <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\SaveLoad.h">
+      <Filter>头文件\VisualNovel\ScriptLoader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

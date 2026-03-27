@@ -22,7 +22,7 @@ namespace ebbglow::visualnovel
 		std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>> sceneFunctions;
 		std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>> sceneCreator;
 
-		
+
 		void Invoker(const Command& cmd, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions);
 		void ExecuteFunction(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions);
 		void ExecuteMacro(rsc::SharedFile::Iterator& it, std::unordered_map<std::string, std::function<void(ScriptLoader*, const std::vector<std::string>&)>>& functions);
@@ -59,13 +59,16 @@ namespace ebbglow::visualnovel
 
 		//运行时数据
 		std::vector<core::entity> idList;
-		std::vector<core::entity> exIdList;
+		std::vector<core::entity> exIdList;//特殊id列表，用于特殊组件配合特殊场景
 		std::vector<std::string> sceneArgs;
 		std::string sceneName;
 		std::string sceneType;
-		rsc::SharedFile::Iterator scIt;//解析时使用的迭代器，供追加文本时更新迭代器使用
+		rsc::SharedFile::Iterator scIt;//初始化时使用的迭代器，供追加文本时更新迭代器使用
+
 		BackLogView backLogTmp;
-		std::string backLogRetName;
+
+		std::string backLogRetName;//由任意可能跳转BackLog的场景填写，供回退时使用
+		std::string saveSceneName;//由任意加载存档时直接跳转的场景填写，供保存/加载时使用
 
 		//设置
 		VisualNovelConfig& cfg;

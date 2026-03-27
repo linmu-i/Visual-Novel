@@ -79,30 +79,36 @@ namespace ebbglow::utils
 		}
 	}
 
+	template<typename T>
+	concept BoolContext = requires(T t)
+	{
+		{ static_cast<bool>(t) };
+	};
+
 	template<typename OS>
 	concept OutStream = requires(OS os, const char* data, uint64_t size)
 	{
-		{ os.write(data, size) } -> std::convertible_to<bool>;
+		{ os.write(data, size) } -> BoolContext;
 	};
 
 	template<typename IS>
 	concept InStream = requires(IS is, char* data, uint64_t size)
 	{
-		{ is.read(data, size) } -> std::convertible_to<bool>;
+		{ is.read(data, size) } -> BoolContext;
 	};
 
 	template<OutStream OS, std::integral IntT>
 	bool Serialize(OS& os, IntT value)
 	{
 		value = ToLittleEndian(value);
-		return os.write(reinterpret_cast<const char*>(&value), sizeof(value));
+		return static_cast<bool>(os.write(reinterpret_cast<const char*>(&value), sizeof(value)));
 	}
 
 	template<OutStream OS, std::floating_point FloatT>
 	bool Serialize(OS& os, FloatT value)
 	{
 		value = ToLittleEndian(value);
-		return os.write(reinterpret_cast<const char*>(&value), sizeof(value));
+		return static_cast<bool>(os.write(reinterpret_cast<const char*>(&value), sizeof(value)));
 	}
 
 	template<OutStream OS>
@@ -110,15 +116,16 @@ namespace ebbglow::utils
 	{
 		if (!Serialize(os, static_cast<uint64_t>(value.size())))
 			return false;
-		return os.write(reinterpret_cast<const char*>(value.data()), static_cast<uint64_t>(value.size()));
+		return static_cast<bool>(os.write(reinterpret_cast<const char*>(value.data()), static_cast<uint64_t>(value.size())));
 	}
 
 	template<OutStream OS>
 	bool Serialize(OS& os, const char* data, uint64_t size)
 	{
+		if (!data) return false;
 		if (!Serialize(os, size))
 			return false;
-		return os.write(data, size);
+		return static_cast<bool>(os.write(data, size));
 	}
 
 	template<OutStream OS, typename Sequence>
@@ -185,11 +192,11 @@ namespace ebbglow::utils
 	}
 
 	template<OutStream OS, typename FirstT, typename SecondT>
-	bool Serialize(OS& os, std::pair<FirstT, SecondT>)
+	bool Serialize(OS& os, const std::pair<FirstT, SecondT>& pair)
 	{
-		if (!Serialize(os, first))
+		if (!Serialize(os, pair.first))
 			return false;
-		if (!Serialize(os, second))
+		if (!Serialize(os, pair.second))
 			return false;
 		return true;
 	}
@@ -215,6 +222,7 @@ namespace ebbglow::utils
 	template<InStream IS>
 	bool Deserialize(IS& is, char* data, uint64_t* size, uint64_t maxSize)
 	{
+		if (!data || !size) return false;
 		if (!Deserialize(is, *size))
 		{
 			*size = 0;
@@ -225,7 +233,7 @@ namespace ebbglow::utils
 			*size = 0;
 			return false;
 		}
-		return is.read(data, *size);
+		return static_cast<bool>(is.read(data, *size));
 	}
 
 	template<InStream IS>
@@ -236,7 +244,7 @@ namespace ebbglow::utils
 			return false;
 		str.clear();
 		str.resize(size);
-		return is.read(reinterpret_cast<char*>(str.data()), size);
+		return static_cast<bool>(is.read(reinterpret_cast<char*>(str.data()), size));
 	}
 
 	template<InStream IS, typename DataT>

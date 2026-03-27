@@ -294,12 +294,26 @@ namespace ebbglow::visualnovel
 
 	void Scene_SetBgm(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
 	{
-		loader->musicMgr.SetBgm(rsc::SharedMusic(GetString(args[0], *loader).c_str()), loader->cfg.volumes[static_cast<size_t>(round(GetNumber(args[1], '\0', *loader)))]);
+		std::string path = GetString(args[0], *loader);
+		uint16_t volumeIndex = static_cast<uint16_t>(round(GetNumber(args[1], '\0', *loader)));
+		float volume = 1.0f;
+		if (volumeIndex < loader->cfg.volumes.size())
+		{
+			volume = loader->cfg.volumes[volumeIndex];
+		}
+		loader->musicMgr.SetBgm(rsc::SharedMusic(reinterpret_cast<const char8_t*>(path.c_str())), volume, path, volumeIndex);
 	}
 
 	void Scene_SetVoice(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
 	{
-		loader->musicMgr.SetVoice(rsc::SharedSound(reinterpret_cast<const char8_t*>(GetString(args[0], *loader).c_str())), loader->cfg.volumes[static_cast<size_t>(round(GetNumber(args[1], '\0', *loader)))]);
+		std::string path = GetString(args[0], *loader);
+		uint16_t volumeIndex = static_cast<uint16_t>(round(GetNumber(args[1], '\0', *loader)));
+		float volume = 1.0f;
+		if (volumeIndex < loader->cfg.volumes.size())
+		{
+			volume = loader->cfg.volumes[volumeIndex];
+		}
+		loader->musicMgr.SetVoice(rsc::SharedSound(reinterpret_cast<const char8_t*>(path.c_str())), volume, path, volumeIndex);
 	}
 
 	void Scene_ColorTween(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
