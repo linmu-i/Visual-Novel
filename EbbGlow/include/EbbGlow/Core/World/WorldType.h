@@ -35,7 +35,40 @@ namespace ebbglow::core
 		auto end() noexcept { return drawArr.end(); }
 	};
 
-	using Layers = std::array<Layer, 16>;
+	//using Layers = std::array<Layer, 16>;
+
+	class Layers
+	{
+	private:
+		std::vector<Layer> layers;
+
+	public:
+		Layers() : layers(16) {}
+		Layers(size_t layerCount) : layers(layerCount) {}
+		Layer& operator[](size_t idx) { return layers[idx]; }
+		const Layer& operator[](size_t idx) const { return layers[idx]; }
+
+		auto begin() noexcept { return layers.begin(); }
+		auto end() noexcept { return layers.end(); }
+
+
+		size_t size() const noexcept { return layers.size(); }
+		void resize(size_t newSize)
+		{
+			if (newSize > layers.size())
+			{
+				layers.resize(newSize);
+			}
+		}
+
+		void clear() noexcept
+		{
+			for (auto& layer : layers)
+			{
+				layer.clear();
+			}
+		}
+	};
 
 	class AddBufferBase
 	{

@@ -164,17 +164,17 @@ namespace ebbglow::gfx
 
 	void DrawTexture(const rsc::SharedRenderTexture2D& texture, Vec2 pos, float scale, float rotation, Color tint)
 	{
-		DrawTextureEx(static_cast<RenderTexture2D*>(texture.get())->texture, RLVec2(pos), rotation, scale, RLColor(tint));
+		DrawTextureRec(static_cast<RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(-texture.height()) }), RLVec2(pos), RLColor(tint));//raylib的RenderTexture2D的纹理坐标系以左下角为原点，在此统一修正
 	}
 
 	void DrawTextureRegionToRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
 	{
-		DrawTexturePro(static_cast<RenderTexture2D*>(texture.get())->texture, RLRect(sourceRec), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
+		DrawTexturePro(static_cast<RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
 	}
 
 	void DrawTextureRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Vec2 pos, Color tint)
 	{
-		DrawTextureRec(static_cast<RenderTexture2D*>(texture.get())->texture, RLRect(sourceRec), RLVec2(pos), RLColor(tint));
+		DrawTextureRec(static_cast<RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLVec2(pos), RLColor(tint));
 	}
 
 	void DrawText(const rsc::SharedFont& font, const std::string& text, Vec2 position, float fontSize, float spacing, Color tint, Vec2 origin, float rotation)

@@ -38,9 +38,95 @@ namespace ebbglow
 
 	void BeginTextureMode(rsc::SharedRenderTexture2D& renderTexture);
 	void EndTextureMode();
+    class TextureModeGuard
+    {
+    private:
+        bool active;
+
+    public:
+        TextureModeGuard(rsc::SharedRenderTexture2D& renderTexture)
+        {
+            active = true;
+			BeginTextureMode(renderTexture);
+        }
+        ~TextureModeGuard()
+        {
+			if (active) EndTextureMode();
+        }
+
+		TextureModeGuard(const TextureModeGuard&) = delete;
+        TextureModeGuard& operator=(const TextureModeGuard&) = delete;
+        TextureModeGuard(TextureModeGuard&& other) noexcept
+        {
+            active = other.active;
+            other.active = false;
+        }
+        TextureModeGuard& operator=(TextureModeGuard&& other) noexcept
+        {
+            if (this != &other)
+            {
+                if (active) EndTextureMode();
+                active = other.active;
+                other.active = false;
+            }
+            return *this;
+		}
+
+        void endTextureMode() noexcept
+        {
+            if (active)
+            {
+                EndTextureMode();
+                active = false;
+			}
+        }
+    };
 
     void BeginShaderMode(rsc::SharedShader& shader);
     void EndShaderMode();
+    class ShaderModeGuard
+    {
+    private:
+        bool active;
+
+    public:
+        ShaderModeGuard(rsc::SharedShader& renderTexture)
+        {
+            active = true;
+            BeginShaderMode(renderTexture);
+        }
+        ~ShaderModeGuard()
+        {
+            if (active) EndShaderMode();
+        }
+
+        ShaderModeGuard(const ShaderModeGuard&) = delete;
+        ShaderModeGuard& operator=(const ShaderModeGuard&) = delete;
+        ShaderModeGuard(ShaderModeGuard&& other) noexcept
+        {
+            active = other.active;
+            other.active = false;
+        }
+        ShaderModeGuard& operator=(ShaderModeGuard&& other) noexcept
+        {
+            if (this != &other)
+            {
+                if (active) EndShaderMode();
+                active = other.active;
+                other.active = false;
+            }
+            return *this;
+        }
+
+        void endShaderMode() noexcept
+        {
+            if (active)
+            {
+                EndShaderMode();
+                active = false;
+            }
+        }
+    };
 
 	void BeginMode2D(const Camera2D& camera2D);
 	void EndMode2D();

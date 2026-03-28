@@ -170,6 +170,7 @@
     <ClCompile Include="source\EbbGlow\VisualNovel\UI\BackLog.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\UI\UIState.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\ColorTween.cpp" />
+    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\DrawToScreen.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\JumpAttachment.cpp" />
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\MainTextBox.cpp" />
   </ItemGroup>
@@ -224,6 +225,7 @@
     <ClInclude Include="include\EbbGlow\VisualNovel\UI\UIState.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\ColorTween.h" />
+    <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\DrawToScreen.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\JumpAttachment.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\MainTextBox.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\VisualNovel.h" />

@@ -7,6 +7,7 @@
 #include <EbbGlow/VisualNovel/UI/BackLog.h>
 #include <EbbGlow/VisualNovel/VisualNovel/ColorTween.h>
 #include <EbbGlow/VisualNovel/VisualNovel/JumpAttachment.h>
+#include <EbbGlow/VisualNovel/VisualNovel/DrawToScreen.h>
 
 
 namespace ebbglow::visualnovel
@@ -78,5 +79,6 @@ namespace ebbglow::visualnovel
 		ApplyLogView(world, scLoader);
 		ApplyColorTween(world, scLoader);
 		ApplyJumpAttachment(world, scLoader);
+		ApplyDrawToScreen(world, scLoader, &(*world.getUiLayer())[7]);
 	}
 }

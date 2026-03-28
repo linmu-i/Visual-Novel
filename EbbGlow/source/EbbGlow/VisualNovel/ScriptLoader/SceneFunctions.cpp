@@ -36,9 +36,9 @@ namespace ebbglow::visualnovel
 		(
 			GetString(args[cfg.mainLanguage], *loader),
 			GetString(args[cfg.secondaryLanguage], *loader),
-			cfg.textSize, cfg.fontData, cfg.textSpeed, Vec2({ cfg.virtualScreenWidth * 0.1666667f, cfg.virtualScreenHeight * 0.75f }) + cfg.drawOffset, cfg.virtualScreenWidth * 0.6666667f,
+			cfg.textSize, cfg.fontData, cfg.textSpeed, Vec2({ cfg.virtualScreenWidth * 0.1666667f, cfg.virtualScreenHeight * 0.75f }), cfg.virtualScreenWidth * 0.6666667f,
 			cfg.showReadText && readIt != cfg.readTextSet.end() ? cfg.readTextColor : colors::White,
-			&(*world.getUiLayer())[cfg.LayerDefine.textBoxLayer]
+			&(loader->tmpLayers)[cfg.LayerDefine.textBoxLayer]
 		));
 
 		rsc::SharedTexture2D backGround(reinterpret_cast<const char8_t*>(GetString(args[4], *loader).c_str()));
@@ -77,13 +77,13 @@ namespace ebbglow::visualnovel
 		if (backGround.valid())
 		{
 			loader->idList.push_back(idMgr->getId());
-			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ backGround, bgPosition + cfg.drawOffset, cfg.LayerDefine.backGroundLayer, world.getUiLayer(), bgScale });
+			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ backGround, bgPosition, &loader->tmpLayers[cfg.LayerDefine.backGroundLayer], bgScale });
 		}
 		if (cfg.textBoxBackGround.valid())
 		{
 			float scale = std::max(float(cfg.virtualScreenWidth) / cfg.textBoxBackGround.width(), float(cfg.virtualScreenHeight * (0.25f + 0.03125f)) / cfg.textBoxBackGround.height());
 			loader->idList.push_back(idMgr->getId());
-			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ cfg.textBoxBackGround, Vec2{ (cfg.virtualScreenWidth - cfg.textBoxBackGround.width() * scale) / 2, cfg.virtualScreenHeight * (0.75f - 0.03125f)} + cfg.drawOffset, cfg.LayerDefine.textBoxBackGroundLayer, world.getUiLayer(), scale });
+			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ cfg.textBoxBackGround, Vec2{ (cfg.virtualScreenWidth - cfg.textBoxBackGround.width() * scale) / 2, cfg.virtualScreenHeight * (0.75f - 0.03125f)}, &loader->tmpLayers[cfg.LayerDefine.textBoxBackGroundLayer], scale });
 		}
 
 		loader->backLogTmp.text = GetString(args[cfg.mainLanguage], *loader) + '\n' + GetString(args[cfg.secondaryLanguage], *loader);
@@ -104,11 +104,11 @@ namespace ebbglow::visualnovel
 		{
 			loader->idList.push_back(world.getEntityManager()->getId());
 			float scale = static_cast<float>(offsetY) / static_cast<float>(cfg.chrNameBackGround.height());
-			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ cfg.chrNameBackGround, Vec2{ static_cast<float>(x), static_cast<float>(y) } + cfg.drawOffset, cfg.LayerDefine.textBoxLayer, loader->world.getUiLayer(), scale});
+			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ cfg.chrNameBackGround, Vec2{ static_cast<float>(x), static_cast<float>(y) }, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer], scale});
 		}
 
 		loader->idList.push_back(world.getEntityManager()->getId());
-		world.createUnit(loader->idList.back(), ui::TextBoxExCom{ cfg.fontData, GetString(args[0], *loader), Vec2{float(x + textOffsetX), float(y)} + cfg.drawOffset, float(cfg.textSize), 0.1f * cfg.textSize, colors::White, loader->world.getUiLayer(), cfg.LayerDefine.textBoxLayer });
+		world.createUnit(loader->idList.back(), ui::TextBoxExCom{ cfg.fontData, GetString(args[0], *loader), Vec2{float(x + textOffsetX), float(y)}, float(cfg.textSize), 0.1f * cfg.textSize, colors::White, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer] });
 
 		loader->backLogTmp.exText = GetString(args[0], *loader);
 	}
@@ -154,9 +154,8 @@ namespace ebbglow::visualnovel
 		auto text = GetString(args[4 + cfg.uiLanguage], *loader);
 		world.createUnit(buttonId, ui::ButtonExCom
 			{
-				Rect{ Vec2{ offsetX, offsetY } + cfg.drawOffset, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
-				cfg.LayerDefine.ButtonLayer,
-				world.getUiLayer(),
+				Rect{ Vec2{ offsetX, offsetY }, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
+				&loader->tmpLayers[cfg.LayerDefine.ButtonLayer],
 				normalImg,
 				hoverImg,
 				pressImg,
@@ -201,7 +200,7 @@ namespace ebbglow::visualnovel
 			y = relativeY * cfg.virtualScreenHeight;
 		}
 		loader->idList.push_back(world.getEntityManager()->getId());
-		world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ img, Vec2{x, y} + cfg.drawOffset, cfg.LayerDefine.backGroundLayer, world.getUiLayer(), scale });
+		world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ img, Vec2{x, y}, &loader->tmpLayers[cfg.LayerDefine.backGroundLayer], scale });
 	}
 
 	void Scene_SetStr(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
@@ -250,7 +249,7 @@ namespace ebbglow::visualnovel
 		uint8_t layerDepth = static_cast<uint8_t>(GetNumber(args[1], '\0', *loader));
 		bool isLoop = args[2] == "@Loop";
 		KeyframeAnimBuffer().id = world.getEntityManager()->getId();
-		KeyframeAnimBuffer().com = ui::KeyFramesAnimationCom{ img, world.getUiLayer(), scale, layerDepth, isLoop };
+		KeyframeAnimBuffer().com = ui::KeyFramesAnimationCom{ img, &loader->tmpLayers, scale, layerDepth, isLoop };
 	}
 
 	void Scene_AddKeyFrame(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
@@ -337,7 +336,7 @@ namespace ebbglow::visualnovel
 		uint8_t layerDepth = static_cast<uint8_t>(GetNumber(args[9], '\0', *loader));
 
 		loader->idList.push_back(id);
-		loader->world.createUnit(id, vn::ColorTweenCom{ fromColor, toColor, duration, &((*loader->world.getUiLayer())[layerDepth])});
+		loader->world.createUnit(id, vn::ColorTweenCom{ fromColor, toColor, duration, &((loader->tmpLayers)[layerDepth])});
 	}
 
 	void Scene_BackLogCom(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
@@ -345,7 +344,7 @@ namespace ebbglow::visualnovel
 		if (args.size() < 1) return;
 		core::entity id = loader->world.getEntityManager()->getId();
 		loader->idList.push_back(id);
-		loader->world.createUnit(id, BackLogCom{ loader->cfg, &(*loader->world.getUiLayer())[10], GetString(args[0], *loader), *loader});
+		loader->world.createUnit(id, BackLogCom{ loader->cfg, &(loader->tmpLayers)[10], GetString(args[0], *loader), *loader});
 	}
 
 	void Scene_JumpButton(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
@@ -392,9 +391,8 @@ namespace ebbglow::visualnovel
 			buttonId,
 			ui::ButtonExCom
 			{
-				Rect{ Vec2{ offsetX, offsetY } + cfg.drawOffset, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
-				cfg.LayerDefine.ButtonLayer,
-				world.getUiLayer(),
+				Rect{ Vec2{ offsetX, offsetY }, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
+				&loader->tmpLayers[cfg.LayerDefine.ButtonLayer],
 				normalImg,
 				hoverImg,
 				pressImg,

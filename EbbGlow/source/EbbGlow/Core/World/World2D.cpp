@@ -31,10 +31,7 @@ namespace ebbglow::core
 			unitsLayer[i].clear();
 		}
 		EndTextureMode();
-		gfx::DrawTextureRegion(activeRenderTexture(),
-			Rect{ 0, 0, static_cast<float>(activeRenderTexture().width()), static_cast<float>(-activeRenderTexture().height()) },
-			Vec2{ 0, 0 },
-			colors::White);
+		gfx::DrawTexture(activeRenderTexture(), Vec2{ 0, 0 });
 	}
 
 	void World2D::update()

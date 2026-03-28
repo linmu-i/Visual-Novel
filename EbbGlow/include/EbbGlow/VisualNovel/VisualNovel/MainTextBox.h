@@ -50,7 +50,7 @@ namespace ebbglow::visualnovel
 		MainTextBoxDraw(Vec2 position, rsc::SharedRenderTexture2D texture) : pos(position), texture(texture) {}
 		void draw() override
 		{
-			gfx::DrawTextureRegion(texture, { 0, 0, float(texture.width()), -float(texture.height()) }, pos, colors::White);
+			gfx::DrawTextureRegion(texture, { 0, 0, float(texture.width()), float(texture.height()) }, pos, colors::White);
 		}
 	};
 

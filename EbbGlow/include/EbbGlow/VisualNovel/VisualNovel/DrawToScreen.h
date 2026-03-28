@@ -18,9 +18,10 @@ namespace ebbglow::visualnovel
 	private:
 		ScriptLoader* scLoader;
 		core::Layer* layer;
+		DrawToScreenDraw drawPackage;
 
 	public:
-		DrawToScreenSystem(ScriptLoader& scLoader, core::Layer* layer) : scLoader(&scLoader), layer(layer) {}
+		DrawToScreenSystem(ScriptLoader& scLoader, core::Layer* layer) : scLoader(&scLoader), layer(layer), drawPackage(scLoader) {}
 		void update() override;
 	};
 

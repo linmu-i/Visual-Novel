@@ -76,7 +76,12 @@ namespace ebbglow::visualnovel
 		//多语言文本
 		std::unordered_map<std::string, std::vector<std::string>> i18nText;
 
-		ScriptLoader(core::World2D& world, VisualNovelConfig& cfg, MusicManager* musicMgr) : world(world), cfg(cfg), musicMgr(*musicMgr) {}
+		//渲染缓存
+		core::Layers tmpLayers;
+		rsc::SharedRenderTexture2D tmpRenderTexture;
+
+		ScriptLoader(core::World2D& world, VisualNovelConfig& cfg, MusicManager* musicMgr) : world(world), cfg(cfg),
+			musicMgr(*musicMgr), tmpRenderTexture(cfg.virtualScreenWidth, cfg.virtualScreenHeight) {}
 		std::future<void> init(const std::string& filePath);
 		bool loadScene(rsc::SharedFile::Iterator& it);
 		bool loadScene(const std::string& sceneName);

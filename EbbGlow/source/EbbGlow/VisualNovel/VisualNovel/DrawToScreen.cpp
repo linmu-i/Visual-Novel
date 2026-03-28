@@ -6,27 +6,24 @@ namespace ebbglow::visualnovel
 {
 	void DrawToScreenDraw::draw()
 	{
-		scLoader.swapTmpLayers();
+		{
+			TextureModeGuard guard(scLoader.tmpRenderTexture);
+			gfx::ClearBackground(ColorR8G8B8A8(0, 0, 0, 0));
+			for (auto& layer : scLoader.tmpLayers)
+			{
+				for (auto& draw : layer)
+				{
+					draw->draw();
+				}
+			}
+		}
+		scLoader.tmpLayers.clear();
 		gfx::DrawTexture(scLoader.tmpRenderTexture, scLoader.cfg.drawOffset);
-		//gfx::DrawCircle({ 200,300 }, 100.0f, { 255, 255, 255, 255 });
 	}
 
 	void DrawToScreenSystem::update()
 	{
-		BeginTextureMode(scLoader->tmpRenderTexture);
-		for (auto& layer : scLoader->getActTmpLayers())
-		{
-			for (auto& draw : layer)
-			{
-				draw->draw();
-			}
-		}
-		EndTextureMode();
-		for (auto& layer : scLoader->getActTmpLayers())
-		{
-			layer.clear();
-		}
-		layer->push_back(std::make_unique<DrawToScreenDraw>(*scLoader));
+		layer->push_back(&drawPackage);
 	}
 
 	void ApplyDrawToScreen(core::World2D& world, ScriptLoader& scLoader, core::Layer* layer)
