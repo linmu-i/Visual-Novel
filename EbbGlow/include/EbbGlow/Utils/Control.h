@@ -38,6 +38,7 @@ namespace ebbglow
 
 	void BeginTextureMode(rsc::SharedRenderTexture2D& renderTexture);
 	void EndTextureMode();
+	void ClearTextureMode();
     class TextureModeGuard
     {
     private:
@@ -84,6 +85,7 @@ namespace ebbglow
 
     void BeginShaderMode(rsc::SharedShader& shader);
     void EndShaderMode();
+	void ClearShaderMode();
     class ShaderModeGuard
     {
     private:

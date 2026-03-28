@@ -146,6 +146,16 @@ namespace ebbglow
 		}
 	}
 
+	void ClearTextureMode()
+	{
+		auto& stack = GetRenderTextureStack();
+		if (!stack.empty())
+		{
+			::EndTextureMode();
+			stack.clear();
+		}
+	}
+
 	static std::vector<rsc::SharedShader>& GetShaderStack()
 	{
 		thread_local static std::vector<rsc::SharedShader> stack;
@@ -171,6 +181,16 @@ namespace ebbglow
 			{
 				::BeginShaderMode(*(Shader*)stack.back().get());
 			}
+		}
+	}
+
+	void ClearShaderMode()
+	{
+		auto& stack = GetShaderStack();
+		if (!stack.empty())
+		{
+			::EndShaderMode();
+			stack.clear();
 		}
 	}
 
