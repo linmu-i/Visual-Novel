@@ -36,10 +36,10 @@ namespace ebbglow
 	void BeginDrawing();
 	void EndDrawing();
 
-	void BeginTextureMode(rsc::SharedRenderTexture2D renderTexture);
+	void BeginTextureMode(rsc::SharedRenderTexture2D& renderTexture);
 	void EndTextureMode();
 
-    void BeginShaderMode(rsc::SharedShader shader);
+    void BeginShaderMode(rsc::SharedShader& shader);
     void EndShaderMode();
 
 	void BeginMode2D(const Camera2D& camera2D);

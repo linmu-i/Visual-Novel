@@ -25,7 +25,7 @@ namespace ebbglow::resource
 			ref = nullptr;
 			return;
 		}
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadImage(*((::Image*)image));
@@ -60,7 +60,7 @@ namespace ebbglow::resource
 			ref = nullptr;
 			return;
 		}
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadImage(*((::Image*)image));
@@ -172,7 +172,7 @@ namespace ebbglow::resource
 			return;
 		}
 		texture = loaded;
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadTexture(*static_cast<::Texture*>(texture));
@@ -207,7 +207,7 @@ namespace ebbglow::resource
 			return;
 		}
 		texture = loaded;
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadTexture(*static_cast<::Texture*>(texture));
@@ -334,7 +334,7 @@ namespace ebbglow::resource
 			return;
 		}
 		font = loaded;
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadFont(*static_cast<::Font*>(font));
@@ -457,7 +457,7 @@ namespace ebbglow::resource
 			return;
 		}
 		music = loaded;
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadMusicStream(*static_cast<::Music*>(music));
@@ -572,7 +572,7 @@ namespace ebbglow::resource
 			return;
 		}
 		shader = loaded;
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadShader(*static_cast<::Shader*>(shader));
@@ -679,7 +679,7 @@ namespace ebbglow::resource
 			return;
 		}
 		memcpy(fileData, data.data(), data.size());
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (!ref)
 		{
 			delete[] name;
@@ -715,7 +715,7 @@ namespace ebbglow::resource
 			return;
 		}
 		memcpy(fileData, data.data(), data.size());
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (!ref)
 		{
 			delete[] name;
@@ -728,7 +728,7 @@ namespace ebbglow::resource
 	}
 
 	SharedFile::SharedFile(unsigned char* fileData, int dataSize, const char* name) noexcept
-		: ref(new(std::nothrow) size_t(1)), dataSize(dataSize)
+		: ref(new(std::nothrow) std::atomic<size_t>(1)), dataSize(dataSize)
 	{
 		size_t len = strlen(name);
 		this->name = new(std::nothrow) char[len + 1];
@@ -1102,7 +1102,7 @@ namespace ebbglow::resource
 			return;
 		}
 		renderTexture = loaded;
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadRenderTexture(*static_cast<::RenderTexture*>(renderTexture));
@@ -1231,7 +1231,7 @@ namespace ebbglow::resource
 			return;
 		}
 		sound = loaded;
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadSound(*static_cast<::Sound*>(sound));
@@ -1264,7 +1264,7 @@ namespace ebbglow::resource
 			return;
 		}
 		sound = loaded;
-		ref = new(std::nothrow) size_t(1);
+		ref = new(std::nothrow) std::atomic<size_t>(1);
 		if (ref == nullptr)
 		{
 			UnloadSound(*static_cast<::Sound*>(sound));

@@ -1,6 +1,9 @@
 #pragma once
-#include <EbbGlow/Utils/Types.h>
+
 #include <string>
+#include <atomic>
+
+#include <EbbGlow/Utils/Types.h>
 
 namespace ebbglow::resource
 {
@@ -8,7 +11,7 @@ namespace ebbglow::resource
 	{
 	private:
 		void* image;
-		size_t* ref;
+		std::atomic<size_t>* ref;
 
 		friend class ResourceCreator;
 
@@ -37,7 +40,7 @@ namespace ebbglow::resource
 	{
 	private:
 		void* texture;
-		size_t* ref;
+		std::atomic<size_t>* ref;
 
 		friend class ResourceCreator;
 
@@ -75,7 +78,7 @@ namespace ebbglow::resource
 	{
 	private:
 		void* font;
-		size_t* ref;
+		std::atomic<size_t>* ref;
 
 		friend class ResourceCreator;
 
@@ -100,7 +103,7 @@ namespace ebbglow::resource
 	{
 	private:
 		void* music;
-		size_t* ref;
+		std::atomic<size_t>* ref;
 
 		friend class ResourceCreator;
 
@@ -126,7 +129,7 @@ namespace ebbglow::resource
 	{
 	private:
 		void* shader;
-		size_t* ref;
+		std::atomic<size_t>* ref;
 
 		friend class ResourceCreator;
 
@@ -151,7 +154,7 @@ namespace ebbglow::resource
 	{
 	private:
 		unsigned char* fileData;
-		size_t* ref;
+		std::atomic<size_t>* ref;
 		int dataSize;
 		char* name;
 
@@ -236,7 +239,7 @@ namespace ebbglow::resource
 	{
 	private:
 		void* renderTexture;
-		size_t* ref;
+		std::atomic<size_t>* ref;
 
 		friend class ResourceCreator;
 
@@ -267,7 +270,7 @@ namespace ebbglow::resource
 	{
 	private:
 		void* sound;
-		size_t* ref;
+		std::atomic<size_t>* ref;
 
 		friend class ResourceCreator;
 
