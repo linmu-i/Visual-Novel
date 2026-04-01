@@ -110,6 +110,7 @@ namespace ebbglow::core
 		template<typename T>
 		World2D& addSystem(T&& sys)
 		{
+			if (getSystem<T>()) return *this;
 			systems.push_back(std::make_unique<std::decay_t<T>>(std::forward<T>(sys)));
 			return *this;
 		}
@@ -118,11 +119,7 @@ namespace ebbglow::core
 		{
 			for (auto& s : systems)
 			{
-				T* result = dynamic_cast<T*>(s.get());
-				if (result != nullptr)
-				{
-					return result;
-				}
+				if (typeid(*s) == typeid(T)) return static_cast<T*>(s.get());
 			}
 			return nullptr;
 		}

@@ -36,15 +36,16 @@ namespace ebbglow::core
 
 	void World2D::update()
 	{
-		for (auto i : waitDelete)
+		for (size_t i = 0; i < waitDelete.size(); ++i)
 		{
+			entity id = waitDelete[i];
 			for (auto& ps : comPools0)
 			{
-				ps.second->remove(i);
+				ps.second->remove(id);
 			}
 			for (auto& ps : comPools1)
 			{
-				ps.second->remove(i);
+				ps.second->remove(id);
 			}
 		}
 		for (auto& b : doubleBuffered)
