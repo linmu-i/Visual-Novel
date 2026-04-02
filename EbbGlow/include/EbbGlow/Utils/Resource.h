@@ -4,6 +4,7 @@
 #include <atomic>
 
 #include <EbbGlow/Utils/Types.h>
+#include <EbbGlow/Utils/Serialization.h>
 
 namespace ebbglow::resource
 {
@@ -291,6 +292,25 @@ namespace ebbglow::resource
 		void* get() noexcept { return sound; }
 		void* get() const noexcept { return sound; }
 	};
+
+	std::vector<char> GetImageData(const SharedImage& image);
+	SharedImage CreateImageFromData(const std::vector<char>& data);
+
+	template<utils::OutStream OS>
+	bool Serialize(OS& os, const SharedImage& image)
+	{
+		if (!image.valid()) return false;
+		auto data = GetImageData(image);
+		return utils::Serialize(os, data);
+	}
+
+	template<utils::InStream IS>
+	bool Deserialize(IS& is, SharedImage& image)
+	{
+		std::vector data = {};
+		if (!utils::Deserialize(is, data)) return false;
+
+	}
 }
 
 namespace ebbglow

@@ -141,6 +141,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="source\EbbGlow\Components\Children.cpp" />
     <ClCompile Include="source\EbbGlow\Core\ECS\IdManager.cpp" />
     <ClCompile Include="source\EbbGlow\Core\Message\MessageManager.cpp" />
     <ClCompile Include="source\EbbGlow\Core\World\World2D.cpp" />
@@ -150,6 +151,7 @@
     <ClCompile Include="source\EbbGlow\UI\Button\Button.cpp" />
     <ClCompile Include="source\EbbGlow\UI\Button\ButtonEx.cpp" />
     <ClCompile Include="source\EbbGlow\UI\Button\MultiButton.cpp" />
+    <ClCompile Include="source\EbbGlow\UI\Dialog\Dialog.cpp" />
     <ClCompile Include="source\EbbGlow\UI\ImageBox\ImageBox.cpp" />
     <ClCompile Include="source\EbbGlow\UI\ImageBox\ImageBoxEx.cpp" />
     <ClCompile Include="source\EbbGlow\UI\TextBox\TextBox.cpp" />
@@ -175,6 +177,7 @@
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\MainTextBox.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\EbbGlow\Components\Children.h" />
     <ClInclude Include="include\EbbGlow\Core\ECS.h" />
     <ClInclude Include="include\EbbGlow\Core\ECS\ComponentPool.h" />
     <ClInclude Include="include\EbbGlow\Core\ECS\ECSType.h" />
@@ -196,6 +199,7 @@
     <ClInclude Include="include\EbbGlow\UI\Button\ButtonEx.h" />
     <ClInclude Include="include\EbbGlow\UI\Button\ButtonMsg.h" />
     <ClInclude Include="include\EbbGlow\UI\Button\MultiButton.h" />
+    <ClInclude Include="include\EbbGlow\UI\Dialog\Dialog.h" />
     <ClInclude Include="include\EbbGlow\UI\ImageBox.h" />
     <ClInclude Include="include\EbbGlow\UI\ImageBox\ImageBox.h" />
     <ClInclude Include="include\EbbGlow\UI\ImageBox\ImageBoxEx.h" />
@@ -208,7 +212,6 @@
     <ClInclude Include="include\EbbGlow\Utils\Input.h" />
     <ClInclude Include="include\EbbGlow\Utils\Math.h" />
     <ClInclude Include="include\EbbGlow\Utils\Resource.h" />
-    <ClInclude Include="include\EbbGlow\Utils\RLUtils.h" />
     <ClInclude Include="include\EbbGlow\Utils\Serialization.h" />
     <ClInclude Include="include\EbbGlow\Utils\ThreadPool.h" />
     <ClInclude Include="include\EbbGlow\Utils\Types.h" />
