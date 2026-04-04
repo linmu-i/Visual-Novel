@@ -2,6 +2,7 @@
 
 #include <string>
 #include <atomic>
+#include <span>
 
 #include <EbbGlow/Utils/Types.h>
 #include <EbbGlow/Utils/Serialization.h>
@@ -293,15 +294,97 @@ namespace ebbglow::resource
 		void* get() const noexcept { return sound; }
 	};
 
-	std::vector<char> GetImageData(const SharedImage& image);
+
+
+	class BufferOS
+	{
+	private:
+		std::vector<char> buffer;
+		uint64_t dataSize_;
+	public:
+		BufferOS(uint64_t size) : buffer(size), dataSize_(0) {}
+		bool write(const char* data, uint64_t size)
+		{
+			if (size > buffer.size())
+			{
+				dataSize_ = 0;
+				return false;
+			}
+			dataSize_ = size;
+			std::copy(data, data + size, buffer.data());
+			return true;
+		}
+		const char* data() const
+		{
+			return buffer.data();
+		}
+
+		uint64_t dataSize() const
+		{
+			return dataSize_;
+		}
+
+		std::span<char> span()
+		{
+			return std::span<char>(buffer.data(), dataSize_);
+		}
+	};
+
+	class BufferIS
+	{
+	private:
+		std::span<const char> buffer;
+	public:
+		BufferIS() = default;
+		void set(const char* data, uint64_t size)
+		{
+			buffer = std::span<const char>(data, size);
+		}
+		bool read(char* buf, uint64_t size)
+		{
+			if (size > buffer.size()) return false;
+			memcpy(buf, buffer.data(), size);
+			return true;
+		}
+	};
+
 	SharedImage CreateImageFromData(const std::vector<char>& data);
+
+	struct ImageDataIterator
+	{
+		uint64_t index = {};
+		std::span<char> data;
+		SharedImage img;
+		BufferOS buffer{ 16 };
+
+		ImageDataIterator& operator++();
+		ImageDataIterator operator++(int);
+		bool operator==(const ImageDataIterator& other) const;
+		bool operator!=(const ImageDataIterator& other) const;
+		std::span<char>& operator*() { return data; }
+		const std::span<char>& operator*() const { return data; }
+	};
+
+	class ImageDataRange
+	{
+	private:
+		SharedImage img;
+
+	public:
+		ImageDataRange(const SharedImage& image) : img(image) {}
+		ImageDataIterator begin() const;
+		ImageDataIterator end() const;
+	};
 
 	template<utils::OutStream OS>
 	bool Serialize(OS& os, const SharedImage& image)
 	{
 		if (!image.valid()) return false;
-		auto data = GetImageData(image);
-		return utils::Serialize(os, data);
+		ImageDataRange range(image);
+		for (auto& data : range)
+		{
+			utils::Serialize(os, data.data(), data.size());
+		}
 	}
 
 	template<utils::InStream IS>
@@ -309,7 +392,8 @@ namespace ebbglow::resource
 	{
 		std::vector data = {};
 		if (!utils::Deserialize(is, data)) return false;
-
+		image = CreateImageFromData(data);
+		return true;
 	}
 }
 

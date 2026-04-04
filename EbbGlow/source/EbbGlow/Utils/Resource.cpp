@@ -1345,115 +1345,25 @@ namespace ebbglow::resource
 		}
 	}
 
-
-
-	class BufferOS
-	{
-	private:
-		std::vector<char> buffer;
-		uint64_t dataSize_;
-	public:
-		BufferOS(uint64_t size) : buffer(size), dataSize_(0) {}
-		bool write(const char* data, uint64_t size)
-		{
-			if (size > buffer.size())
-			{
-				dataSize_ = 0;
-				return false;
-			}
-			dataSize_ = size;
-			std::copy(data, data + size, buffer.data());
-			return true;
-		}
-		const char* data() const
-		{
-			return buffer.data();
-		}
-
-		uint64_t dataSize() const
-		{
-			return dataSize_;
-		}
-
-	};
-
-	class BufferIS
-	{
-	private:
-		std::vector<char> buffer;
-	public:
-		BufferIS(uint64_t size) : buffer(size) {}
-		bool write(const char* data, uint64_t size)
-		{
-			if (size > buffer.size())
-			{
-				return false;
-			}
-			std::copy(data, data + size, buffer.data());
-			return true;
-		}
-		bool read(char* buf, uint64_t size)
-		{
-			if (size > buffer.size()) return false;
-			memcpy(buf, buffer.data(), size);
-			return true;
-		}
-	};
-
-	std::vector<char> GetImageData(const SharedImage& image)
-	{
-		::Image* img = static_cast<::Image*>(image.get());
-		std::vector<char> data;
-		uint64_t size = 0;
-		BufferOS buffer{ 16 };
-		size += sizeof(::Image::width);
-		size += sizeof(::Image::height);
-		size += sizeof(::Image::mipmaps);
-		size += sizeof(::Image::format);
-		size += static_cast<uint64_t>(GetPixelDataSize(img->width, img->height, img->format));
-		data.resize(size);
-		char* p = data.data();
-
-		utils::Serialize(buffer, img->width);
-		memcpy(p, buffer.data(), buffer.dataSize());
-		p += buffer.dataSize();
-
-		utils::Serialize(buffer, img->height);
-		memcpy(p, buffer.data(), buffer.dataSize());
-		p += buffer.dataSize();
-
-		utils::Serialize(buffer, img->mipmaps);
-		memcpy(p, buffer.data(), buffer.dataSize());
-		p += buffer.dataSize();
-
-		utils::Serialize(buffer, img->format);
-		memcpy(p, buffer.data(), buffer.dataSize());
-		p += buffer.dataSize();
-
-		memcpy(p, img->data, GetPixelDataSize(img->width, img->height, img->format));
-
-		return data;
-	}
-
 	SharedImage CreateImageFromData(const std::vector<char>& data)
 	{
 		::Image img = {};
-		BufferIS buffer{ 16 };
+		BufferIS buffer;
 		const char* p = data.data();
 
-		buffer.write(p, sizeof(::Image::width));
+		buffer.set(p, sizeof(::Image::width));
 		utils::Deserialize(buffer, img.width);
 		p += sizeof(::Image::width);
 
-		buffer.write(p, sizeof(::Image::height));
+		buffer.set(p, sizeof(::Image::height));
 		utils::Deserialize(buffer, img.height);
 		p += sizeof(::Image::height);
 
-		buffer.write(p, sizeof(::Image::mipmaps));
+		buffer.set(p, sizeof(::Image::mipmaps));
 		utils::Deserialize(buffer, img.mipmaps);
 		p += sizeof(::Image::mipmaps);
 
-		buffer.write(p, sizeof(::Image::format));
+		buffer.set(p, sizeof(::Image::format));
 		utils::Deserialize(buffer, img.format);
 		p += sizeof(::Image::format);
 
@@ -1463,5 +1373,86 @@ namespace ebbglow::resource
 
 		ResourceCreator creator;
 		return creator.CreateImage(img);
+	}
+
+	ImageDataIterator& ImageDataIterator::operator++()
+	{
+		Image* img = static_cast<::Image*>(this->img.get());
+		switch (index)
+		{
+		case 0:
+		{
+			uint64_t dataSize = GetPixelDataSize(img->width, img->height, img->format);
+			dataSize += sizeof(img->width) + sizeof(img->height) + sizeof(img->mipmaps) + sizeof(img->format);
+			utils::Serialize(buffer, dataSize);
+			data = buffer.span();
+			break;
+		}
+		case 1:
+			utils::Serialize(buffer, img->width);
+			data = buffer.span();
+			break;
+
+		case 2:
+			utils::Serialize(buffer, img->height);
+			data = buffer.span();
+			break;
+
+		case 3:
+			utils::Serialize(buffer, img->mipmaps);
+			data = buffer.span();
+			break;
+
+		case 4:
+			utils::Serialize(buffer, img->format);
+			data = buffer.span();
+			break;
+
+		case 5:
+			data = std::span<char>(static_cast<char*>(img->data), GetPixelDataSize(img->width, img->height, img->format));
+			break;
+
+		default:
+			index = 6;
+			return *this;
+		}
+		++index;
+		return *this;
+	}
+
+	ImageDataIterator ImageDataIterator::operator++(int)
+	{
+		ImageDataIterator tmp = *this;
+		++(*this);
+		return tmp;
+	}
+
+	bool ImageDataIterator::operator==(const ImageDataIterator& other) const
+	{
+		return index == other.index && img.get() == other.img.get();
+	}
+
+	bool ImageDataIterator::operator!=(const ImageDataIterator& other) const
+	{
+		return !(*this == other);
+	}
+
+	ImageDataIterator ImageDataRange::begin() const
+	{
+		ImageDataIterator it;
+		it.img = img;
+		it.index = 0;
+		it.data = std::span<char>();
+		++it;
+		return it;
+	}
+
+	ImageDataIterator ImageDataRange::end() const
+	{
+		ImageDataIterator it;
+		it.img = img;
+		it.index = 6;
+		it.data = std::span<char>();
+		return it;
 	}
 }
