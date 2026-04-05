@@ -1369,6 +1369,7 @@ namespace ebbglow::resource
 
 		uint64_t size = static_cast<uint64_t>(GetPixelDataSize(img.width, img.height, img.format));
 		img.data = RL_MALLOC(size);
+		if (!img.data) return SharedImage{};
 		memcpy(img.data, p, size);
 
 		ResourceCreator creator;
