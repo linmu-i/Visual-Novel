@@ -57,21 +57,8 @@ namespace ebbglow
 
 		TextureModeGuard(const TextureModeGuard&) = delete;
         TextureModeGuard& operator=(const TextureModeGuard&) = delete;
-        TextureModeGuard(TextureModeGuard&& other) noexcept
-        {
-            active = other.active;
-            other.active = false;
-        }
-        TextureModeGuard& operator=(TextureModeGuard&& other) noexcept
-        {
-            if (this != &other)
-            {
-                if (active) EndTextureMode();
-                active = other.active;
-                other.active = false;
-            }
-            return *this;
-		}
+        TextureModeGuard(TextureModeGuard&& other) = delete;
+        TextureModeGuard& operator=(TextureModeGuard&& other) = delete;
 
         void endTextureMode() noexcept
         {
@@ -104,21 +91,8 @@ namespace ebbglow
 
         ShaderModeGuard(const ShaderModeGuard&) = delete;
         ShaderModeGuard& operator=(const ShaderModeGuard&) = delete;
-        ShaderModeGuard(ShaderModeGuard&& other) noexcept
-        {
-            active = other.active;
-            other.active = false;
-        }
-        ShaderModeGuard& operator=(ShaderModeGuard&& other) noexcept
-        {
-            if (this != &other)
-            {
-                if (active) EndShaderMode();
-                active = other.active;
-                other.active = false;
-            }
-            return *this;
-        }
+        ShaderModeGuard(ShaderModeGuard&& other) = delete;
+        ShaderModeGuard& operator=(ShaderModeGuard&& other) = delete;
 
         void endShaderMode() noexcept
         {

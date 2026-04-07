@@ -347,6 +347,27 @@ namespace ebbglow::visualnovel
 		loader->world.createUnit(id, BackLogCom{ loader->cfg, &(loader->tmpLayers)[10], GetString(args[0], *loader), *loader});
 	}
 
+	void Scene_TextBoxCom(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	{
+		if (args.size() < 3) return;
+		core::entity id = loader->world.getEntityManager()->getId();
+		loader->idList.push_back(id);
+		auto& cfg = loader->cfg;
+		std::string text = GetString(args[0], *loader);
+		float offsetX = static_cast<float>(GetNumber(args[1], '\0', *loader));
+		float offsetY = static_cast<float>(GetNumber(args[2], '\0', *loader));
+		float textSize = {};
+		if (args.size() >= 3) textSize = GetNumber(args[3], '\0', *loader);
+		else textSize = cfg.textSize;
+		offsetX *= cfg.virtualScreenWidth;
+		offsetY *= cfg.virtualScreenHeight;
+		auto font = utils::DynamicLoadFont(cfg.fontData, text, textSize);
+		Vec2 offset = utils::MeasureTextSize(font, text, textSize, 0.1f * cfg.textSize);
+		loader->world.createUnit(id, ui::TextBoxExCom{ cfg.fontData, text, Vec2{ offsetX - offset.x / 2.0f, offsetY - offset.y / 2.0f }, textSize, 0.1f * textSize, colors::White, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer] });
+		//loader->world.createUnit(id, ui::TextBoxExCom{ cfg.fontData, GetString(args[0], *loader), Vec2{ offsetX - offset.x / 2.0f, offsetY - offset.y / 2.0f }, static_cast<float>(cfg.textSize), 0.1f * static_cast<float>(cfg.textSize), colors::White, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer] });
+		//loader->world.createUnit(id, ui::TextBoxExCom{ cfg.fontData, GetString(args[0], *loader), Vec2{ static_cast<float>(GetNumber(args[1], '\0', *loader)), static_cast<float>(GetNumber(args[2], '\0', *loader)) }, static_cast<float>(GetNumber(args[3], '\0', *loader)), 0.1f * static_cast<float>(GetNumber(args[3], '\0', *loader)), colors::White, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer] });
+	}
+
 	void Scene_JumpButton(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
 	{
 		if (args.size() < 17) return;

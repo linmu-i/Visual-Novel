@@ -39,6 +39,7 @@ namespace ebbglow::visualnovel
 		scLoader.registerSceneFunction("SetVoice", Scene_SetVoice);
 		scLoader.registerSceneFunction("ColorTween", Scene_ColorTween);
 		scLoader.registerSceneFunction("BackLogCom", Scene_BackLogCom);
+		scLoader.registerSceneFunction("TextBoxCom", Scene_TextBoxCom);
 		scLoader.registerSceneFunction("JumpButton", Scene_JumpButton);
 		
 		scLoader.registerPredefinedVariable("SCENE_ARGS_LIST", [](ScriptLoader* scLoader, const std::vector<std::string>& args)
