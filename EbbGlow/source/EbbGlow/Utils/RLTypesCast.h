@@ -8,7 +8,7 @@ inline constexpr ::Color RLColor(const ebbglow::ColorR8G8B8A8& color) noexcept
 	return ::Color{ color.r, color.g, color.b, color.a };
 }
 
-inline ::Color RLColor(const ebbglow::ColorHSV& color) noexcept
+inline ::Color RLColor(const ebbglow::ColorHSVA& color) noexcept
 {
 	return ColorFromHSV(color.h, color.s, color.v);;
 }

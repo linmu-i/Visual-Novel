@@ -37,16 +37,22 @@ namespace ebbglow
 		uint8_t g;
 		uint8_t b;
 		uint8_t a;
+
+		constexpr ColorR8G8B8A8() : r(0), g(0), b(0), a(0) {}
+		constexpr ColorR8G8B8A8(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : r(r), g(g), b(b), a(a) {}
 	};
 
 	using Color = ColorR8G8B8A8;
 
-	struct ColorHSV
+	struct ColorHSVA
 	{
 		float h;
 		float s;
 		float v;
 		float a;
+
+		constexpr ColorHSVA() : h(0.0f), s(0.0f), v(0.0f), a(0.0f) {}
+		constexpr ColorHSVA(float h, float s, float v, float a) : h(h), s(s), v(v), a(a) {}
 	};
 
 	struct Rect

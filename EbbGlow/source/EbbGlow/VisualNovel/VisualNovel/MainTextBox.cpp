@@ -5,136 +5,137 @@
 
 namespace ebbglow::visualnovel
 {
-	MainTextBoxCom::MainTextBoxCom(const std::string& textL0, const std::string& textL1, float textSize, const rsc::SharedFile& fontData, float speed, Vec2 pos, float width, Color textColor, core::Layer* layer) :
-		textSize(textSize), spacing(textSize * 0.1f), lineSpacing(textSize * 0.3f), speed(speed), timeCount(0.0f), drawing(true), layer(layer),
-		font(utils::DynamicLoadFont(fontData, textL0 + textL1, textSize * 1.5f)), textStr(textL0), activePixel(0),
-		textHeight(std::max(utils::MeasureTextSize(font, textL0, textSize, spacing).y, utils::MeasureTextSize(font, textL1, textSize, spacing).y)), pos(pos)
+	MainTextBoxCom::MainTextBoxCom(Vec2 position, float width, const std::string& textL0, const std::string& textL1, const rsc::SharedFile& fontData,
+		float textSize, float spacing, float lineSpacing, float speed, core::Layer* layer, ColorR8G8B8A8 textColor) :
+		pos(position), font(utils::DynamicLoadFont(fontData, textL0 + textL1, textSize)), textSize(textSize), spacing(spacing),
+		lineSpacing(lineSpacing), layer(layer), textColor(textColor), l1OffsetY(0.0f), activePixels(0.0f), timeCount(0.0f),
+		speed(speed)
 	{
-		std::vector<std::vector<int>> t0 = utils::TextLineCalculateWithWordWrap(textL0.c_str(), textSize, spacing, font, width);
-
-		totalPixel = 0;
-		totalPixelL0 = 0;
-
-		for (auto& s : t0)
+		float l0PixelCount = 0.0f;
+		this->textL0 = utils::TextLineCalculateWithWordWrap(textL0, textSize, spacing, font, width);
+		for (auto& line : this->textL0)
 		{
-			auto text = utils::ToUTF8Text(s);
-			Vec2 textureSize = utils::MeasureTextSize(font, text, textSize, spacing);
-			rsc::SharedRenderTexture tmpTexture(static_cast<int>(textureSize.x), static_cast<int>(textureSize.y));
-			BeginTextureMode(tmpTexture);
-			//BeginShaderMode(gfx::GetDefaultAAShader());
-			gfx::ClearBackground(colors::Blank);
-			gfx::DrawTextCodepoints(font, s, { 0,0 }, textSize, spacing, textColor);
-			//EndShaderMode();
-			EndTextureMode();
-			this->textL0.push_back(utils::TakeTextureFromRenderTexture(std::move(tmpTexture)));
+			auto text = utils::ToUTF8Text(line);
+			textL0Size.push_back(utils::MeasureTextSize(font, text, textSize, spacing));
+			l0PixelCount += textL0Size.back().x;
+			l1OffsetY += textL0Size.back().y;
+			l1OffsetY += lineSpacing;
 		}
 
-		std::vector<std::vector<int>> t1 = utils::TextLineCalculateWithWordWrap(textL1, textSize, spacing, font, width);
-
-		for (auto& s : t1)
+		float l1PixelCount = 0.0f;
+		this->textL1 = utils::TextLineCalculateWithWordWrap(textL1, textSize, spacing, font, width);
+		for (auto& line : this->textL1)
 		{
-			auto text = utils::ToUTF8Text(s);
-			Vec2 textureSize = utils::MeasureTextSize(font, text, textSize, spacing);
-			rsc::SharedRenderTexture2D tmpTexture(static_cast<int>(textureSize.x), static_cast<int>(textureSize.y));
-			BeginTextureMode(tmpTexture);
-			
-			gfx::ClearBackground(colors::Blank);
-			gfx::DrawTextCodepoints(font, s, { 0,0 }, textSize, spacing, textColor);
-			
-			EndTextureMode();
-			this->textL1.push_back(utils::TakeTextureFromRenderTexture(std::move(tmpTexture)));
+			auto text = utils::ToUTF8Text(line);
+			textL1Size.push_back(utils::MeasureTextSize(font, text, textSize, spacing));
+			l1PixelCount += textL1Size.back().x;
 		}
 
-		totalHeightL0 = textHeight * t0.size() + lineSpacing * t0.size();
-		totalHeightL1 = textHeight * t1.size() + lineSpacing * t1.size();
+		totalPixel = std::max(l0PixelCount, l1PixelCount);
 
-
-		for (auto& t : this->textL0)
-		{
-			totalPixel += t.width();
-			totalPixelL0 += t.width();
-		}
-		for (auto& t : this->textL1)
-		{
-			totalPixel += t.width();
-		}
+		textL0ActiveRegion.reserve(this->textL0.size());
+		textL1ActiveRegion.reserve(this->textL1.size());
 	}
 
 	void MainTextBoxSystem::update()
 	{
-		textBoxs->active()->forEach
-		(
-			[this](core::entity id, MainTextBoxCom& comActive)
+		textBoxs->active()->forEach([this](core::entity id, MainTextBoxCom& act) 
 			{
-				if (comActive.activePixel == 0)
-				{
-					BeginTextureMode(textureTmp);
-					gfx::ClearBackground(colors::Blank);
-					EndTextureMode();
-				}
-				auto& comInactive = *(textBoxs->inactive()->get(id));
+				auto& ina = *textBoxs->inactive()->get(id);
 
-				int activePixelTmp = static_cast<int>(comActive.timeCount * comActive.speed * 2000);
-
-				if (!comActive.drawing)
+				if (act.activePixels < act.totalPixel)
 				{
-					comInactive.activePixel = comActive.totalPixel;
-					activePixelTmp = comActive.totalPixel + 11;
+					ina.timeCount += GetFrameTime();
 				}
-				if (comActive.activePixel < comActive.totalPixel)
+				else
 				{
-					comInactive.timeCount += utils::GetFrameTime();
+					ina.activePixels = act.totalPixel + 10.0f;
 				}
 
-				if (activePixelTmp - comActive.activePixel > 10 && comActive.activePixel < comActive.totalPixel)
-				{
-					comInactive.activePixel = activePixelTmp;
-					int activePixel0 = activePixelTmp;
-					int activePixel1 = activePixelTmp;
+				float newActPx = act.timeCount * act.speed * 2000;//基准速度2000px/s
 
-					int spacing = static_cast<int>(comActive.textHeight + comActive.lineSpacing);
-					BeginTextureMode(textureTmp);
-					BeginShaderMode(gfx::GetDefaultAAShader());
-					for (int activeLine = 0; activeLine < comActive.textL0.size() && activePixel0; ++activeLine)
+				if (newActPx >= act.activePixels + 10.0f)
+				{
+					ina.activePixels = newActPx;
+					
+					float tmpPx = newActPx;
+					Vec2 tmpPos = act.pos;
+
+					ina.textL0ActiveRegion.clear();
+					for (int32_t i = 0; i < act.textL0.size(); ++i)
 					{
-						if (activePixel0 >= comActive.textL0[activeLine].width())
+						Vec2 size = act.textL0Size[i];
+						if (tmpPx >= size.x)
 						{
-							gfx::DrawTextureRegion(comActive.textL0[activeLine], { 0, 0, float(comActive.textL0[activeLine].width()), -float(comActive.textL0[activeLine].height()) }, { 0, float(spacing * activeLine) }, colors::White);
-							activePixel0 -= comActive.textL0[activeLine].width();
+							Rect rect{ tmpPos.x, tmpPos.y - size.y / 2.0f, size.x, size.y * 2.0f };
+							ina.textL0ActiveRegion.push_back(rect);
+							tmpPx -= size.x;
+
+							if (tmpPx < 0.01f) break;
 						}
 						else
 						{
-							gfx::DrawTextureRegion(comActive.textL0[activeLine], { 0, 0, float(activePixel0), -float(comActive.textL0[activeLine].height()) }, { 0, float(spacing * activeLine) }, colors::White);
-							activePixel0 = 0;
+							Rect rect{ tmpPos.x, tmpPos.y - size.y / 2.0f, tmpPx, size.y * 2.0f };
+							ina.textL0ActiveRegion.push_back(rect);
+							break;
 						}
+						tmpPos.y += size.y;
+						tmpPos.y += act.lineSpacing;
 					}
-					if (cfg.secondLanguageShow)
-					{
-						for (int activeLine = 0; activeLine < comActive.textL1.size() && activePixel1; ++activeLine)
-						{
-							if (activePixel1 >= comActive.textL1[activeLine].width())
-							{
-								gfx::DrawTextureRegion(comActive.textL1[activeLine], {0, 0, float(comActive.textL1[activeLine].width()), -float(comActive.textL1[activeLine].height())}, {0, float(spacing * activeLine + spacing * comActive.textL0.size())}, colors::White);
-								activePixel1 -= comActive.textL1[activeLine].width();
-							}
-							else
-							{
-								gfx::DrawTextureRegion(comActive.textL1[activeLine], { 0, 0, float(activePixel1), -float(comActive.textL1[activeLine].height()) }, { 0, float(spacing * activeLine + spacing * comActive.textL0.size()) }, colors::White);
-								activePixel1 = 0;
-							}
-						}
-					}
-					else if (comActive.activePixel > comActive.totalPixelL0)
-					{
-						comInactive.drawing = false;
-						comInactive.activePixel = comActive.totalPixel + 11;
-					}
-					EndShaderMode();
-					EndTextureMode();
-				}
-				(*comActive.layer).push_back(std::make_unique<MainTextBoxDraw>(comActive.pos, textureTmp));
-			}
-		);
 
+					tmpPx = newActPx;
+					tmpPos = act.pos;
+					tmpPos.y += act.l1OffsetY;
+
+					ina.textL1ActiveRegion.clear();
+					for (int32_t i = 0; i < act.textL1.size(); ++i)
+					{
+						Vec2 size = act.textL1Size[i];
+						if (tmpPx >= size.x)
+						{
+							Rect rect{ tmpPos.x, tmpPos.y - size.y / 2.0f, size.x, size.y * 2.0f };
+							ina.textL1ActiveRegion.push_back(rect);
+							tmpPx -= size.x;
+
+							if (tmpPx < 0.01f) break;
+						}
+						else
+						{
+							Rect rect{ tmpPos.x, tmpPos.y - size.y / 2.0f, tmpPx, size.y * 2.0f };
+							ina.textL1ActiveRegion.push_back(rect);
+							break;
+						}
+						tmpPos.y += size.y;
+						tmpPos.y += act.lineSpacing;
+					}
+				}
+				else if (act.activePixels >= act.totalPixel)
+				{
+					ina.textL0ActiveRegion.clear();
+					Vec2 tmpPos = act.pos;
+					for (int32_t i = 0; i < act.textL0.size(); ++i)
+					{
+						Vec2 size = act.textL0Size[i];
+						Rect rect{ tmpPos.x, tmpPos.y - size.y / 2.0f, size.x, size.y * 2.0f };
+						ina.textL0ActiveRegion.push_back(rect);
+						tmpPos.y += size.y;
+						tmpPos.y += act.lineSpacing;
+					}
+
+					ina.textL1ActiveRegion.clear();
+					tmpPos = act.pos;
+					tmpPos.y += act.l1OffsetY;
+					for (int32_t i = 0; i < act.textL1.size(); ++i)
+					{
+						Vec2 size = act.textL1Size[i];
+						Rect rect{ tmpPos.x, tmpPos.y - size.y / 2.0f, size.x, size.y * 2.0f };
+						ina.textL1ActiveRegion.push_back(rect);
+						tmpPos.y += size.y;
+						tmpPos.y += act.lineSpacing;
+					}
+				}
+
+				act.layer->push_back(std::make_unique<MainTextBoxDraw>(act));
+			});
 	}
 }

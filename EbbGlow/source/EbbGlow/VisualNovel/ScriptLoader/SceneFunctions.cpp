@@ -34,11 +34,13 @@ namespace ebbglow::visualnovel
 
 		loader->world.createUnit(textBoxId, vn::MainTextBoxCom
 		(
+			Vec2{ cfg.virtualScreenWidth * 0.1666667f, cfg.virtualScreenHeight * 0.75f },
+			cfg.virtualScreenWidth * 0.6666667f,
 			GetString(args[cfg.mainLanguage], *loader),
 			GetString(args[cfg.secondaryLanguage], *loader),
-			cfg.textSize, cfg.fontData, cfg.textSpeed, Vec2({ cfg.virtualScreenWidth * 0.1666667f, cfg.virtualScreenHeight * 0.75f }), cfg.virtualScreenWidth * 0.6666667f,
-			cfg.showReadText && readIt != cfg.readTextSet.end() ? cfg.readTextColor : colors::White,
-			&(loader->tmpLayers)[cfg.LayerDefine.textBoxLayer]
+			cfg.fontData, cfg.textSize, cfg.textSize * 0.1, cfg.textSize * 0.3, cfg.textSpeed,
+			&(loader->tmpLayers)[cfg.LayerDefine.textBoxLayer],
+			cfg.showReadText && readIt != cfg.readTextSet.end() ? cfg.readTextColor : colors::White
 		));
 
 		rsc::SharedTexture2D backGround(reinterpret_cast<const char8_t*>(GetString(args[4], *loader).c_str()));

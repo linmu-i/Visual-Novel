@@ -21,7 +21,7 @@ namespace ebbglow::visualnovel
 		{
 			length = static_cast<size_t>(round(GetNumber(args[1], '\0', *loader)));
 		}
-		loader->numberView.emplace(args[0], VariableView{ loader->textStorage.size(), length });
+		loader->numberView.emplace(args[0], VariableView{ loader->numberStorage.size(), length });
 		loader->numberStorage.resize(loader->numberStorage.size() + length);
 	}
 	void Global_Include(ScriptLoader* loader, const std::vector<std::string>& args) noexcept

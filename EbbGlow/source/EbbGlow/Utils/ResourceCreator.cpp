@@ -38,5 +38,6 @@ namespace ebbglow::resource
 		::Image* ptr = new(std::nothrow) ::Image(img);
 		result.image = static_cast<void*>(ptr);
 		result.ref = new(std::nothrow) std::atomic<size_t>(1);
+		return result;
 	}
 }

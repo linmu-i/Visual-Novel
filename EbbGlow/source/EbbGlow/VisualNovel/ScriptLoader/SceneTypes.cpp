@@ -66,7 +66,7 @@ namespace ebbglow::visualnovel
 						});
 					if (!processed)
 					{
-						if (textBoxComs->active()->get(scLoader->exIdList.back())->activePixel >= textBoxComs->active()->get(scLoader->exIdList.back())->totalPixel)
+						if (textBoxComs->active()->get(scLoader->exIdList.back())->activePixels >= textBoxComs->active()->get(scLoader->exIdList.back())->totalPixel)
 						{
 							auto next = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), scLoader->sceneView.find(scLoader->sceneArgs.front())->second);
 							scLoader->loadScene(next);

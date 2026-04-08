@@ -222,6 +222,35 @@ namespace ebbglow
 		}
 	}
 
+	static std::vector<Rect>& GetScissorStack()
+	{
+		thread_local static std::vector<Rect> stack;
+		return stack;
+	}
+
+	void BeginScissorMode(Rect region)
+	{
+		auto& stack = GetScissorStack();
+		if (!stack.empty()) ::EndScissorMode();
+		stack.push_back(region);
+		::BeginScissorMode(region.x, region.y, region.width, region.height);
+	}
+
+	void EndScissorMode()
+	{
+		auto& stack = GetScissorStack();
+		::EndScissorMode();
+		if (!stack.empty())
+		{
+			stack.pop_back();
+			if (!stack.empty())
+			{
+				auto& region = stack.back();
+				::BeginScissorMode(region.x, region.y, region.width, region.height);
+			}
+		}
+	}
+
 	float GetFrameTime()
 	{
 		return ::GetFrameTime();

@@ -31,7 +31,7 @@ namespace ebbglow::utils
 		{
 			std::unordered_set<int> seen;
 			for (int i = 0; i < codePointsCount; ++i) {
-				if (seen.insert(codePoints[i]).second) { // 插入成功=未见过
+				if (seen.insert(codePoints[i]).second) {
 					uniqueCodePoints.push_back(codePoints[i]);
 				}
 			}
@@ -47,7 +47,7 @@ namespace ebbglow::utils
 		rsc::ResourceCreator creator;
 		if (type == rsc::FontType::Default)
 		{
-			Font font = LoadFontFromMemory(p, fontData.get(), fontData.size(), fontSize * 2.0f, uniqueCodePoints.data(), uniqueCodePoints.size());
+			Font font = LoadFontFromMemory(p, fontData.get(), fontData.size(), static_cast<int>(fontSize * 2.0f), uniqueCodePoints.data(), uniqueCodePoints.size());
 			SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
 			rsc::SharedFont result = creator.CreateFont(font);
 			return result;
@@ -69,6 +69,7 @@ namespace ebbglow::utils
 			SetTextureFilter(sdfFont.texture, TEXTURE_FILTER_BILINEAR);
 			return creator.CreateFont(sdfFont);
 		}
+		return rsc::SharedFont();
 	}
 
 

@@ -130,7 +130,7 @@ namespace ebbglow::visualnovel
 
 	static bool IsKeyWord(rsc::SharedFile::Iterator& it, std::string_view keyWord)
 	{
-		return (!memcmp(it.get(), keyWord.data(), keyWord.size()) && (isspace(it[-1]) || it.position() == 0) && isspace(it[keyWord.size()]));
+		return (!memcmp(it.get(), keyWord.data(), keyWord.size()) && (it.position() == 0 || isspace(it[-1])) && isspace(it[keyWord.size()]));
 	}
 
 	static bool IsValidName(unsigned char chr)

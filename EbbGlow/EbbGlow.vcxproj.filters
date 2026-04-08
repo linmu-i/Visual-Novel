@@ -103,6 +103,18 @@
     <Filter Include="头文件\VisualNovel\UI">
       <UniqueIdentifier>{4dcf6d44-deb4-43ab-babe-d7316719c448}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\UI\Dialog">
+      <UniqueIdentifier>{82965e9b-f1bf-4a1c-a552-d9d7a5d2fb34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\UI\Dialog">
+      <UniqueIdentifier>{57985bb0-f06b-4f15-b3ad-23d8ba6d06da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Components">
+      <UniqueIdentifier>{70d699c4-fec3-4f70-a392-0985248db9a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Components">
+      <UniqueIdentifier>{207d326b-9a77-4b1b-a507-6096b35e628d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -195,11 +207,20 @@
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\JumpAttachment.cpp">
       <Filter>源文件\VisualNovel\VisualNovel</Filter>
     </ClCompile>
-    <ClCompile Include="source\EbbGlow\Utils\ResourceCreator.cpp">
-      <Filter>源文件\VisualNovel</Filter>
-    </ClCompile>
     <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\SaveLoad.cpp">
       <Filter>源文件\VisualNovel\ScriptLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\DrawToScreen.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EbbGlow\UI\Dialog\Dialog.cpp">
+      <Filter>源文件\UI\Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EbbGlow\Components\Children.cpp">
+      <Filter>源文件\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EbbGlow\Utils\ResourceCreator.cpp">
+      <Filter>源文件\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -261,9 +282,6 @@
       <Filter>头文件\Utils</Filter>
     </ClInclude>
     <ClInclude Include="include\EbbGlow\Utils\Resource.h">
-      <Filter>头文件\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="include\EbbGlow\Utils\RLUtils.h">
       <Filter>头文件\Utils</Filter>
     </ClInclude>
     <ClInclude Include="include\EbbGlow\Utils\ThreadPool.h">
@@ -370,6 +388,15 @@
     </ClInclude>
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\SaveLoad.h">
       <Filter>头文件\VisualNovel\ScriptLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\DrawToScreen.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\UI\Dialog\Dialog.h">
+      <Filter>头文件\UI\Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\Components\Children.h">
+      <Filter>头文件\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
