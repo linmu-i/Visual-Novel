@@ -23,12 +23,31 @@ namespace ebbglow::core
 		virtual void update() = 0;
 	};
 
+	struct RenderPackageFlags
+	{
+		uint64_t flags = 0ull;
+
+		constexpr RenderPackageFlags() = default;
+		constexpr RenderPackageFlags(uint64_t flags) : flags(flags) {}
+
+		operator uint64_t() const { return flags; }
+
+		constexpr bool hasFlag(uint64_t flag) const { return flags & flag; }
+		constexpr void setFlag(uint64_t flag) { flags |= flag; }
+		constexpr void removeFlag(uint64_t flag) { flags &= (~flag); }
+		constexpr void clearFlags() { flags = None; }
+
+		static constexpr uint64_t None = 0ull;
+		static constexpr uint64_t ExcludeRecursive = 1ull;
+	};
+
 	class DrawBase
 	{
 	public:
 		DrawBase() = default;
 		virtual ~DrawBase() = default;
 		virtual void draw() = 0;
+		virtual RenderPackageFlags getFlags() { return { RenderPackageFlags::None }; }
 	};
 
 	class DoubleBufferedBase
