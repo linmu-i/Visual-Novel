@@ -10,15 +10,15 @@ namespace ebbglow::core
 		}
 		else
 		{
-			uint64_t tmp = inactive.back();
-			inactive.pop_back();
+			uint64_t tmp = *inactive.begin();
+			inactive.erase(inactive.begin());
 			return tmp;
 		}
 	}
 
 	void IdManager::recycleId(uint64_t id)
 	{
-		inactive.push_back(id);
+		inactive.insert(id);
 	}
 
 	size_t IdManager::size() const

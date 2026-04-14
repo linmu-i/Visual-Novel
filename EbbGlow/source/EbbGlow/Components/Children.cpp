@@ -8,6 +8,7 @@ namespace ebbglow::components
 		{
 			for (auto id : childrenIds)
 			{
+				world->getEntityManager()->recycleId(id);
 				world->deleteUnit(id);
 			}
 		}

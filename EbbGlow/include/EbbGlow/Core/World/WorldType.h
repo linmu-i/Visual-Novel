@@ -12,17 +12,20 @@ namespace ebbglow::core
 	private:
 		std::vector<std::unique_ptr<DrawBase>> storageArr;
 		std::vector<DrawBase*> drawArr;
+		std::mutex mtx;
 
 	public:
 		Layer() {}
 		Layer& push_back(std::unique_ptr<DrawBase>&& package)
 		{
+			std::lock_guard<std::mutex> lock(mtx);
 			storageArr.push_back(std::move(package));
 			drawArr.push_back(storageArr.back().get());
 			return *this;
 		}
 		Layer& push_back(DrawBase* package)
 		{
+			std::lock_guard<std::mutex> lock(mtx);
 			drawArr.push_back(package);
 			return *this;
 		}
@@ -53,13 +56,6 @@ namespace ebbglow::core
 
 
 		size_t size() const noexcept { return layers.size(); }
-		void resize(size_t newSize)
-		{
-			if (newSize > layers.size())
-			{
-				layers.resize(newSize);
-			}
-		}
 
 		void clear() noexcept
 		{
