@@ -20,6 +20,8 @@ namespace ebbglow::visualnovel
 		scLoader.registerGlobalFunction("BeginScene", Global_BeginScene);
 		scLoader.registerGlobalFunction("I18nText", Global_I18nText);
 		scLoader.registerGlobalFunction("BackLogScene", Global_BackLogScene);
+		scLoader.registerGlobalFunction("SaveScene", Global_SaveScene);
+		scLoader.registerGlobalFunction("LoadScene", Global_LoadScene);
 
 		scLoader.registerSceneType("TextScene", SceneType_TextScene);
 		scLoader.registerSceneType("SelectScene", SceneType_SelectScene);
@@ -48,7 +50,7 @@ namespace ebbglow::visualnovel
 				if (args.size() > 0) offset = static_cast<int32_t>(round(GetNumber(args[0], '\0', *scLoader)));
 				return &(scLoader->sceneArgs[offset]);
 			});
-		scLoader.registerPredefinedVariable("BACK_LOG_RETURN_NAME", [](ScriptLoader* scLoader, const std::vector<std::string>& args) { return &(scLoader->backLogRetName); });
+		scLoader.registerPredefinedVariable("RETURN_NAME", [](ScriptLoader* scLoader, const std::vector<std::string>& args) { return &(scLoader->retName); });
 		scLoader.registerPredefinedVariable("BEGIN_SCENE_NAME", [](ScriptLoader* scLoader, const std::vector<std::string>& args) { return &(scLoader->beginScene); });
 		scLoader.registerPredefinedVariable("to_string", [](ScriptLoader* scLoader, const std::vector<std::string>& args)
 			{

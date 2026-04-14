@@ -40,6 +40,7 @@ namespace ebbglow
 
 		constexpr ColorR8G8B8A8() : r(0), g(0), b(0), a(0) {}
 		constexpr ColorR8G8B8A8(uint8_t r, uint8_t g, uint8_t b, uint8_t a) : r(r), g(g), b(b), a(a) {}
+		constexpr ColorR8G8B8A8(uint32_t color) : r((color >> 24) & 0xff), g((color >> 16) & 0xff), b((color >> 8) & 0xff), a(color & 0xff) {}
 	};
 
 	using Color = ColorR8G8B8A8;

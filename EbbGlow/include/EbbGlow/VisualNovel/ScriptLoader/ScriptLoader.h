@@ -56,6 +56,8 @@ namespace ebbglow::visualnovel
 		ScriptData scriptData;
 		std::string beginScene;
 		std::string backLogScene;
+		std::string saveScene;
+		std::string LoadScene;
 
 		//运行时数据
 		std::vector<core::entity> idList;
@@ -67,8 +69,7 @@ namespace ebbglow::visualnovel
 
 		BackLogView backLogTmp;
 
-		std::string backLogRetName;//由任意可能跳转BackLog的场景填写，供回退时使用
-		std::string saveSceneName;//由任意加载存档时直接跳转的场景填写，供保存/加载时使用
+		std::string retName;//由任意需要保存当前场景以供回退的组件填写，以供回退定位
 
 		//设置
 		VisualNovelConfig& cfg;

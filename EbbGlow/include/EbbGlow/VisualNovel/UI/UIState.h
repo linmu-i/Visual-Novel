@@ -29,7 +29,7 @@ namespace ebbglow::visualnovel
 			state->active()->forEach([active, this](core::entity id, UIState& act)
 				{
 					auto& ina = *state->inactive()->get(id);
-					scLoader->backLogRetName = scLoader->sceneName;
+					scLoader->retName = scLoader->sceneName;
 					ina.logActive = active;
 				});
 		}

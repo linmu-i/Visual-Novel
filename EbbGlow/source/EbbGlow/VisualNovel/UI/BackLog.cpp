@@ -105,7 +105,7 @@ namespace ebbglow::visualnovel
 
 	void BackLogDraw::draw()
 	{
-		Rect origin{0, com.drawOffsetY, static_cast<float>(com.textureBuf.width()), -com.textureBuf.height() * 5.0f / 6.0f};
+		Rect origin{0, com.drawOffsetY, static_cast<float>(com.textureBuf.width()), com.textureBuf.height() * 5.0f / 6.0f};
 		gfx::DrawTextureRegionToRegion(com.textureBuf, origin, Rect{ 0, cfg.virtualScreenHeight / 6.0f, static_cast<float>(cfg.virtualScreenWidth), cfg.virtualScreenHeight * 0.75f });
 	}
 
@@ -180,6 +180,14 @@ namespace ebbglow::visualnovel
 						ina.animationTime = 0.0f;
 						ina.animationUp = false;
 						ina.animationDown = false;
+						if (act.animationUp)
+						{
+							ina.drawOffsetY = 0.0f;
+						}
+						else
+						{
+							ina.drawOffsetY = itemHeight;
+						}
 					}
 					else
 					{

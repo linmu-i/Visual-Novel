@@ -390,7 +390,7 @@ namespace ebbglow::resource
 	template<utils::InStream IS>
 	bool Deserialize(IS& is, SharedImage& image)
 	{
-		std::vector data = {};
+		std::vector<char> data = {};
 		if (!utils::Deserialize(is, data)) return false;
 		image = CreateImageFromData(data);
 		return true;

@@ -1,6 +1,6 @@
 #pragma once
 #include <EbbGlow/Core/ECS/ECSType.h>
-#include <vector>
+#include <set>
 
 namespace ebbglow::core
 {
@@ -8,7 +8,7 @@ namespace ebbglow::core
 	{
 	private:
 		uint64_t countId = 0;
-		std::vector<entity> inactive;
+		std::set<entity> inactive;
 	public:
 		uint64_t getId();
 		void recycleId(uint64_t id);

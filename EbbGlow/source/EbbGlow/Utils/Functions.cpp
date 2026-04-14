@@ -17,26 +17,23 @@ namespace ebbglow::utils
 		return { result.x, result.y };
 	}
 
-	///**;--%{'#"""<!-- SDF功能待优化 -->"""*/%}
-	rsc::SharedFont DynamicLoadFont(const rsc::SharedFile& fontData, const std::string& text, float fontSize, rsc::FontType type) noexcept
+	rsc::SharedFont DynamicLoadFont(const rsc::SharedFile& fontData, const std::vector<int>& codepoints, float fontSize, rsc::FontType type) noexcept
 	{
 		if (!fontData.valid()) return rsc::SharedFont();
 		const char* p = fontData.fileName();
 		while (*p != '\0') ++p;
 		while (*p != '.' && p != fontData.fileName()) --p;
 		if (*p != '.') return rsc::SharedFont();
-		int codePointsCount;
-		int* codePoints = ::LoadCodepoints(text.c_str(), &codePointsCount);
+
 		std::vector<int> uniqueCodePoints;
 		{
 			std::unordered_set<int> seen;
-			for (int i = 0; i < codePointsCount; ++i) {
-				if (seen.insert(codePoints[i]).second) {
-					uniqueCodePoints.push_back(codePoints[i]);
+			for (int i = 0; i < codepoints.size(); ++i) {
+				if (seen.insert(codepoints[i]).second) {
+					uniqueCodePoints.push_back(codepoints[i]);
 				}
 			}
 		}
-		UnloadCodepoints(codePoints);
 
 		uniqueCodePoints.push_back(0x4E00);
 		uniqueCodePoints.push_back(0x4E00);
@@ -47,7 +44,7 @@ namespace ebbglow::utils
 		rsc::ResourceCreator creator;
 		if (type == rsc::FontType::Default)
 		{
-			Font font = LoadFontFromMemory(p, fontData.get(), fontData.size(), static_cast<int>(fontSize * 2.0f), uniqueCodePoints.data(), uniqueCodePoints.size());
+			Font font = LoadFontFromMemory(p, fontData.get(), fontData.size(), static_cast<int>(fontSize), uniqueCodePoints.data(), uniqueCodePoints.size());
 			SetTextureFilter(font.texture, TEXTURE_FILTER_BILINEAR);
 			rsc::SharedFont result = creator.CreateFont(font);
 			return result;
@@ -58,7 +55,7 @@ namespace ebbglow::utils
 			{
 				return rsc::SharedFont();
 			}
-			Font sdfFont;
+			Font sdfFont = {};
 			sdfFont.baseSize = fontSize;
 			sdfFont.glyphs = LoadFontData(fontData.get(), fontData.size(), fontSize, uniqueCodePoints.data(), uniqueCodePoints.size(), FONT_SDF);
 			sdfFont.glyphCount = uniqueCodePoints.size();
@@ -70,6 +67,11 @@ namespace ebbglow::utils
 			return creator.CreateFont(sdfFont);
 		}
 		return rsc::SharedFont();
+	}
+	rsc::SharedFont DynamicLoadFont(const rsc::SharedFile& fontData, const std::string& text, float fontSize, rsc::FontType type) noexcept
+	{
+		std::vector<int> codepoints = ToCodepoints(text);
+		return DynamicLoadFont(fontData, codepoints, fontSize, type);
 	}
 
 
@@ -436,5 +438,23 @@ std::vector<std::vector<int>> TextLineCalculateWithWordWrap(
 	Vec2 ScreenSize() noexcept
 	{
 		return { static_cast<float>(GetScreenWidth()), static_cast<float>(GetScreenHeight()) };
+	}
+
+	rsc::SharedImage LoadImageFromTexture(const rsc::SharedTexture& texture)
+	{
+		if (!texture.valid()) return {};
+		::Texture* tex = static_cast<::Texture*>(texture.get());
+		::Image img = LoadImageFromTexture(*tex);
+		rsc::ResourceCreator creator;
+		return creator.CreateImage(img);
+	}
+	rsc::SharedImage LoadImageFromTexture(const rsc::SharedRenderTexture& texture)
+	{
+		if (!texture.valid()) return {};
+		::RenderTexture* rndtex = static_cast<::RenderTexture*>(texture.get());
+		::Texture* tex = static_cast<::Texture*>(&rndtex->texture);
+		::Image img = LoadImageFromTexture(*tex);
+		rsc::ResourceCreator creator;
+		return creator.CreateImage(img);
 	}
 }
