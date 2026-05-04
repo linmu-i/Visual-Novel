@@ -2,6 +2,7 @@
 
 #include <EbbGlow/Core/Message.h>
 #include <EbbGlow/UI/Button/ButtonMsg.h>
+#include <EbbGlow/Core/World.h>
 
 namespace ebbglow::components
 {
@@ -9,6 +10,8 @@ namespace ebbglow::components
 	{
 		core::MessageManager* msgMgr;
 		std::vector<std::function<void(core::MessageBase*)>> callbacks;
+		MessageCallback(core::MessageManager* msgMgr, const std::vector<std::function<void(core::MessageBase*)>>& callbacks) :
+			msgMgr(msgMgr), callbacks(callbacks) {}
 	};
 
 	class MessageCallbackSystem : public core::SystemBase
@@ -20,4 +23,10 @@ namespace ebbglow::components
 		MessageCallbackSystem(core::DoubleComs<MessageCallback>* coms) : coms(coms){}
 		void update() override;
 	};
+
+	inline void ApplyMessageCallback(core::World2D& world)
+	{
+		world.addPool<MessageCallback>();
+		world.addSystem(MessageCallbackSystem(world.getDoubleBuffer<MessageCallback>()));
+	}
 }
