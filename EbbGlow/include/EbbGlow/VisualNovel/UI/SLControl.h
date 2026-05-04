@@ -84,7 +84,7 @@ namespace ebbglow::visualnovel
 		void registerBuildLoad() { loadFlag = true; }
 		void registerRebuild() { rebuildFlag = true; }
 		void setBeginIndex(size_t index) { beginIndex = index; }
-		std::vector<core::entity> getIdList() { return idList; }
+		std::vector<core::entity>& getIdList() { return idList; }
 	};
 
 	struct SaveAttachment
