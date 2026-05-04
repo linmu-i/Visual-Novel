@@ -42,10 +42,10 @@ namespace ebbglow::visualnovel
 		std::string text;
 		std::string exText;
 		std::string voice;
-		std::string music;
+		std::string attText;
 		bool empty() const
 		{
-			return sceneName.empty() && text.empty() && exText.empty() && voice.empty() && music.empty();
+			return sceneName.empty() && text.empty() && exText.empty() && voice.empty() && attText.empty();
 		}
 		void clear()
 		{
@@ -53,7 +53,7 @@ namespace ebbglow::visualnovel
 			text.clear();
 			exText.clear();
 			voice.clear();
-			music.clear();
+			attText.clear();
 		}
 	};
 }

@@ -10,4 +10,6 @@ namespace ebbglow::visualnovel
 	void Global_BeginScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept;
 	void Global_I18nText(ScriptLoader* loader, const std::vector<std::string>& args) noexcept;
 	void Global_BackLogScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept;
+	void Global_SaveScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept;
+	void Global_LoadScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept;
 }

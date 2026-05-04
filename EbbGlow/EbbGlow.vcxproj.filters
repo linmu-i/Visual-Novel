@@ -204,14 +204,11 @@
     <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\ColorTween.cpp">
       <Filter>源文件\VisualNovel\VisualNovel</Filter>
     </ClCompile>
-    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\JumpAttachment.cpp">
+    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\ButtonAttachment.cpp">
       <Filter>源文件\VisualNovel\VisualNovel</Filter>
     </ClCompile>
     <ClCompile Include="source\EbbGlow\VisualNovel\ScriptLoader\SaveLoad.cpp">
       <Filter>源文件\VisualNovel\ScriptLoader</Filter>
-    </ClCompile>
-    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\DrawToScreen.cpp">
-      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="source\EbbGlow\UI\Dialog\Dialog.cpp">
       <Filter>源文件\UI\Dialog</Filter>
@@ -221,6 +218,15 @@
     </ClCompile>
     <ClCompile Include="source\EbbGlow\Utils\ResourceCreator.cpp">
       <Filter>源文件\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\DrawToScreen.cpp">
+      <Filter>源文件\VisualNovel\VisualNovel</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EbbGlow\VisualNovel\UI\SLControl.cpp">
+      <Filter>源文件\VisualNovel\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="source\EbbGlow\Components\MessageCallback.cpp">
+      <Filter>源文件\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -380,7 +386,7 @@
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\ColorTween.h">
       <Filter>头文件\VisualNovel\VisualNovel</Filter>
     </ClInclude>
-    <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\JumpAttachment.h">
+    <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\ButtonAttachment.h">
       <Filter>头文件\VisualNovel\VisualNovel</Filter>
     </ClInclude>
     <ClInclude Include="include\EbbGlow\Utils\Serialization.h">
@@ -389,13 +395,19 @@
     <ClInclude Include="include\EbbGlow\VisualNovel\ScriptLoader\SaveLoad.h">
       <Filter>头文件\VisualNovel\ScriptLoader</Filter>
     </ClInclude>
-    <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\DrawToScreen.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="include\EbbGlow\UI\Dialog\Dialog.h">
       <Filter>头文件\UI\Dialog</Filter>
     </ClInclude>
     <ClInclude Include="include\EbbGlow\Components\Children.h">
+      <Filter>头文件\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\DrawToScreen.h">
+      <Filter>头文件\VisualNovel\VisualNovel</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\VisualNovel\UI\SLControl.h">
+      <Filter>头文件\VisualNovel\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EbbGlow\Components\MessageCallback.h">
       <Filter>头文件\Components</Filter>
     </ClInclude>
   </ItemGroup>

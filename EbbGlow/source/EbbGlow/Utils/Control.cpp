@@ -233,7 +233,7 @@ namespace ebbglow
 		auto& stack = GetScissorStack();
 		if (!stack.empty()) ::EndScissorMode();
 		stack.push_back(region);
-		::BeginScissorMode(region.x, region.y, region.width, region.height);
+		::BeginScissorMode(static_cast<int>(region.x), static_cast<int>(region.y), static_cast<int>(region.width), static_cast<int>(region.height));
 	}
 
 	void EndScissorMode()
@@ -246,7 +246,7 @@ namespace ebbglow
 			if (!stack.empty())
 			{
 				auto& region = stack.back();
-				::BeginScissorMode(region.x, region.y, region.width, region.height);
+				::BeginScissorMode(static_cast<int>(region.x), static_cast<int>(region.y), static_cast<int>(region.width), static_cast<int>(region.height));
 			}
 		}
 	}

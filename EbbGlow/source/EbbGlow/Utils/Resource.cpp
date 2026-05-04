@@ -234,6 +234,32 @@ namespace ebbglow::resource
 		other.ref = nullptr;
 	}
 
+	SharedTexture::SharedTexture(const SharedImage& img) noexcept
+	{
+		if (!img.valid())
+		{
+			texture = nullptr;
+			ref = nullptr;
+			return;
+		}
+		auto* loaded = new(std::nothrow) Texture(::LoadTextureFromImage(*static_cast<::Image*>(img.get())));
+		if (loaded == nullptr || loaded->id == 0)
+		{
+			if(loaded) delete loaded;
+			texture = nullptr;
+			ref = nullptr;
+			return;
+		}
+		texture = loaded;
+		ref = new(std::nothrow) std::atomic<size_t>(1);
+		if (ref == nullptr)
+		{
+			UnloadTexture(*static_cast<::Texture*>(texture));
+			delete static_cast<::Texture*>(texture);
+			texture = nullptr;
+		}
+	}
+
 	SharedTexture::~SharedTexture()
 	{
 		if (ref)
@@ -1414,7 +1440,7 @@ namespace ebbglow::resource
 			break;
 
 		default:
-			index = 6;
+			index = 7;
 			return *this;
 		}
 		++index;
@@ -1452,7 +1478,7 @@ namespace ebbglow::resource
 	{
 		ImageDataIterator it;
 		it.img = img;
-		it.index = 6;
+		it.index = 7;
 		it.data = std::span<char>();
 		return it;
 	}

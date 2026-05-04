@@ -54,10 +54,10 @@ namespace ebbglow::visualnovel
 
 		//初始化数据
 		ScriptData scriptData;
-		std::string beginScene;
-		std::string backLogScene;
-		std::string saveScene;
-		std::string LoadScene;
+		std::string beginSceneName;
+		std::string backLogSceneName;
+		std::string saveSceneName;
+		std::string loadSceneName;
 
 		//运行时数据
 		std::vector<core::entity> idList;

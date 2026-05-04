@@ -1,18 +1,21 @@
 #include <EbbGlow/VisualNovel/ScriptLoader/SceneFunctions.h>
 #include <EbbGlow/VisualNovel/VisualNovel/MainTextBox.h>
 #include <EbbGlow/VisualNovel/VisualNovel/ColorTween.h>
-#include <EbbGlow/VisualNovel/VisualNovel/JumpAttachment.h>
+#include <EbbGlow/VisualNovel/VisualNovel/ButtonAttachment.h>
 #include <EbbGlow/VisualNovel/UI/BackLog.h>
+#include <EbbGlow/VisualNovel/UI/SLControl.h>
 #include <EbbGlow/Utils/Math.h>
 #include <EbbGlow/UI/UI.h>
 
 namespace ebbglow::visualnovel
 {
-	void Scene_TextScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_TextScene(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.size() < 6) return;
 		auto& cfg = loader->cfg;
 		auto& world = loader->world;
+		auto& mainLibRsc = GetMainLibRsc();
+
 		std::vector<std::string> texts;
 		texts.reserve(4);
 		for (int i = 0; i < 4; ++i)
@@ -38,8 +41,9 @@ namespace ebbglow::visualnovel
 			cfg.virtualScreenWidth * 0.6666667f,
 			GetString(args[cfg.mainLanguage], *loader),
 			GetString(args[cfg.secondaryLanguage], *loader),
-			cfg.fontData, cfg.textSize, cfg.textSize * 0.1, cfg.textSize * 0.3, cfg.textSpeed,
-			&(loader->tmpLayers)[cfg.LayerDefine.textBoxLayer],
+			cfg.fontData, cfg.textSize, cfg.textSize * 0.1f, cfg.textSize * 0.3f, cfg.textSpeed,
+			&(loader->tmpLayers)[mainLibRsc.LayerDefine.textBoxLayer],
+			cfg,
 			cfg.showReadText && readIt != cfg.readTextSet.end() ? cfg.readTextColor : colors::White
 		));
 
@@ -79,47 +83,45 @@ namespace ebbglow::visualnovel
 		if (backGround.valid())
 		{
 			loader->idList.push_back(idMgr->getId());
-			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ backGround, bgPosition, &loader->tmpLayers[cfg.LayerDefine.backGroundLayer], bgScale });
+			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ backGround, bgPosition, &loader->tmpLayers[mainLibRsc.LayerDefine.backGroundLayer], bgScale });
 		}
-		if (cfg.textBoxBackGround.valid())
+		if (mainLibRsc.textBoxBackGround.valid())
 		{
-			float scale = std::max(float(cfg.virtualScreenWidth) / cfg.textBoxBackGround.width(), float(cfg.virtualScreenHeight * (0.25f + 0.03125f)) / cfg.textBoxBackGround.height());
+			float scale = std::max(float(cfg.virtualScreenWidth) / mainLibRsc.textBoxBackGround.width(), float(cfg.virtualScreenHeight * (0.25f + 0.03125f)) / mainLibRsc.textBoxBackGround.height());
 			loader->idList.push_back(idMgr->getId());
-			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ cfg.textBoxBackGround, Vec2{ (cfg.virtualScreenWidth - cfg.textBoxBackGround.width() * scale) / 2, cfg.virtualScreenHeight * (0.75f - 0.03125f)}, &loader->tmpLayers[cfg.LayerDefine.textBoxBackGroundLayer], scale });
+			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ mainLibRsc.textBoxBackGround, Vec2{ (cfg.virtualScreenWidth - mainLibRsc.textBoxBackGround.width() * scale) / 2, cfg.virtualScreenHeight * (0.75f - 0.03125f)}, &loader->tmpLayers[mainLibRsc.LayerDefine.textBoxBackGroundLayer], scale });
 		}
-
-		loader->backLogTmp.text = GetString(args[cfg.mainLanguage], *loader) + '\n' + GetString(args[cfg.secondaryLanguage], *loader);
 	}
 
-	void Scene_Chr(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_Chr(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.empty()) return;
 		auto& cfg = loader->cfg;
 		auto& world = loader->world;
+		auto& mainLibRsc = GetMainLibRsc();
 
 		float offsetX = cfg.virtualScreenWidth * (1.0f / 12.0f);
-		float offsetY = cfg.virtualScreenHeight * 0.0625;
+		float offsetY = cfg.virtualScreenHeight * 0.0625f;
 		float x = offsetX * 1.5f;
 		float y = cfg.virtualScreenHeight * 0.75f - offsetY;
-		float textOffsetX = cfg.chrNameOffsetX * offsetX;
-		if (cfg.chrNameBackGround.valid())
+		float textOffsetX = mainLibRsc.chrNameOffsetX * offsetX;
+		if (mainLibRsc.chrNameBackGround.valid())
 		{
 			loader->idList.push_back(world.getEntityManager()->getId());
-			float scale = static_cast<float>(offsetY) / static_cast<float>(cfg.chrNameBackGround.height());
-			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ cfg.chrNameBackGround, Vec2{ static_cast<float>(x), static_cast<float>(y) }, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer], scale});
+			float scale = static_cast<float>(offsetY) / static_cast<float>(mainLibRsc.chrNameBackGround.height());
+			world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ mainLibRsc.chrNameBackGround, Vec2{ static_cast<float>(x), static_cast<float>(y) }, &loader->tmpLayers[mainLibRsc.LayerDefine.textBoxLayer], scale});
 		}
 
 		loader->idList.push_back(world.getEntityManager()->getId());
-		world.createUnit(loader->idList.back(), ui::TextBoxExCom{ cfg.fontData, GetString(args[0], *loader), Vec2{float(x + textOffsetX), float(y)}, float(cfg.textSize), 0.1f * cfg.textSize, colors::White, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer] });
-
-		loader->backLogTmp.exText = GetString(args[0], *loader);
+		world.createUnit(loader->idList.back(), ui::TextBoxExCom{ cfg.fontData, GetString(args[0], *loader), Vec2{float(x + textOffsetX), float(y)}, float(cfg.textSize), 0.1f * cfg.textSize, colors::White, &loader->tmpLayers[mainLibRsc.LayerDefine.textBoxLayer] });
 	}
 
-	void Scene_Button(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_Button(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.size() < 16) return;
 		auto& cfg = loader->cfg;
 		auto& world = loader->world;
+		auto& mainLibRsc = GetMainLibRsc();
 
 		float relativeX = static_cast<float>(GetNumber(args[0], '\0', *loader));
 		float relativeY = static_cast<float>(GetNumber(args[1], '\0', *loader));
@@ -145,23 +147,17 @@ namespace ebbglow::visualnovel
 		}
 
 		core::entity buttonId = world.getEntityManager()->getId();
-		if (loader->sceneType == "SelectScene")
-		{
-			loader->exIdList.push_back(buttonId);
-		}
-		else
-		{
-			loader->idList.push_back(buttonId);
-		}
-		auto text = GetString(args[4 + cfg.uiLanguage], *loader);
+		loader->idList.push_back(buttonId);
+
+		auto text = GetString(args[static_cast<size_t>(4) + cfg.uiLanguage], *loader);
 		world.createUnit(buttonId, ui::ButtonExCom
 			{
-				Rect{ Vec2{ offsetX, offsetY }, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
-				&loader->tmpLayers[cfg.LayerDefine.ButtonLayer],
+				Rect{ Vec2{ offsetX, offsetY } + cfg.drawOffset, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
+				Rect{ Vec2{ offsetX, offsetY }, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth }}, //*((width * cfg.virtualScreenWidth) / normalImg.width())},
+				& loader->tmpLayers[mainLibRsc.LayerDefine.ButtonLayer],
 				normalImg,
 				hoverImg,
 				pressImg,
-				(width * cfg.virtualScreenWidth) / normalImg.width(),
 				utils::DynamicLoadFont(cfg.fontData, text, cfg.textSize),
 				text,
 				textColor,
@@ -171,11 +167,13 @@ namespace ebbglow::visualnovel
 		world.getMessageManager()->subscribe(buttonId);
 	}
 
-	void Scene_ImageBox(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_ImageBox(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.size() < 7) return;
 		auto& cfg = loader->cfg;
 		auto& world = loader->world;
+		auto& mainLibRsc = GetMainLibRsc();
+
 		float relativeX = static_cast<float>(GetNumber(args[0], '\0', *loader));
 		float relativeY = static_cast<float>(GetNumber(args[1], '\0', *loader));
 		float ratio = static_cast<float>(GetNumber(args[2], '\0', *loader));
@@ -202,10 +200,10 @@ namespace ebbglow::visualnovel
 			y = relativeY * cfg.virtualScreenHeight;
 		}
 		loader->idList.push_back(world.getEntityManager()->getId());
-		world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ img, Vec2{x, y}, &loader->tmpLayers[cfg.LayerDefine.backGroundLayer], scale });
+		world.createUnit(loader->idList.back(), ui::ImageBoxExCom{ img, Vec2{x, y}, &loader->tmpLayers[mainLibRsc.LayerDefine.backGroundLayer], scale });
 	}
 
-	void Scene_SetStr(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_SetStr(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.size() < 2) return;
 		std::string* var = GetTextVariable(args[0], *loader);
@@ -213,7 +211,7 @@ namespace ebbglow::visualnovel
 		*var = GetString(args[1], *loader);
 	}
 
-	void Scene_SetNum(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_SetNum(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.size() < 2) return;
 		if (args[0].empty()) return;
@@ -241,7 +239,7 @@ namespace ebbglow::visualnovel
 		return buf;
 	}
 
-	void Scene_BeginKeyFrameAnimation(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_BeginKeyFrameAnimation(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.size() < 3) return;
 		auto& cfg = loader->cfg;
@@ -254,7 +252,7 @@ namespace ebbglow::visualnovel
 		KeyframeAnimBuffer().com = ui::KeyFramesAnimationCom{ img, &loader->tmpLayers, scale, layerDepth, isLoop };
 	}
 
-	void Scene_AddKeyFrame(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_AddKeyFrame(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.size() < 9) return;
 		auto& world = loader->world;
@@ -284,7 +282,7 @@ namespace ebbglow::visualnovel
 		KeyframeAnimBuffer().com.keyFrames.push_back(keyFrame);
 	}
 
-	void Scene_EndKeyFrameAnimation(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_EndKeyFrameAnimation(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		auto& buf = KeyframeAnimBuffer();
 		loader->idList.push_back(buf.id);
@@ -293,7 +291,7 @@ namespace ebbglow::visualnovel
 		buf.com = ui::KeyFramesAnimationCom();
 	}
 
-	void Scene_SetBgm(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_SetBgm(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		std::string path = GetString(args[0], *loader);
 		uint16_t volumeIndex = static_cast<uint16_t>(round(GetNumber(args[1], '\0', *loader)));
@@ -305,7 +303,7 @@ namespace ebbglow::visualnovel
 		loader->musicMgr.SetBgm(rsc::SharedMusic(reinterpret_cast<const char8_t*>(path.c_str())), volume, path, volumeIndex);
 	}
 
-	void Scene_SetVoice(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_SetVoice(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		std::string path = GetString(args[0], *loader);
 		uint16_t volumeIndex = static_cast<uint16_t>(round(GetNumber(args[1], '\0', *loader)));
@@ -317,7 +315,7 @@ namespace ebbglow::visualnovel
 		loader->musicMgr.SetVoice(rsc::SharedSound(reinterpret_cast<const char8_t*>(path.c_str())), volume, path, volumeIndex);
 	}
 
-	void Scene_ColorTween(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_ColorTween(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		core::entity id = loader->world.getEntityManager()->getId();
 		ColorR8G8B8A8 fromColor =
@@ -341,7 +339,7 @@ namespace ebbglow::visualnovel
 		loader->world.createUnit(id, vn::ColorTweenCom{ fromColor, toColor, duration, &((loader->tmpLayers)[layerDepth])});
 	}
 
-	void Scene_BackLogCom(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_BackLogCom(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.size() < 1) return;
 		core::entity id = loader->world.getEntityManager()->getId();
@@ -349,9 +347,10 @@ namespace ebbglow::visualnovel
 		loader->world.createUnit(id, BackLogCom{ loader->cfg, &(loader->tmpLayers)[10], GetString(args[0], *loader), *loader});
 	}
 
-	void Scene_TextBoxCom(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_TextBoxCom(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
 		if (args.size() < 3) return;
+		auto& mainLibRsc = GetMainLibRsc();
 		core::entity id = loader->world.getEntityManager()->getId();
 		loader->idList.push_back(id);
 		auto& cfg = loader->cfg;
@@ -359,22 +358,28 @@ namespace ebbglow::visualnovel
 		float offsetX = static_cast<float>(GetNumber(args[1], '\0', *loader));
 		float offsetY = static_cast<float>(GetNumber(args[2], '\0', *loader));
 		float textSize = {};
-		if (args.size() >= 3) textSize = GetNumber(args[3], '\0', *loader);
+		if (args.size() >= 3) textSize = static_cast<float>(GetNumber(args[3], '\0', *loader));
 		else textSize = cfg.textSize;
 		offsetX *= cfg.virtualScreenWidth;
 		offsetY *= cfg.virtualScreenHeight;
 		auto font = utils::DynamicLoadFont(cfg.fontData, text, textSize);
 		Vec2 offset = utils::MeasureTextSize(font, text, textSize, 0.1f * cfg.textSize);
-		loader->world.createUnit(id, ui::TextBoxExCom{ cfg.fontData, text, Vec2{ offsetX - offset.x / 2.0f, offsetY - offset.y / 2.0f }, textSize, 0.1f * textSize, colors::White, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer] });
-		//loader->world.createUnit(id, ui::TextBoxExCom{ cfg.fontData, GetString(args[0], *loader), Vec2{ offsetX - offset.x / 2.0f, offsetY - offset.y / 2.0f }, static_cast<float>(cfg.textSize), 0.1f * static_cast<float>(cfg.textSize), colors::White, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer] });
-		//loader->world.createUnit(id, ui::TextBoxExCom{ cfg.fontData, GetString(args[0], *loader), Vec2{ static_cast<float>(GetNumber(args[1], '\0', *loader)), static_cast<float>(GetNumber(args[2], '\0', *loader)) }, static_cast<float>(GetNumber(args[3], '\0', *loader)), 0.1f * static_cast<float>(GetNumber(args[3], '\0', *loader)), colors::White, &loader->tmpLayers[cfg.LayerDefine.textBoxLayer] });
+		loader->world.createUnit(id,
+			ui::TextBoxExCom
+			{ 
+				cfg.fontData, text,
+				Vec2{ offsetX - offset.x / 2.0f, offsetY - offset.y / 2.0f },
+				textSize, 0.1f * textSize, colors::White,
+				&loader->tmpLayers[mainLibRsc.LayerDefine.textBoxLayer]
+			});
 	}
 
-	void Scene_JumpButton(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	void Scene_ButtonWithAttachment(ScriptLoader* loader, const std::vector<std::string>& args)
 	{
-		if (args.size() < 17) return;
+		if (args.size() < 16) return;
 		auto& cfg = loader->cfg;
 		auto& world = loader->world;
+		auto& mainLibRsc = GetMainLibRsc();
 
 		float relativeX = static_cast<float>(GetNumber(args[0], '\0', *loader));
 		float relativeY = static_cast<float>(GetNumber(args[1], '\0', *loader));
@@ -400,36 +405,63 @@ namespace ebbglow::visualnovel
 		}
 
 		core::entity buttonId = world.getEntityManager()->getId();
-		if (loader->sceneType == "SelectScene")
-		{
-			loader->exIdList.push_back(buttonId);
-		}
-		else
-		{
-			loader->idList.push_back(buttonId);
-		}
-		auto text = GetString(args[4 + cfg.uiLanguage], *loader);
-		auto sceneName = GetString(args[16], *loader);
+		loader->idList.push_back(buttonId);
+
+		auto text = GetString(args[static_cast<size_t>(4) + cfg.uiLanguage], *loader);
 		world.createUnit(
 			buttonId,
 			ui::ButtonExCom
 			{
-				Rect{ Vec2{ offsetX, offsetY }, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
-				&loader->tmpLayers[cfg.LayerDefine.ButtonLayer],
+				Rect{ Vec2{ offsetX, offsetY } + cfg.drawOffset, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },
+				Rect{ Vec2{ offsetX, offsetY }, Vec2{ width * cfg.virtualScreenWidth, height * cfg.virtualScreenWidth } },// *((width * cfg.virtualScreenWidth) / normalImg.width()) },
+				&loader->tmpLayers[mainLibRsc.LayerDefine.ButtonLayer],
 				normalImg,
 				hoverImg,
 				pressImg,
-				(width * cfg.virtualScreenWidth) / normalImg.width(),
 				utils::DynamicLoadFont(cfg.fontData, text, cfg.textSize),
 				text,
 				textColor,
 				static_cast<float>(cfg.textSize),
 				cfg.textSize * 0.1f
-			},
-			JumpAttachmentCom
-			{
-				sceneName
 			});
+		for (int i = 16; i < args.size(); ++i)
+		{
+			auto cmd = Tokenizer(args[i]);
+			CreateButtonAttachment(*loader, buttonId, cmd);
+		}
 		world.getMessageManager()->subscribe(buttonId);
+	}
+
+	void Scene_SaveBlocks(ScriptLoader* loader, const std::vector<std::string>& args)
+	{
+		auto* sys = loader->world.getSystem<SLControlSystem>();
+		if (!sys) return;
+		sys->registerUpdateInfoList();
+		sys->registerBuildSave();
+		loader->idList.insert(loader->idList.end(), sys->getIdList().begin(), sys->getIdList().end());
+	}
+
+	void Scene_LoadBlocks(ScriptLoader* loader, const std::vector<std::string>& args)
+	{
+		auto* sys = loader->world.getSystem<SLControlSystem>();
+		if (!sys) return;
+		sys->registerUpdateInfoList();
+		sys->registerBuildLoad();
+		loader->idList.insert(loader->idList.end(), sys->getIdList().begin(), sys->getIdList().end());
+	}
+
+	void Scene_SetBackLog(ScriptLoader* loader, const std::vector<std::string>& args)
+	{
+		if (args.size() < 4) return;
+		loader->backLogTmp.sceneName = loader->sceneName;
+		if (args[0] != "@NotSet") loader->backLogTmp.text = args[0];
+		if (args[1] != "@NotSet") loader->backLogTmp.exText = args[1];
+		if (args[2] != "@NotSet") loader->backLogTmp.attText = args[2];
+		if (args[3] != "@NotSet") loader->backLogTmp.voice = args[3];
+	}
+
+	void Scene_PushBackLog(ScriptLoader* loader, const std::vector<std::string>& args)
+	{
+		if (loader->backLogTmp.sceneName != loader->sceneName) loader->addToBackLog(loader->backLogTmp);
 	}
 }

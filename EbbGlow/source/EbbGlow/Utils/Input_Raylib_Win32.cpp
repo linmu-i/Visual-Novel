@@ -36,9 +36,9 @@ namespace ebbglow::input
 
 	static bool active = false;
 	static bool initialized = false;
-
+	
 	static uint32_t mouseId = 0xFFFFFFFF;
-
+	
 	static inline std::vector<InputPoint>& ActPoints() { return active ? points0 : points1; }
 	static inline std::vector<InputPoint>& InaPoints() { return active ? points1 : points0; }
 

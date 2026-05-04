@@ -1,5 +1,6 @@
 #include <EbbGlow/VisualNovel/ScriptLoader/SceneTypes.h>
 #include <EbbGlow/Utils/Input.h>
+#include <EbbGlow/VisualNovel/ScriptLoader/SaveLoad.h>
 #include <chrono>
 
 namespace ebbglow::visualnovel
@@ -8,8 +9,28 @@ namespace ebbglow::visualnovel
 	{
 		if (input::MouseWheelDelta() > 0)
 		{
-			scLoader.backLogRetName = scLoader.sceneName;
-			scLoader.loadScene(scLoader.backLogScene);
+			scLoader.retName = scLoader.sceneName;
+			scLoader.loadScene(scLoader.backLogSceneName);
+		}
+	}
+
+	static void GoToSaveSupport(ScriptLoader& scLoader)
+	{
+		if (input::KeyPressed(input::Keyboard::F5))
+		{
+			scLoader.retName = scLoader.sceneName;
+			scLoader.tmpLayers[0].push_back(std::make_unique<ImageExporter>(&scLoader.tmpLayers, scLoader.cfg));
+			ExportArchiveInfo(scLoader);
+			scLoader.loadScene(scLoader.saveSceneName);
+		}
+	}
+
+	static void GotoLoadSupport(ScriptLoader& scLoader)
+	{
+		if (input::KeyPressed(input::Keyboard::F9))
+		{
+			scLoader.retName = scLoader.sceneName;
+			scLoader.loadScene(scLoader.loadSceneName);
 		}
 	}
 
@@ -66,20 +87,30 @@ namespace ebbglow::visualnovel
 						});
 					if (!processed)
 					{
-						if (textBoxComs->active()->get(scLoader->exIdList.back())->activePixels >= textBoxComs->active()->get(scLoader->exIdList.back())->totalPixel)
+						if (!scLoader->exIdList.empty())
 						{
-							auto next = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), scLoader->sceneView.find(scLoader->sceneArgs.front())->second);
-							scLoader->loadScene(next);
+							if (textBoxComs->active()->get(scLoader->exIdList.back())->activePixels >= textBoxComs->active()->get(scLoader->exIdList.back())->totalPixel)
+							{
+								auto next = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), scLoader->sceneView.find(scLoader->sceneArgs.front())->second);
+								scLoader->loadScene(next);
+							}
+							else
+							{
+								world->getSystem<vn::MainTextBoxSystem>()->skip(scLoader->exIdList.back());
+							}
 						}
 						else
 						{
-							world->getSystem<vn::MainTextBoxSystem>()->skip(scLoader->exIdList.back());
+							auto next = rsc::SharedFile::Iterator(scLoader->scriptData.getSize(), scLoader->scriptData.getData(), scLoader->sceneView.find(scLoader->sceneArgs.front())->second);
+							scLoader->loadScene(next);
 						}
 					}
 					clicked = false;
 				}
 
 				GotoBackLogSupport(*scLoader);
+				GoToSaveSupport(*scLoader);
+				GotoLoadSupport(*scLoader);
 			});
 
 		
@@ -87,8 +118,8 @@ namespace ebbglow::visualnovel
 
 	void SceneType_TextScene(ScriptLoader* scLoader, std::vector<std::string> args) noexcept
 	{
-		if (!scLoader->backLogTmp.empty()) scLoader->addToBackLog(std::move(scLoader->backLogTmp));
-		scLoader->backLogTmp.clear();
+		//if (!scLoader->backLogTmp.empty()) scLoader->addToBackLog(std::move(scLoader->backLogTmp));
+		//scLoader->backLogTmp.clear();
 
 		auto id = scLoader->world.getEntityManager()->getId();
 		scLoader->world.createUnit(id, TextSceneCom());
@@ -96,7 +127,7 @@ namespace ebbglow::visualnovel
 	}
 
 
-
+	/*
 	void SelectSceneSystem::update()
 	{
 		coms->active()->forEach([this](core::entity id, SelectSceneCom& comActive)
@@ -123,11 +154,11 @@ namespace ebbglow::visualnovel
 								exLogTextSelect = reinterpret_cast<const char*>(u8"选择:");
 							}
 							
-							if (!scLoader->backLogTmp.empty()) scLoader->addToBackLog(std::move(scLoader->backLogTmp));
-							BackLogView view;
-							view.exText = exLogTextSelect;
-							view.text = world->getDoubleBuffer<ui::ButtonExCom>()->active()->get(msg->getSender())->text;
-							scLoader->backLogTmp = std::move(view);
+							//if (!scLoader->backLogTmp.empty()) scLoader->addToBackLog(std::move(scLoader->backLogTmp));
+							//BackLogView view;
+							//view.exText = exLogTextSelect;
+							//view.text = world->getDoubleBuffer<ui::ButtonExCom>()->active()->get(msg->getSender())->text;
+							//scLoader->backLogTmp = std::move(view);
 
 							scLoader->loadScene(scIt);
 							return;
@@ -146,7 +177,7 @@ namespace ebbglow::visualnovel
 		scLoader->idList.push_back(id);
 	}
 
-
+	*/
 
 	void DelaySceneSystem::update()
 	{

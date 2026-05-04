@@ -35,7 +35,7 @@ namespace ebbglow::visualnovel
 	void Global_BeginScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
 	{
 		if (args.empty()) return;
-		loader->beginScene = GetString(args.front(), *loader);
+		loader->beginSceneName = GetString(args.front(), *loader);
 	}
 	void Global_I18nText(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
 	{
@@ -51,6 +51,18 @@ namespace ebbglow::visualnovel
 	void Global_BackLogScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
 	{
 		if (args.size() < 1) return;
-		loader->backLogScene = GetString(args[0], *loader);
+		loader->backLogSceneName = GetString(args[0], *loader);
+	}
+
+	void Global_SaveScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	{
+		if (args.size() < 1) return;
+		loader->saveSceneName = GetString(args[0], *loader);
+	}
+
+	void Global_LoadScene(ScriptLoader* loader, const std::vector<std::string>& args) noexcept
+	{
+		if (args.size() < 1) return;
+		loader->loadSceneName = GetString(args[0], *loader);
 	}
 }

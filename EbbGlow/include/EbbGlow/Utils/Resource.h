@@ -52,6 +52,7 @@ namespace ebbglow::resource
 		SharedTexture(std::u8string_view texturePath) noexcept;
 		SharedTexture(const SharedTexture& other);
 		SharedTexture(SharedTexture&& other) noexcept;
+		SharedTexture(const SharedImage& img) noexcept;
 		~SharedTexture();
 
 		SharedTexture& operator=(const SharedTexture& other);
@@ -383,7 +384,7 @@ namespace ebbglow::resource
 		ImageDataRange range(image);
 		for (auto& data : range)
 		{
-			utils::Serialize(os, data.data(), data.size());
+			os.write(data.data(), data.size());
 		}
 	}
 
@@ -392,6 +393,7 @@ namespace ebbglow::resource
 	{
 		std::vector<char> data = {};
 		if (!utils::Deserialize(is, data)) return false;
+		if (data.empty()) return false;
 		image = CreateImageFromData(data);
 		return true;
 	}

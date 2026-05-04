@@ -35,8 +35,8 @@ namespace ebbglow::visualnovel
 			auto varViewIt = scLoader.numberView.find(varName);
 			if (varViewIt == scLoader.numberView.end()) return 0.0;
 
-			index += varViewIt->second.index;
-			if (index < 0 || index >= scLoader.numberStorage.size()) return 0.0;
+			index += static_cast<int32_t>(varViewIt->second.index);
+			if (index < 0 || index >= static_cast<int32_t>(scLoader.numberStorage.size())) return 0.0;
 			return scLoader.numberStorage[index];
 		}
 
@@ -130,6 +130,9 @@ namespace ebbglow::visualnovel
 
 	static bool IsKeyWord(rsc::SharedFile::Iterator& it, std::string_view keyWord)
 	{
+		size_t length = it.size() - it.position();
+		if (length < keyWord.size()) return false;
+
 		return (!memcmp(it.get(), keyWord.data(), keyWord.size()) && (it.position() == 0 || isspace(it[-1])) && isspace(it[keyWord.size()]));
 	}
 
@@ -180,7 +183,7 @@ namespace ebbglow::visualnovel
 		++it;
 		while (*it != '"' && !it.eof())
 		{
-			if (*it == '\\' && it.position() < it.size() - 1)
+			if (*it == '\\' && it.position() < static_cast<int>(it.size()) - 1)
 			{
 				textBuf += it[1];
 				it += 2;
@@ -243,7 +246,7 @@ namespace ebbglow::visualnovel
 		}
 		auto varViewIt = scLoader.textView.find(cmd.name);
 		if (varViewIt == scLoader.textView.end()) return nullptr;
-		int32_t index = varViewIt->second.index;
+		int32_t index = static_cast<int32_t>(varViewIt->second.index);
 		index += offset;
 		if (index < 0 || index >= scLoader.textStorage.size()) return nullptr;
 		return &scLoader.textStorage[index];
@@ -277,9 +280,9 @@ namespace ebbglow::visualnovel
 
 		auto varViewIt = scLoader.numberView.find(cmd.name);
 		if (varViewIt == scLoader.numberView.end()) return nullptr;
-		int32_t index = varViewIt->second.index;
+		int32_t index = static_cast<int32_t>(varViewIt->second.index);
 		index += offset;
-		if (index < 0 || index >= scLoader.numberStorage.size()) return nullptr;
+		if (index < 0 || index >= static_cast<int32_t>(scLoader.numberStorage.size())) return nullptr;
 		return &scLoader.numberStorage[index];
 	}
 
@@ -291,17 +294,17 @@ namespace ebbglow::visualnovel
 				scIt = scriptData.begin();
 				while (!scIt.eof())
 				{
-					if (!memcmp(scIt.get(), "Global", 6) && isspace(scIt[6]))
+					if (IsKeyWord(scIt, "Global"))
 					{
 						scIt += 6;
 						SkipSpace(scIt);
 						while (!scIt.eof())
 						{
-							if ((!memcmp(scIt.get(), "Scene", 5) && isspace(scIt[5])) || (!memcmp(scIt.get(), "Global", 6) && isspace(scIt[6])))
+							if (IsKeyWord(scIt, "Scene") || IsKeyWord(scIt, "Global"))
 							{
 								break;
 							}
-							if (!memcmp(scIt.get(), "Macro", 5) && isspace(scIt[5]))
+							if (IsKeyWord(scIt, "Macro"))
 							{
 								scIt += 5;
 								SkipSpace(scIt);
@@ -365,7 +368,7 @@ namespace ebbglow::visualnovel
 						}
 
 					}
-					else if (!memcmp(scIt.get(), "Scene", 5) && isspace(scIt[5]))
+					else if (IsKeyWord(scIt, "Scene"))
 					{
 						int64_t offset = scIt.position();
 						scIt += 5;
@@ -382,7 +385,7 @@ namespace ebbglow::visualnovel
 						{
 							if (*scIt == 'G' || *scIt == 'S')
 							{
-								if (((!memcmp(scIt.get(), "Global", 6) && isspace(scIt[6])) || (!memcmp(scIt.get(), "Scene", 5)) && isspace(scIt[5])) && (scIt.position() == 0 || scIt[-1] == '\n'))
+								if (IsKeyWord(scIt, "Global") || IsKeyWord(scIt, "Scene"))
 								{
 									break;
 								}
@@ -394,6 +397,27 @@ namespace ebbglow::visualnovel
 								{
 									if (*scIt == '\\') ++scIt;
 									++scIt;
+								}
+							}
+							else if (*scIt == '/')
+							{
+								if (scIt.size() - scIt.position() >= 2)
+								{
+									if (scIt[1] == '*')
+									{
+										while (!scIt.eof() && scIt.size() - scIt.position() >= 2)
+										{
+											if (*scIt == '/' && (scIt.position() == 0 || scIt[-1] == '*')) break;
+											++scIt;
+										}
+									}
+									else if (scIt[1] == '/')
+									{
+										while (!scIt.eof() && *scIt != '\n')
+										{
+											++scIt;
+										}
+									}
 								}
 							}
 							++scIt;
@@ -447,7 +471,7 @@ namespace ebbglow::visualnovel
 			case ',':
 				if (bracketCount == 1)
 				{
-					while (!args.back().empty() && isspace(args.back().back())) args.back().pop_back();
+					while (!args.back().empty() && isspace(static_cast<unsigned char>(args.back().back()))) args.back().pop_back();
 					args.push_back("");
 					++it;
 					SkipSpace(it);
@@ -804,6 +828,7 @@ namespace ebbglow::visualnovel
 
 	void ScriptLoader::addToBackLog(const BackLogView& logView)
 	{
+		if (logView.empty()) return;
 		while(backLogViews.size() >= maxBackLog)
 		{
 			backLogViews.pop_front();
@@ -812,6 +837,7 @@ namespace ebbglow::visualnovel
 	}
 	void ScriptLoader::addToBackLog(BackLogView&& logView)
 	{
+		if (logView.empty()) return;
 		while (backLogViews.size() >= maxBackLog)
 		{
 			backLogViews.pop_front();
@@ -821,7 +847,7 @@ namespace ebbglow::visualnovel
 
 	void ScriptLoader::start()
 	{
-		auto view = sceneView.find(beginScene);
+		auto view = sceneView.find(beginSceneName);
 		if (view == sceneView.end()) return;
 		size_t index = view->second;
 		auto beginIt = rsc::SharedFile::Iterator(scriptData.getSize(), scriptData.getData(), index);

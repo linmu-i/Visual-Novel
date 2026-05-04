@@ -40,7 +40,7 @@ namespace ebbglow::visualnovel
 		world.addSystem(TextSceneSystem(world, scLoader));
 	}
 
-	struct SelectSceneCom {};
+	/*struct SelectSceneCom {};
 
 	class SelectSceneSystem : public core::SystemBase
 	{
@@ -67,7 +67,7 @@ namespace ebbglow::visualnovel
 		world.addSystem(SelectSceneSystem(world, scLoader));
 	}
 
-
+	*/
 
 	struct DelaySceneCom
 	{
