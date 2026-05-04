@@ -12,22 +12,23 @@ namespace ebbglow::core
 	private:
 		std::vector<std::unique_ptr<DrawBase>> storageArr;
 		std::vector<DrawBase*> drawArr;
-		std::mutex mtx;
+		std::unique_ptr<std::mutex> mtx;
 
 	public:
-		Layer() {}
+		Layer() : mtx(std::make_unique<std::mutex>()) {}
 		Layer& push_back(std::unique_ptr<DrawBase>&& package)
 		{
-			std::lock_guard<std::mutex> lock(mtx);
+			std::lock_guard<std::mutex> lock(*mtx);
 			storageArr.push_back(std::move(package));
 			drawArr.push_back(storageArr.back().get());
 			return *this;
 		}
 		Layer& push_back(DrawBase* package)
 		{
-			std::lock_guard<std::mutex> lock(mtx);
+			std::lock_guard<std::mutex> lock(*mtx);
 			drawArr.push_back(package);
 			return *this;
+			
 		}
 		void clear() noexcept
 		{
@@ -37,8 +38,6 @@ namespace ebbglow::core
 		auto begin() noexcept { return drawArr.begin(); }
 		auto end() noexcept { return drawArr.end(); }
 	};
-
-	//using Layers = std::array<Layer, 16>;
 
 	class Layers
 	{
