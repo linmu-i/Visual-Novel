@@ -34,12 +34,13 @@ namespace ebbglow::visualnovel
 		float timeCount;
 
 		core::Layer* layer;
+		VisualNovelConfig* cfg;
 
 		MainTextBoxCom() : textSize(0.0f), spacing(0.0f), lineSpacing(0.0f), speed(0.0f), activePixels(0.0f), totalPixel(0.0f),
-			l1OffsetY(0.0f), layer(nullptr), timeCount(0.0f) {}
+			l1OffsetY(0.0f), layer(nullptr), cfg(nullptr), timeCount(0.0f) {}
 
 		MainTextBoxCom(Vec2 position, float width, const std::string& textL0, const std::string& textL1, const rsc::SharedFile& fontData,
-			float textSize, float spacing, float lineSpacing, float speed, core::Layer* layer, ColorR8G8B8A8 textColor);
+			float textSize, float spacing, float lineSpacing, float speed, core::Layer* layer, VisualNovelConfig& cfg, ColorR8G8B8A8 textColor);
 	};
 
 	class MainTextBoxDraw : public core::DrawBase
@@ -49,27 +50,7 @@ namespace ebbglow::visualnovel
 
 	public:
 		MainTextBoxDraw(MainTextBoxCom& com) : com(com) {}
-		void draw() override
-		{
-			Vec2 pos = com.pos;
-			for (int32_t i = 0; i < com.textL0ActiveRegion.size(); ++i)
-			{
-				ScissorModeGuard guard(com.textL0ActiveRegion[i]);
-				gfx::DrawTextCodepoints(com.font, com.textL0[i], pos, com.textSize, com.spacing);
-				pos.y += com.textL0Size[i].y;
-				pos.y += com.lineSpacing;
-			}
-
-			pos = com.pos;
-			pos.y += com.l1OffsetY;
-			for (int32_t i = 0; i < com.textL1ActiveRegion.size(); ++i)
-			{
-				ScissorModeGuard guard(com.textL1ActiveRegion[i]);
-				gfx::DrawTextCodepoints(com.font, com.textL1[i], pos, com.textSize, com.spacing);
-				pos.y += com.textL1Size[i].y;
-				pos.y += com.lineSpacing;
-			}
-		}
+		void draw() override;
 	};
 
 	class MainTextBoxSystem : public core::SystemBase

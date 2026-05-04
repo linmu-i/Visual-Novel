@@ -28,18 +28,6 @@ namespace ebbglow::core
 		std::vector<entity> waitDelete;
 		std::unordered_map<std::type_index, std::unique_ptr<AddBufferBase>> waitAdd;
 
-		rsc::SharedRenderTexture2D renderTexture0;
-		rsc::SharedRenderTexture2D renderTexture1;
-
-		rsc::SharedRenderTexture2D& activeRenderTexture()
-		{
-			return framesCount % 2 == 0 ? renderTexture0 : renderTexture1;
-		}
-		rsc::SharedRenderTexture2D& inactiveRenderTexture()
-		{
-			return framesCount % 2 == 0 ? renderTexture1 : renderTexture0;
-		}
-
 		template<typename T>
 		ComponentPool<T>* getPool0()
 		{
@@ -75,7 +63,7 @@ namespace ebbglow::core
 		Camera2D* getCamera() { return &camera; }
 		MessageManager* getMessageManager() { return &messageManager; }
 
-		World2D(int screenX, int screenY) : screenX(screenX), screenY(screenY), renderTexture0(screenX, screenY), renderTexture1(screenX, screenY)
+		World2D(int screenX, int screenY) : screenX(screenX), screenY(screenY)//, renderTexture0(screenX, screenY), renderTexture1(screenX, screenY)
 		{
 			camera.offset = { 0,0 };
 			camera.target = { 0,0 };
@@ -123,10 +111,7 @@ namespace ebbglow::core
 			}
 			return nullptr;
 		}
-		rsc::SharedRenderTexture2D& getSceenshot()
-		{
-			return inactiveRenderTexture();
-		}
+
 		template<typename T, typename...Args>
 		World2D& createUnit(entity id, T com, Args...args)
 		{

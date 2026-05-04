@@ -6,9 +6,9 @@
 namespace ebbglow::visualnovel
 {
 	MainTextBoxCom::MainTextBoxCom(Vec2 position, float width, const std::string& textL0, const std::string& textL1, const rsc::SharedFile& fontData,
-		float textSize, float spacing, float lineSpacing, float speed, core::Layer* layer, ColorR8G8B8A8 textColor) :
+		float textSize, float spacing, float lineSpacing, float speed, core::Layer* layer, VisualNovelConfig& cfg, ColorR8G8B8A8 textColor) :
 		pos(position), font(utils::DynamicLoadFont(fontData, textL0 + textL1, textSize)), textSize(textSize), spacing(spacing),
-		lineSpacing(lineSpacing), layer(layer), textColor(textColor), l1OffsetY(0.0f), activePixels(0.0f), timeCount(0.0f),
+		lineSpacing(lineSpacing), layer(layer), cfg(&cfg), textColor(textColor), l1OffsetY(0.0f), activePixels(0.0f), timeCount(0.0f),
 		speed(speed)
 	{
 		float l0PixelCount = 0.0f;
@@ -35,6 +35,28 @@ namespace ebbglow::visualnovel
 
 		textL0ActiveRegion.reserve(this->textL0.size());
 		textL1ActiveRegion.reserve(this->textL1.size());
+	}
+
+	void MainTextBoxDraw::draw()
+	{
+		Vec2 pos = com.pos;
+		for (int32_t i = 0; i < com.textL0ActiveRegion.size(); ++i)
+		{
+			ScissorModeGuard guard(com.textL0ActiveRegion[i].offsetOf(com.cfg->drawOffset));
+			gfx::DrawTextCodepoints(com.font, com.textL0[i], pos, com.textSize, com.spacing);
+			pos.y += com.textL0Size[i].y;
+			pos.y += com.lineSpacing;
+		}
+
+		pos = com.pos;
+		pos.y += com.l1OffsetY;
+		for (int32_t i = 0; i < com.textL1ActiveRegion.size(); ++i)
+		{
+			ScissorModeGuard guard(com.textL1ActiveRegion[i].offsetOf(com.cfg->drawOffset));
+			gfx::DrawTextCodepoints(com.font, com.textL1[i], pos, com.textSize, com.spacing);
+			pos.y += com.textL1Size[i].y;
+			pos.y += com.lineSpacing;
+		}
 	}
 
 	void MainTextBoxSystem::update()
