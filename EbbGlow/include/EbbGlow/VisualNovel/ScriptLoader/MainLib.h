@@ -6,8 +6,10 @@
 #include <EbbGlow/VisualNovel/UI/UIState.h>
 #include <EbbGlow/VisualNovel/UI/BackLog.h>
 #include <EbbGlow/VisualNovel/VisualNovel/ColorTween.h>
-#include <EbbGlow/VisualNovel/VisualNovel/JumpAttachment.h>
+#include <EbbGlow/VisualNovel/VisualNovel/ButtonAttachment.h>
 #include <EbbGlow/VisualNovel/VisualNovel/DrawToScreen.h>
+#include <EbbGlow/VisualNovel/UI/SLControl.h>
+#include <EbbGlow/Components/MessageCallback.h>
 
 
 namespace ebbglow::visualnovel
@@ -24,7 +26,7 @@ namespace ebbglow::visualnovel
 		scLoader.registerGlobalFunction("LoadScene", Global_LoadScene);
 
 		scLoader.registerSceneType("TextScene", SceneType_TextScene);
-		scLoader.registerSceneType("SelectScene", SceneType_SelectScene);
+		//scLoader.registerSceneType("SelectScene", SceneType_SelectScene);
 		scLoader.registerSceneType("DelayScene", SceneType_DelayScene);
 		scLoader.registerSceneType("BlankScene", SceneType_BlankScene);
 
@@ -42,7 +44,11 @@ namespace ebbglow::visualnovel
 		scLoader.registerSceneFunction("ColorTween", Scene_ColorTween);
 		scLoader.registerSceneFunction("BackLogCom", Scene_BackLogCom);
 		scLoader.registerSceneFunction("TextBoxCom", Scene_TextBoxCom);
-		scLoader.registerSceneFunction("JumpButton", Scene_JumpButton);
+		scLoader.registerSceneFunction("ButtonWithAttachment", Scene_ButtonWithAttachment);
+		scLoader.registerSceneFunction("SaveBlocks", Scene_SaveBlocks);
+		scLoader.registerSceneFunction("LoadBlocks", Scene_LoadBlocks);
+		scLoader.registerSceneFunction("SetBackLog", Scene_SetBackLog);
+		scLoader.registerSceneFunction("PushBackLog", Scene_PushBackLog);
 		
 		scLoader.registerPredefinedVariable("SCENE_ARGS_LIST", [](ScriptLoader* scLoader, const std::vector<std::string>& args)
 			{
@@ -51,7 +57,7 @@ namespace ebbglow::visualnovel
 				return &(scLoader->sceneArgs[offset]);
 			});
 		scLoader.registerPredefinedVariable("RETURN_NAME", [](ScriptLoader* scLoader, const std::vector<std::string>& args) { return &(scLoader->retName); });
-		scLoader.registerPredefinedVariable("BEGIN_SCENE_NAME", [](ScriptLoader* scLoader, const std::vector<std::string>& args) { return &(scLoader->beginScene); });
+		scLoader.registerPredefinedVariable("BEGIN_SCENE_NAME", [](ScriptLoader* scLoader, const std::vector<std::string>& args) { return &(scLoader->beginSceneName); });
 		scLoader.registerPredefinedVariable("to_string", [](ScriptLoader* scLoader, const std::vector<std::string>& args)
 			{
 				thread_local static std::string buffer;
@@ -76,12 +82,14 @@ namespace ebbglow::visualnovel
 		ui::ApplyTextBoxEx(world);
 		ApplyMainTextBox(world, cfg);
 		ApplyTextScene(world, scLoader);
-		ApplySelectScene(world, scLoader);
+		//ApplySelectScene(world, scLoader);
 		ApplyDelayScene(world, scLoader);
 		//ApplyUIState(world, cfg, scLoader);
 		ApplyLogView(world, scLoader);
 		ApplyColorTween(world, scLoader);
-		ApplyJumpAttachment(world, scLoader);
+		ApplyButtonAttachment(world, scLoader);
 		ApplyDrawToScreen(world, scLoader, &(*world.getUiLayer())[7]);
+		ApplySLBlock(scLoader);
+		components::ApplyMessageCallback(world);
 	}
 }

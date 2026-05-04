@@ -23,17 +23,7 @@ namespace ebbglow::visualnovel
 		}
 	};
 
-	//class ItemDraw : public core::DrawBase
-	//{
-	//private:
-	//	const Item& com;
-	//
-	//public:
-	//	ItemDraw(const Item& com) : com(com) {}
-		//void draw() override;
-	//};
-
-	void DrawItem(const Item& item) noexcept;
+	void DrawItem(const Item& item, Vec2 offset) noexcept;
 
 	struct BackLogCom
 	{
@@ -46,7 +36,6 @@ namespace ebbglow::visualnovel
 
 		float drawOffsetY;
 
-		rsc::SharedRenderTexture2D textureBuf;
 		std::vector<core::entity> voiceButton;
 		std::vector<core::entity> jumpButton;
 		std::vector<Item> items;
@@ -76,10 +65,6 @@ namespace ebbglow::visualnovel
 		core::DoubleComs<BackLogCom>* coms;
 		ScriptLoader* scLoader;
 
-		core::Layer layerBuf;
-		
-		//core::SubSystem<ui::ButtonExCom, ui::ButtonExSystem> buttonSubSys;
-
 	public:
 		BackLogSystem(ScriptLoader* scLoader) :
 			scLoader(scLoader), world(&scLoader->world),
@@ -92,6 +77,6 @@ namespace ebbglow::visualnovel
 	inline void ApplyLogView(core::World2D& world, ScriptLoader& scLoader)
 	{
 		world.addPool<BackLogCom>();
-		world.addSystem(BackLogSystem(&scLoader));
+		world.addSystem(std::move(BackLogSystem(&scLoader)));
 	}
 }

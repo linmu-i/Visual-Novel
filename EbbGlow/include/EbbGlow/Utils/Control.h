@@ -107,6 +107,37 @@ namespace ebbglow
 	void BeginMode2D(const Camera2D& camera2D);
 	void EndMode2D();
 
+	class Mode2DGuard
+	{
+	private:
+		bool active;
+
+	public:
+		Mode2DGuard(const Camera2D& camera2D)
+		{
+			active = true;
+			BeginMode2D(camera2D);
+		}
+		~Mode2DGuard()
+		{
+			if (active) EndMode2D();
+		}
+
+		Mode2DGuard(const Mode2DGuard&) = delete;
+		Mode2DGuard& operator=(const Mode2DGuard&) = delete;
+		Mode2DGuard(Mode2DGuard&& other) = delete;
+		Mode2DGuard& operator=(Mode2DGuard&& other) = delete;
+
+		void endMode2D() noexcept
+		{
+			if (active)
+			{
+				EndMode2D();
+				active = false;
+			}
+		}
+	};
+
 	void BeginScissorMode(Rect region);
 	void EndScissorMode();
 
