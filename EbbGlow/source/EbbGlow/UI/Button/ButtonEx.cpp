@@ -27,7 +27,7 @@ namespace ebbglow::ui
 		}
 		if (button.font.valid())
 		{
-			gfx::DrawText(button.font, button.text, button.hitRect.position() + button.hitRect.coverage() / 2 - utils::MeasureTextSize(button.font, button.text, button.textSize, button.spacing) / 2, button.textSize, button.spacing);
+			gfx::DrawText(button.font, button.text, button.drawRect.position() + button.drawRect.coverage() / 2 - utils::MeasureTextSize(button.font, button.text, button.textSize, button.spacing) / 2, button.textSize, button.spacing);
 		}
 	}
 
@@ -71,7 +71,7 @@ namespace ebbglow::ui
 				}
 				if (!act.pressed)
 				{
-					if (press && inBoxCount == 1)
+					if (press)// && inBoxCount == 1)
 					{
 						ina.pressed = true;
 						msgMgr->addUnicastMessage(std::make_unique<ButtonPressMsg>(id, pressId), id);

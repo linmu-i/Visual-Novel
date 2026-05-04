@@ -7,7 +7,7 @@ namespace ebbglow::core
 {
 	void World2D::draw()
 	{
-		BeginTextureMode(activeRenderTexture());
+		//BeginTextureMode(activeRenderTexture());
 		gfx::ClearBackground(colors::Black);
 		BeginMode2D(camera);
 		for (int i = 0; i < 16; i++)
@@ -30,8 +30,8 @@ namespace ebbglow::core
 			uiLayer[i].clear();
 			unitsLayer[i].clear();
 		}
-		EndTextureMode();
-		gfx::DrawTexture(activeRenderTexture(), Vec2{ 0, 0 });
+		//EndTextureMode();
+		//gfx::DrawTexture(activeRenderTexture(), Vec2{ 0, 0 });
 	}
 
 	void World2D::update()
