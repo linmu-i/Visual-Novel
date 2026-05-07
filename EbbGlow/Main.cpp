@@ -30,14 +30,14 @@ int main()
 		CFG.virtualScreenHeight = static_cast<int>(ScY);
 		CFG.virtualScreenWidth = static_cast<int>(ScY * (16.0f / 9.0f));
 		CFG.drawOffset = { (ScX - CFG.virtualScreenWidth) / 2.0f, 0.0f };
-		CFG.drawRatio = static_cast<float>(CFG.virtualScreenHeight) / ScY;
+		CFG.drawRatio = static_cast<float>(CFG.virtualScreenHeight) / 1080.0f;
 	}
 	else
 	{
 		CFG.virtualScreenWidth = static_cast<int>(ScX);
 		CFG.virtualScreenHeight = static_cast<int>(ScX / (16.0f / 9.0f));
 		CFG.drawOffset = { 0.0f, (ScY - CFG.virtualScreenHeight) / 2.0f };
-		CFG.drawRatio = static_cast<float>(CFG.virtualScreenWidth) / ScX;
+		CFG.drawRatio = static_cast<float>(CFG.virtualScreenWidth) / 1920.0f;
 	}
 
 	auto& mainLibRsc = ebbglow::visualnovel::GetMainLibRsc();

@@ -26,14 +26,14 @@ namespace ebbglow::visualnovel
 			exText[0].push_back(tmp.back());
 		}
 		float heightCount = item.region.height * 0.1f;
-		float spacing = item.region.height * 0.06;
+		float spacing = item.region.height * 0.06f;
 		if (!exText.empty())
 		{
-			gfx::DrawTextCodepoints(item.font, exText[0], Vec2{ item.region.position().x + offset.x, item.region.position().y + offset.y + heightCount }, cfg.textSize, cfg.textSize * 0.1f);
+			gfx::DrawTextCodepoints(item.font, exText[0], Vec2{ item.region.position().x, item.region.position().y + heightCount } + offset, cfg.textSize, cfg.textSize * 0.1f);
 			heightCount += utils::MeasureTextSize(item.font, utils::ToUTF8Text(exText[0]), cfg.textSize, cfg.textSize * 0.1f).y;
 			gfx::DrawRectangleGradientH
 			(
-				Rect{ item.region.x + offset.x, item.region.y + spacing + heightCount - 0.8f + offset.y, item.region.x + cfg.virtualScreenWidth * 0.3333333f, 1.6f },
+				Rect{ item.region.x, item.region.y + spacing + heightCount - 0.8f, item.region.x + cfg.virtualScreenWidth * 0.3333333f, 1.6f }.offsetOf(offset),
 				ColorR8G8B8A8(255, 255, 255, 255),
 				ColorR8G8B8A8(255, 255, 255, 0)
 			);
@@ -62,7 +62,7 @@ namespace ebbglow::visualnovel
 		gfx::DrawLine(Vec2{ item.region.x, item.region.y + item.region.height } + offset, Vec2{ item.region.x + cfg.virtualScreenWidth * 0.6666667f, item.region.y + item.region.height } + offset, ColorR8G8B8A8(128, 128, 128, 255), 1.0f);
 	}
 
-	static Item CreateItem(const BackLogView& logView, ScriptLoader& loader, int index, const VisualNovelConfig& cfg) noexcept
+	static Item CreateItem(const BackLogView& logView, ScriptLoader& loader, size_t index, const VisualNovelConfig& cfg) noexcept
 	{
 		return Item
 		{
@@ -111,20 +111,20 @@ namespace ebbglow::visualnovel
 	void BackLogDraw::draw()
 	{
 		{
-			auto scissorMode = ScissorModeGuard(Rect{ BackLogLayout::viewRegion.position() * cfg.drawRatio, BackLogLayout::viewRegion.coverage() * cfg.drawRatio });
+			auto scissorMode = ScissorModeGuard(Rect{ BackLogLayout::viewRegion.position() * cfg.drawRatio + cfg.drawOffset, BackLogLayout::viewRegion.coverage() * cfg.drawRatio });
 			for (auto& item : com.items)
 			{
-				DrawItem(item, Vec2{ 0, com.drawOffsetY });//com.drawOffsetY + cfg.virtualScreenHeight / 6.0f - (cfg.virtualScreenHeight * 5.0f / 36.0f) });
+				DrawItem(item, Vec2{ 0, com.drawOffsetY });// + cfg.drawOffset);
 			}
 		}
 		gfx::DrawLine(
 			BackLogLayout::viewRegion.position() * cfg.drawRatio,
-			Vec2{ BackLogLayout::viewRegion.x + BackLogLayout::viewRegion.width, BackLogLayout::viewRegion.y } *cfg.drawRatio,
+			Vec2{ BackLogLayout::viewRegion.x + BackLogLayout::viewRegion.width, BackLogLayout::viewRegion.y } * cfg.drawRatio,
 			0xffffffff, 1.0f * cfg.drawRatio);
 
 		gfx::DrawLine(
-			Vec2{ BackLogLayout::viewRegion.x * cfg.drawRatio, (BackLogLayout::viewRegion.y + BackLogLayout::viewRegion.height) * cfg.drawRatio },
-			Vec2{ BackLogLayout::viewRegion.x + BackLogLayout::viewRegion.width, BackLogLayout::viewRegion.y + BackLogLayout::viewRegion.height } *cfg.drawRatio,
+			Vec2{ BackLogLayout::viewRegion.x , BackLogLayout::viewRegion.y + BackLogLayout::viewRegion.height } * cfg.drawRatio,
+			Vec2{ BackLogLayout::viewRegion.x + BackLogLayout::viewRegion.width, BackLogLayout::viewRegion.y + BackLogLayout::viewRegion.height } * cfg.drawRatio,
 			0xffffffff, 1.0f * cfg.drawRatio);
 	}
 
@@ -136,7 +136,7 @@ namespace ebbglow::visualnovel
 				auto& logView = scLoader->backLogViews;
 
 				ina.wheelDeltaCount += input::MouseWheelDelta();
-				int32_t delta = act.wheelDeltaCount > 0.0 ? floor(act.wheelDeltaCount) : ceil(act.wheelDeltaCount);
+				int32_t delta = static_cast<int32_t>(act.wheelDeltaCount > 0.0 ? floor(act.wheelDeltaCount) : ceil(act.wheelDeltaCount));
 				int32_t newIndex = std::clamp(act.index + delta, 0, std::max(static_cast<int>(logView.size()) - 4, 0));
 					
 				float itemHeight = BackLogLayout::size.y * scLoader->cfg.drawRatio;

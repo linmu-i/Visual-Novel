@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cmath>
+#include <concepts>
 
 namespace ebbglow
 {
@@ -12,6 +13,9 @@ namespace ebbglow
 
 		constexpr Vec2() noexcept : x(0.0f), y(0.0f) {}
 		constexpr Vec2(float x, float y) noexcept : x(x), y(y) {}
+
+		template<std::convertible_to<float> T0, std::convertible_to<float> T1>
+		constexpr Vec2(T0 x, T1 y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
 
 		[[nodiscard]] float length() const noexcept
 		{
@@ -66,6 +70,9 @@ namespace ebbglow
 		constexpr Rect() : x(0.0f), y(0.0f), width(0.0f), height(0.0f) {}
 		constexpr Rect(float x, float y, float width, float height) : x(x), y(y), width(width), height(height) {}
 		constexpr Rect(Vec2 position, Vec2 coverage) : x(position.x), y(position.y), width(coverage.x), height(coverage.y) {}
+
+		template<std::convertible_to<float> T0, std::convertible_to<float> T1, std::convertible_to<float> T2, std::convertible_to<float> T3>
+		constexpr Rect(T0 x, T1 y, T2 width, T3 height) : x(static_cast<float>(x)), y(static_cast<float>(y)), width(static_cast<float>(width)), height(static_cast<float>(height)) {}
 
 		[[nodiscard]] constexpr bool contain(const Vec2& point) const noexcept
 		{

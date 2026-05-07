@@ -15,10 +15,10 @@ namespace ebbglow::visualnovel
 		gfx::DrawRect(Rect{ sl.pos, Vec2{cfg.virtualScreenWidth * 0.4f, 21 * scale} }, sl.color);
 		gfx::DrawRect(Rect{sl.pos.x, sl.pos.y - 16.0f * scale, 200.0f * scale, 16.0f * scale}, sl.color);
 		gfx::DrawTriangle(Vec2{ sl.pos.x + 200.0f * scale, sl.pos.y - 16.0f * scale }, Vec2{ sl.pos.x + 200.0f * scale, sl.pos.y }, Vec2{ sl.pos.x + 216.0f * scale, sl.pos.y }, sl.color);
-		gfx::DrawRectLines(Rect{ sl.pos, Vec2{cfg.virtualScreenWidth * 0.4f, cfg.virtualScreenHeight / 6.0f} *scale }, sl.color, 3.0f * scale);
+		gfx::DrawRectLines(Rect{ sl.pos, Vec2{cfg.virtualScreenWidth * 0.4f, cfg.virtualScreenHeight / 6.0f} }, sl.color, 3.0f * scale);
 		
 
-		if (sl.image.valid()) gfx::DrawTexture(sl.image, sl.pos + sl.imgOffset * scale, scale);
+		if (sl.image.valid()) gfx::DrawTextureRegionToRegion(sl.image, Rect{ 0.0f, 0.0f, sl.image.width(), sl.image.height() }, Rect{ sl.pos + sl.imgOffset * scale, Vec2{ 256, 144 } *scale }, Vec2{ 0, 0 }, scale);
 		else gfx::DrawRect(Rect{ sl.pos + sl.imgOffset * scale , Vec2{ 256, 144 } * scale }, 0xAAAAAAFF);
 
 		gfx::DrawText(sl.font, sl.indexStr, sl.pos + Vec2{ 4, -8 } *scale, 24.0f * scale, 2.0f * scale);
