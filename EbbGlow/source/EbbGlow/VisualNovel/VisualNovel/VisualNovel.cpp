@@ -111,9 +111,10 @@ namespace ebbglow::visualnovel
 			cfg.text.textSize = DefaultConfig::text_textSize;
 		}
 
-		if ((value = cfgIni["Text"]["fontData"]) != "")
+		if ((value = cfgIni["Text"]["fontPath"]) != "")
 		{
 			cfg.text.fontData = rsc::SharedFile(value.c_str());
+			cfg.text.fontPath = value;
 		}
 		else
 		{
@@ -159,12 +160,14 @@ namespace ebbglow::visualnovel
 
 		if ((value = cfgIni["Save"]["savePathFormat"]) != "")
 		{
+			cfg.save.pathFormat = value;
 			cfg.save.getSavePath = [value](size_t index) {
 				return std::filesystem::path(std::vformat(value, std::make_format_args(index)));
 			};
 		}
 		else
 		{
+			cfg.save.pathFormat = DefaultConfig::savePath;
 			cfg.save.getSavePath = [](size_t index) {
 				return std::filesystem::path(std::format(DefaultConfig::savePath, index));
 			};
@@ -188,6 +191,42 @@ namespace ebbglow::visualnovel
 				cfg.audio.volumes.push_back(std::stof(value.substr(start)));
 			}
 		}
+	}
+
+	void WriteVisualNovelConfig(const std::filesystem::path& path, const VisualNovelConfig& cfg)
+	{
+		mINI::INIFile iniFile{ path };
+		mINI::INIStructure cfgIni;
+
+		cfgIni["Graphics"]["fullScreen"] = cfg.win.fullScreen ? "true" : "false";
+		cfgIni["Graphics"]["windowWidth"] = std::to_string(cfg.win.width);
+		cfgIni["Graphics"]["windowHeight"] = std::to_string(cfg.win.height);
+		cfgIni["Graphics"]["windowTitle"] = cfg.win.title;
+
+		cfgIni["Text"]["textSpeed"] = std::format("{}", cfg.text.textSpeed);
+		cfgIni["Text"]["textSize"] = std::format("{}", cfg.text.textSize);
+		cfgIni["Text"]["fontPath"] = cfg.text.fontPath;
+
+		cfgIni["I18n"]["mainLanguage"] = std::to_string(cfg.i18n.mainLanguage);
+		cfgIni["I18n"]["secondaryLanguage"] = std::to_string(cfg.i18n.secondaryLanguage);
+		cfgIni["I18n"]["uiLanguage"] = std::to_string(cfg.i18n.uiLanguage);
+
+		cfgIni["Save"]["maxSaveCount"] = std::to_string(cfg.save.maxSaveCount);
+		cfgIni["Save"]["savePathFormat"] = cfg.save.pathFormat;   // 新增字段
+
+		{
+			std::string volumesStr;
+			for (size_t i = 0; i < cfg.audio.volumes.size(); ++i) {
+				if (i != 0) volumesStr += ',';
+				std::string s = std::format("{}", cfg.audio.volumes[i]);
+				if (s.find('.') == std::string::npos)
+					s += ".0";
+				volumesStr += s;
+			}
+			cfgIni["Audio"]["volumes"] = volumesStr;
+		}
+
+		iniFile.write(cfgIni);
 	}
 
 	void CalculateVirtualScreen(VisualNovelConfig& cfg)
