@@ -228,6 +228,9 @@
     <ClCompile Include="source\EbbGlow\Components\MessageCallback.cpp">
       <Filter>源文件\Components</Filter>
     </ClCompile>
+    <ClCompile Include="source\EbbGlow\VisualNovel\VisualNovel\VisualNovel.cpp">
+      <Filter>源文件\VisualNovel\VisualNovel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\EbbGlow\Utils\ResourceCreator.h">

@@ -48,32 +48,59 @@ namespace ebbglow::visualnovel
 
 	struct VisualNovelConfig
 	{
-		uint8_t mainLanguage = 0;
-		uint8_t secondaryLanguage = 1;
-		uint8_t uiLanguage = 0;
+		struct I18n
+		{
+			uint8_t mainLanguage = 0;
+			uint8_t secondaryLanguage = 1;
+			uint8_t uiLanguage = 0;
 
-		float textSpeed = 1.0f;
-		float textSize = 20;
+			bool secondLanguageShow = true;
+		} i18n;
+		struct Text
+		{
+			float textSpeed = 1.0f;
+			float textSize = 20;
+			std::string fontPath;
+			rsc::SharedFile fontData;
+			bool showReadText = false;
+			Color readTextColor = colors::White;
+		} text;
+		struct Win
+		{
+			std::string title;
 
-		rsc::SharedFile fontData;
+			int32_t width = 1920;
+			int32_t height = 1080;
 
-		int virtualScreenWidth = 0;
-		int virtualScreenHeight = 0;
+			bool fullScreen = true;
 
-		std::vector<float> volumes;
+			int32_t fps = 120;
+		} win;
+		struct VirtualScreen
+		{
+			int32_t width = 0;
+			int32_t height = 0;
 
-		bool showReadText = false;
-		Color readTextColor = colors::White;
-		std::unordered_set<std::string> readTextSet;
+			float drawRatio = 0.0f;
+			Vec2 drawOffset = { 0,0 };
+		} virtualScreen;
 
-		float drawRatio = 0.0f;
-		Vec2 drawOffset = { 0,0 };
+		struct Audio
+		{
+			std::vector<float> volumes;
+		} audio;
 
-		bool secondLanguageShow = true;
-
-		std::function<std::filesystem::path(size_t)> getSavePath = [](size_t index) { return std::filesystem::path(std::format("save/{:03d}.sav", index)); };
-		size_t maxSaveCount = 80;
+		struct Save
+		{
+			std::string pathFormat;
+			std::function<std::filesystem::path(size_t)> getSavePath = [](size_t index) { return std::filesystem::path(std::format("save/{:03d}.sav", index)); };
+			size_t maxSaveCount = 80;
+		} save;
 	};
+
+	void ReadVisualNovelConfig(const std::filesystem::path& path, VisualNovelConfig& cfg);
+	void WriteVisualNovelConfig(const std::filesystem::path& path, const VisualNovelConfig& cfg);
+	void CalculateVirtualScreen(VisualNovelConfig& cfg);
 }
 
 namespace ebbglow

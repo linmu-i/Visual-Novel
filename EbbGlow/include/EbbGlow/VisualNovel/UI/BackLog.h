@@ -19,7 +19,7 @@ namespace ebbglow::visualnovel
 
 		Item(const std::string& text, const std::string& exText, const std::string& voicePath, const std::string& sceneName, Rect region, const VisualNovelConfig& cfg)
 			: text(text), exText(exText), voicePath(voicePath), sceneName(sceneName), region(region), cfg(&cfg),
-			font(utils::DynamicLoadFont(cfg.fontData, text + exText + '.', cfg.textSize)) {
+			font(utils::DynamicLoadFont(cfg.text.fontData, text + exText + '.', cfg.text.textSize)) {
 		}
 	};
 

@@ -10,15 +10,17 @@ namespace ebbglow::visualnovel
 	void SLBlockDraw::draw()
 	{
 		auto& cfg = *sl.cfg;
-		float scale = cfg.drawRatio;
-		gfx::DrawRect(Rect{ sl.pos, Vec2{cfg.virtualScreenWidth * 0.4f, cfg.virtualScreenHeight / 6.0f} }, 0xddddddff);
-		gfx::DrawRect(Rect{ sl.pos, Vec2{cfg.virtualScreenWidth * 0.4f, 21 * scale} }, sl.color);
+		auto& virtualScreen = cfg.virtualScreen;
+
+		float scale = virtualScreen.drawRatio;
+		gfx::DrawRect(Rect{ sl.pos, Vec2{virtualScreen.width * 0.4f, virtualScreen.height / 6.0f} }, 0xddddddff);
+		gfx::DrawRect(Rect{ sl.pos, Vec2{virtualScreen.width * 0.4f, 21 * scale} }, sl.color);
 		gfx::DrawRect(Rect{sl.pos.x, sl.pos.y - 16.0f * scale, 200.0f * scale, 16.0f * scale}, sl.color);
 		gfx::DrawTriangle(Vec2{ sl.pos.x + 200.0f * scale, sl.pos.y - 16.0f * scale }, Vec2{ sl.pos.x + 200.0f * scale, sl.pos.y }, Vec2{ sl.pos.x + 216.0f * scale, sl.pos.y }, sl.color);
-		gfx::DrawRectLines(Rect{ sl.pos, Vec2{cfg.virtualScreenWidth * 0.4f, cfg.virtualScreenHeight / 6.0f} }, sl.color, 3.0f * scale);
-		
+		gfx::DrawRectLines(Rect{ sl.pos, Vec2{virtualScreen.width * 0.4f, virtualScreen.height / 6.0f} }, sl.color, 3.0f * scale);
 
-		if (sl.image.valid()) gfx::DrawTextureRegionToRegion(sl.image, Rect{ 0.0f, 0.0f, sl.image.width(), sl.image.height() }, Rect{ sl.pos + sl.imgOffset * scale, Vec2{ 256, 144 } *scale }, Vec2{ 0, 0 }, scale);
+
+		if (sl.image.valid()) gfx::DrawTextureRegionToRegion(sl.image, Rect{ 0.0f, 0.0f, sl.image.width(), sl.image.height() }, Rect{ sl.pos + sl.imgOffset * scale, Vec2{ 256, 144 } *scale }, Vec2{ 0, 0 });
 		else gfx::DrawRect(Rect{ sl.pos + sl.imgOffset * scale , Vec2{ 256, 144 } * scale }, 0xAAAAAAFF);
 
 		gfx::DrawText(sl.font, sl.indexStr, sl.pos + Vec2{ 4, -8 } *scale, 24.0f * scale, 2.0f * scale);
@@ -50,8 +52,9 @@ namespace ebbglow::visualnovel
 		auto& cfg = scLoader.cfg;
 		auto& idMgr = *world.getEntityManager();
 		auto& mainLibRsc = GetMainLibRsc();
+		auto& virtualScreen = cfg.virtualScreen;
 
-		float scale = cfg.drawRatio;
+		float scale = virtualScreen.drawRatio;
 		Vec2 blockBeginVec = Vec2{ 173, 240 } * scale;
 		float xOffset = 786 * scale;
 		float yOffset = 212 * scale;
@@ -90,7 +93,7 @@ namespace ebbglow::visualnovel
 					oss << std::put_time(&timeInfo, "%Y/%m/%d %H:%M:%S");
 					std::string timeStr = oss.str();
 
-					auto font = utils::DynamicLoadFont(cfg.fontData, text + info->attachmentText + "0123456789/:", SLBlock::textSize * scale);
+					auto font = utils::DynamicLoadFont(cfg.text.fontData, text + info->attachmentText + "0123456789/:", SLBlock::textSize * scale);
 					auto cdpts = utils::TextLineCalculateWithWordWrap(
 						text, SLBlock::textSize * scale, SLBlock::textSize * scale * 0.1f, font,
 						SLBlock::txtMaxLength * scale);
@@ -108,7 +111,7 @@ namespace ebbglow::visualnovel
 						SLBlock
 						{
 							pos, {}, blockColor,
-							"", {}, "", utils::DynamicLoadFont(cfg.fontData, "0123456789", SLBlock::textSize * scale),& cfg, layer, indexStr
+							"", {}, "", utils::DynamicLoadFont(cfg.text.fontData, "0123456789", SLBlock::textSize * scale),& cfg, layer, indexStr
 						});
 				}
 
@@ -117,12 +120,12 @@ namespace ebbglow::visualnovel
 					world.createUnit(ids[indexOffset],
 						SaveAttachment
 						{
-							&infoList, cfg.getSavePath(infoIndex), indexOffset
+							&infoList, cfg.save.getSavePath(infoIndex), indexOffset
 						},
 						ui::ButtonExCom
 						{
-							Rect{ pos + cfg.drawOffset, Vec2{cfg.virtualScreenWidth * 0.4f, cfg.virtualScreenHeight / 6.0f} *scale },
-							Rect{ pos, Vec2{cfg.virtualScreenWidth * 0.4f, cfg.virtualScreenHeight / 6.0f} *scale },
+							Rect{ pos + virtualScreen.drawOffset, Vec2{cfg.virtualScreen.width * 0.4f, cfg.virtualScreen.height / 6.0f} *scale },
+							Rect{ pos, Vec2{virtualScreen.width * 0.4f, cfg.virtualScreen.height / 6.0f} *scale },
 							layer, {}, {}, {}, {}, "", colors::Blank, 0.0f, 0.0f
 						});
 					world.getMessageManager()->subscribe(ids[indexOffset]);
@@ -132,12 +135,12 @@ namespace ebbglow::visualnovel
 					world.createUnit(ids[indexOffset],
 						LoadAttachment
 						{
-							&infoList, cfg.getSavePath(infoIndex), indexOffset
+							&infoList, cfg.save.getSavePath(infoIndex), indexOffset
 						},
 						ui::ButtonExCom
 						{
-							Rect{ pos + cfg.drawOffset, Vec2{cfg.virtualScreenWidth * 0.4f, cfg.virtualScreenHeight / 6.0f} *scale },
-							Rect{ pos, Vec2{cfg.virtualScreenWidth * 0.4f, cfg.virtualScreenHeight / 6.0f} *scale },
+							Rect{ pos + virtualScreen.drawOffset, Vec2{virtualScreen.width * 0.4f, virtualScreen.height / 6.0f} *scale },
+							Rect{ pos, Vec2{virtualScreen.width * 0.4f, virtualScreen.height / 6.0f} *scale },
 							layer, {}, {}, {}, {}, "", colors::Blank, 0.0f, 0.0f
 						});
 					world.getMessageManager()->subscribe(ids[indexOffset]);
@@ -153,9 +156,9 @@ namespace ebbglow::visualnovel
 		if (updateInfoListFlag)
 		{
 			updateInfoListFlag = false;
-			for (size_t i = 0; i < scLoader->cfg.maxSaveCount; ++i)
+			for (size_t i = 0; i < scLoader->cfg.save.maxSaveCount; ++i)
 			{
-				std::filesystem::path path = scLoader->cfg.getSavePath(i);
+				std::filesystem::path path = scLoader->cfg.save.getSavePath(i);
 				if (std::filesystem::exists(path))
 				{
 					if (i >= infoList.size())

@@ -42,7 +42,7 @@ namespace ebbglow::visualnovel
 		Vec2 pos = com.pos;
 		for (int32_t i = 0; i < com.textL0ActiveRegion.size(); ++i)
 		{
-			ScissorModeGuard guard(com.textL0ActiveRegion[i].offsetOf(com.cfg->drawOffset));
+			ScissorModeGuard guard(com.textL0ActiveRegion[i].offsetOf(com.cfg->virtualScreen.drawOffset));
 			gfx::DrawTextCodepoints(com.font, com.textL0[i], pos, com.textSize, com.spacing);
 			pos.y += com.textL0Size[i].y;
 			pos.y += com.lineSpacing;
@@ -52,7 +52,7 @@ namespace ebbglow::visualnovel
 		pos.y += com.l1OffsetY;
 		for (int32_t i = 0; i < com.textL1ActiveRegion.size(); ++i)
 		{
-			ScissorModeGuard guard(com.textL1ActiveRegion[i].offsetOf(com.cfg->drawOffset));
+			ScissorModeGuard guard(com.textL1ActiveRegion[i].offsetOf(com.cfg->virtualScreen.drawOffset));
 			gfx::DrawTextCodepoints(com.font, com.textL1[i], pos, com.textSize, com.spacing);
 			pos.y += com.textL1Size[i].y;
 			pos.y += com.lineSpacing;

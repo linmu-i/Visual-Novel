@@ -5,47 +5,35 @@
 #include <EbbGlow/Utils/Control.h>
 
 //const char* FONT_PATH = R"(D:\Downloads\GSdefaultfonts.ttf)";//
-const char* FONT_PATH = R"(resource\font\Noto_Sans_SC\static\NotoSansSC-SemiBold.ttf)";
+//const char* FONT_PATH = R"(resource/font/Noto_Sans_SC/static/NotoSansSC-SemiBold.ttf)";
 ebbglow::vn::VisualNovelConfig CFG;
 
 int main()
 {
-	ebbglow::SetConfigFlag(ebbglow::flags::WindowUndecorated);
-	ebbglow::Init(0, 0, "");
-	ebbglow::SetTargetFPS(120);
-	CFG.textSpeed = 1.0f;
-	CFG.fontData = ebbglow::rsc::SharedFile(FONT_PATH);
-	CFG.textSize = 32;
-	CFG.readTextColor = { 170, 230, 255, 255 };
-	CFG.mainLanguage = 0;
-	CFG.secondaryLanguage = 2;
-	CFG.volumes.push_back(0.8f);
-	CFG.secondLanguageShow = true;
+	
+	ebbglow::visualnovel::ReadVisualNovelConfig(u8"config/config.ini", CFG);
 
-	auto ScX = ebbglow::utils::ScreenSize().x;
-	auto ScY = ebbglow::utils::ScreenSize().y;
-
-	if (ScX / ScY > 16.0f / 9.0f)
+	if (CFG.win.fullScreen)
 	{
-		CFG.virtualScreenHeight = static_cast<int>(ScY);
-		CFG.virtualScreenWidth = static_cast<int>(ScY * (16.0f / 9.0f));
-		CFG.drawOffset = { (ScX - CFG.virtualScreenWidth) / 2.0f, 0.0f };
-		CFG.drawRatio = static_cast<float>(CFG.virtualScreenHeight) / 1080.0f;
+		ebbglow::SetConfigFlag(ebbglow::flags::WindowUndecorated);
+		ebbglow::Init(0, 0, CFG.win.title);
+		ebbglow::SetTargetFPS(120);
 	}
 	else
 	{
-		CFG.virtualScreenWidth = static_cast<int>(ScX);
-		CFG.virtualScreenHeight = static_cast<int>(ScX / (16.0f / 9.0f));
-		CFG.drawOffset = { 0.0f, (ScY - CFG.virtualScreenHeight) / 2.0f };
-		CFG.drawRatio = static_cast<float>(CFG.virtualScreenWidth) / 1920.0f;
+		ebbglow::Init(CFG.win.width, CFG.win.height, CFG.win.title);
+		ebbglow::SetTargetFPS(120);
 	}
 
+	ebbglow::visualnovel::CalculateVirtualScreen(CFG);
+
+
 	auto& mainLibRsc = ebbglow::visualnovel::GetMainLibRsc();
-	mainLibRsc.textBoxBackGround = ebbglow::rsc::SharedTexture2D("resource\\img\\TextBoxBackground.png");
-	mainLibRsc.chrNameBackGround = ebbglow::rsc::SharedTexture2D("resource\\img\\ChrBoxBackground.png");
+	mainLibRsc.textBoxBackGround = ebbglow::rsc::SharedTexture2D("resource/img/TextBoxBackground.png");
+	mainLibRsc.chrNameBackGround = ebbglow::rsc::SharedTexture2D("resource/img/ChrBoxBackground.png");
 	mainLibRsc.chrNameOffsetX = 0.5f;
 
-	ebbglow::core::World2D mainWorld(ScX, ScY);
+	ebbglow::core::World2D mainWorld(ebbglow::utils::ScreenSize().x, ebbglow::utils::ScreenSize().y);
 	mainWorld.addSystem<ebbglow::vn::MusicManager>(ebbglow::vn::MusicManager(CFG));
 	ebbglow::vn::ScriptLoader scLoader(mainWorld, CFG, mainWorld.getSystem<ebbglow::vn::MusicManager>());
 	ebbglow::vn::ApplyVisualNovel(mainWorld, CFG, scLoader);
@@ -57,7 +45,7 @@ int main()
 	{
 		cdpt[i] = i;
 	}
-	ebbglow::rsc::SharedFont asciiFont = ebbglow::utils::DynamicLoadFont(CFG.fontData, cdpt, 64);
+	ebbglow::rsc::SharedFont asciiFont = ebbglow::utils::DynamicLoadFont(CFG.text.fontData, cdpt, 64);
 
 	auto loaded = scLoader.init("Script.txt");
 
@@ -86,7 +74,6 @@ int main()
 		ebbglow::BeginDrawing();
 		ebbglow::gfx::ClearBackground(ebbglow::colors::Black);
 		mainWorld.draw();
-		//ebbglow::gfx::DrawText(asciiFont, std::to_string(static_cast<int>(1 / ebbglow::GetFrameTime())), { 5.0f, 5.0f }, 32, 3);
 		DrawAvrFPS();
 		ebbglow::EndDrawing();
 	}

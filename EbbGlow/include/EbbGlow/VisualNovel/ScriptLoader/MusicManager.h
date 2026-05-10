@@ -18,7 +18,7 @@ namespace ebbglow::visualnovel
 		std::uint16_t voiceVolumeIndex;
 
 	public:
-		MusicManager(const VisualNovelConfig& config) : cfg(config) {}
+		MusicManager(const VisualNovelConfig& config) : cfg(config), bgmVolumeIndex(0), voiceVolumeIndex(0) {}
 
 		void update() override;
 		void SetBgm(const rsc::SharedMusic& music, float volume, const std::string& path, uint16_t volumeIndex) noexcept;

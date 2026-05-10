@@ -37,7 +37,7 @@ namespace ebbglow::visualnovel
 
 	public:
 		ImageExporter(core::Layers* layers, const VisualNovelConfig& cfg) : layers(layers),
-			textureBuffer(cfg.virtualScreenWidth, cfg.virtualScreenHeight) {}
+			textureBuffer(cfg.virtualScreen.width, cfg.virtualScreen.height) {}
 		void draw() override;
 		core::RenderPackageFlags getFlags() override;
 	};

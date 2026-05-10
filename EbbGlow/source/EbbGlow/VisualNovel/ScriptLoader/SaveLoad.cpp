@@ -154,7 +154,7 @@ namespace ebbglow::visualnovel
 			
 			if (!utils::Deserialize(is, bgmPath)) return false;
 			if (!utils::Deserialize(is, bgmVolumeIndex)) return false;
-			scLoader.musicMgr.SetBgm(rsc::SharedMusic(bgmPath.c_str()), scLoader.cfg.volumes[bgmVolumeIndex], bgmPath, bgmVolumeIndex);
+			scLoader.musicMgr.SetBgm(rsc::SharedMusic(bgmPath.c_str()), scLoader.cfg.audio.volumes[bgmVolumeIndex], bgmPath, bgmVolumeIndex);
 
 			
 			if (!utils::Deserialize(is, tmpNumberStorage)) return false;
