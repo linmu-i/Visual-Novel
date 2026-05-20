@@ -12,7 +12,7 @@ namespace ebbglow::ui
 		for (int i = 0; i < framesPath.size(); ++i)
 		{
 			frameTime.push_back(time);
-			framesSequence.push_back(framesPath[i].c_str());
+			framesSequence.push_back(rsc::SharedTexture(framesPath[i].c_str()));
 		}
 	}
 
@@ -25,7 +25,7 @@ namespace ebbglow::ui
 		for (int i = 0; i < framesPath.size(); ++i)
 		{
 			frameTime.push_back(time);
-			framesSequence.push_back(framesPath[i].c_str());
+			framesSequence.push_back(rsc::SharedTexture(framesPath[i].c_str()));
 		}
 	}
 

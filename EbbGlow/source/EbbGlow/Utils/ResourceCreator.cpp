@@ -1,43 +1,61 @@
 #include "ResourceCreator.h"
+#include "ResourceBlock.h"
 
 namespace ebbglow::resource
 {
 	SharedFont ResourceCreator::CreateFont(::Font font) const noexcept
 	{
 		SharedFont result;
-		if (font.texture.id == 0) return result;
-		::Font * ptr = new(std::nothrow) ::Font(font);
-		result.font = static_cast<void*>(ptr);
-		result.ref = new(std::nothrow) std::atomic<size_t>(1);
+		if (!::IsFontValid(font)) return result;
+		result.data = new(std::nothrow) FontBlock(1, font);
+		if (!result.data) return result;
+		if (!::IsFontValid(static_cast<FontBlock*>(result.data)->font))
+		{
+			delete static_cast<FontBlock*>(result.data);
+			result.data = nullptr;
+		}
 		return result;
 	};
 
 	SharedTexture ResourceCreator::CreateTexture(::Texture2D texture) const noexcept
 	{
 		SharedTexture result;
-		if (texture.id == 0) return result;
-		::Texture* ptr = new(std::nothrow) ::Texture(texture);
-		result.texture = static_cast<void*>(ptr);
-		result.ref = new(std::nothrow) std::atomic<size_t>(1);
+		if (!::IsTextureValid(texture)) return result;
+		result.data = new(std::nothrow) TextureBlock(1, texture);
+		if (!result.data) return result;
+		if (!::IsTextureValid(static_cast<TextureBlock*>(result.data)->texture))
+		{
+			delete static_cast<TextureBlock*>(result.data);
+			result.data = nullptr;
+		}
 		return result;
 	}
 
 	SharedShader ResourceCreator::CreateShader(::Shader shader) const noexcept
 	{
 		SharedShader result;
-		if (shader.id == 0) return result;
-		::Shader* ptr = new(std::nothrow) ::Shader(shader);
-		result.shader = static_cast<void*>(ptr);
-		result.ref = new(std::nothrow) std::atomic<size_t>(1);
+		if (!::IsShaderValid(shader)) return result;
+		result.data = new(std::nothrow) ShaderBlock(1, shader);
+		if (!result.data) return result;
+		if (!::IsShaderValid(static_cast<ShaderBlock*>(result.data)->shader))
+		{
+			delete static_cast<ShaderBlock*>(result.data);
+			result.data = nullptr;
+		}
 		return result;
 	}
 
 	SharedImage ResourceCreator::CreateImage(::Image img) const noexcept
 	{
 		SharedImage result;
-		::Image* ptr = new(std::nothrow) ::Image(img);
-		result.image = static_cast<void*>(ptr);
-		result.ref = new(std::nothrow) std::atomic<size_t>(1);
+		if (!::IsImageValid(img)) return result;
+		result.data = new(std::nothrow) ImageBlock(1, img);
+		if (!result.data) return result;
+		if (!::IsImageValid(static_cast<ImageBlock*>(result.data)->image))
+		{
+			delete static_cast<ImageBlock*>(result.data);
+			result.data = nullptr;
+		}
 		return result;
 	}
 }

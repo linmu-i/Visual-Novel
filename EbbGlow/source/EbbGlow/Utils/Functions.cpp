@@ -20,7 +20,8 @@ namespace ebbglow::utils
 	rsc::SharedFont DynamicLoadFont(const rsc::SharedFile& fontData, const std::vector<int>& codepoints, float fontSize, rsc::FontType type) noexcept
 	{
 		if (!fontData.valid()) return rsc::SharedFont();
-		const char* p = fontData.fileName();
+		std::string fileNameTmp = fontData.fileName().string();
+		const char* p = fileNameTmp.c_str();
 		while (*p != '\0') ++p;
 		while (*p != '.' && p != fontData.fileName()) --p;
 		if (*p != '.') return rsc::SharedFont();
@@ -317,7 +318,7 @@ std::vector<std::vector<int>> TextLineCalculateWithWordWrap(
 	CodepointsOwner cpOwner(text.c_str());
 	if (cpOwner.count <= 0 || !cpOwner.data) return {};
 
-	WidthCache wcache(*static_cast<Font*>(font.get()), fontSize, spacing);
+	WidthCache wcache(*static_cast<const Font*>(font.get()), fontSize, spacing);
 	std::vector<std::vector<int>> result;
 
 	int* codepoints = cpOwner.data;
@@ -443,7 +444,7 @@ std::vector<std::vector<int>> TextLineCalculateWithWordWrap(
 	rsc::SharedImage LoadImageFromTexture(const rsc::SharedTexture& texture)
 	{
 		if (!texture.valid()) return {};
-		::Texture* tex = static_cast<::Texture*>(texture.get());
+		const ::Texture* tex = static_cast<const ::Texture*>(texture.get());
 		::Image img = LoadImageFromTexture(*tex);
 		rsc::ResourceCreator creator;
 		return creator.CreateImage(img);
@@ -451,8 +452,8 @@ std::vector<std::vector<int>> TextLineCalculateWithWordWrap(
 	rsc::SharedImage LoadImageFromTexture(const rsc::SharedRenderTexture& texture)
 	{
 		if (!texture.valid()) return {};
-		::RenderTexture* rndtex = static_cast<::RenderTexture*>(texture.get());
-		::Texture* tex = static_cast<::Texture*>(&rndtex->texture);
+		const ::RenderTexture* rndtex = static_cast<const ::RenderTexture*>(texture.get());
+		const ::Texture* tex = static_cast<const ::Texture*>(&rndtex->texture);
 		::Image img = LoadImageFromTexture(*tex);
 		rsc::ResourceCreator creator;
 		return creator.CreateImage(img);

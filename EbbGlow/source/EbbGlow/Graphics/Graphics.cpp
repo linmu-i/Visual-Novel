@@ -149,42 +149,42 @@ namespace ebbglow::gfx
 
 	void DrawTexture(const rsc::SharedTexture2D& texture, Vec2 pos, float scale, float rotation, Color tint)
 	{
-		DrawTextureEx(*static_cast<Texture2D*>(texture.get()), RLVec2(pos), rotation, scale, RLColor(tint));
+		DrawTextureEx(*static_cast<const Texture2D*>(texture.get()), RLVec2(pos), rotation, scale, RLColor(tint));
 	}
 
 	void DrawTextureRegionToRegion(const rsc::SharedTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
 	{
-		DrawTexturePro(*static_cast<Texture2D*>(texture.get()), RLRect(sourceRec), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
+		DrawTexturePro(*static_cast<const Texture2D*>(texture.get()), RLRect(sourceRec), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
 	}
 
 	void DrawTextureRegion(const rsc::SharedTexture2D& texture, Rect sourceRec, Vec2 pos, Color tint)
 	{
-		DrawTextureRec(*static_cast<Texture2D*>(texture.get()), RLRect(sourceRec), RLVec2(pos), RLColor(tint));
+		DrawTextureRec(*static_cast<const Texture2D*>(texture.get()), RLRect(sourceRec), RLVec2(pos), RLColor(tint));
 	}
 
 	void DrawTexture(const rsc::SharedRenderTexture2D& texture, Vec2 pos, float scale, float rotation, Color tint)
 	{
-		DrawTextureRec(static_cast<RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(-texture.height()) }), RLVec2(pos), RLColor(tint));//raylib的RenderTexture2D的纹理坐标系以左下角为原点，在此统一修正
+		DrawTextureRec(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(-texture.height()) }), RLVec2(pos), RLColor(tint));//raylib的RenderTexture2D的纹理坐标系以左下角为原点，在此统一修正
 	}
 
 	void DrawTextureRegionToRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
 	{
-		DrawTexturePro(static_cast<RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
+		DrawTexturePro(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
 	}
 
 	void DrawTextureRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Vec2 pos, Color tint)
 	{
-		DrawTextureRec(static_cast<RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLVec2(pos), RLColor(tint));
+		DrawTextureRec(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLVec2(pos), RLColor(tint));
 	}
 
 	void DrawText(const rsc::SharedFont& font, const std::string& text, Vec2 position, float fontSize, float spacing, Color tint, Vec2 origin, float rotation)
 	{
-		DrawTextPro(*static_cast<Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(origin), rotation, fontSize, spacing, RLColor(tint));
+		DrawTextPro(*static_cast<const Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(origin), rotation, fontSize, spacing, RLColor(tint));
 	}
 
 	void DrawTextCodepoints(const rsc::SharedFont& font, const std::vector<int32_t>& codepoints, Vec2 position, float fontSize, float spacing, Color tint)
 	{
-		DrawTextCodepoints(*static_cast<Font*>(font.get()), codepoints.data(), static_cast<int>(codepoints.size()), RLVec2(position), fontSize, spacing, RLColor(tint));
+		DrawTextCodepoints(*static_cast<const Font*>(font.get()), codepoints.data(), static_cast<int>(codepoints.size()), RLVec2(position), fontSize, spacing, RLColor(tint));
 	}
 
 	const char* DefaultSDFShaderCode = R"(
@@ -258,15 +258,15 @@ void main()
 
 	void DrawSDFText(const rsc::SharedFont& font, const std::string& text, Vec2 position, float fontSize, float spacing, Color tint, Vec2 origin, float rotation, const rsc::SharedShader& shader)
 	{
-		BeginShaderMode(*static_cast<Shader*>(shader.get()));
-		DrawTextPro(*static_cast<Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(origin), rotation, fontSize, spacing, RLColor(tint));
+		BeginShaderMode(*static_cast<const Shader*>(shader.get()));
+		DrawTextPro(*static_cast<const Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(origin), rotation, fontSize, spacing, RLColor(tint));
 		EndShaderMode();
 	}
 
 	void DrawSDFTextCodepoints(const rsc::SharedFont& font, const std::vector<int32_t>& codepoints, Vec2 position, float fontSize, float spacing, Color tint, const rsc::SharedShader& shader)
 	{
-		BeginShaderMode(*static_cast<Shader*>(shader.get()));
-		DrawTextCodepoints(*static_cast<Font*>(font.get()), codepoints.data(), static_cast<int>(codepoints.size()), RLVec2(position), fontSize, spacing, RLColor(tint));
+		BeginShaderMode(*static_cast<const Shader*>(shader.get()));
+		DrawTextCodepoints(*static_cast<const Font*>(font.get()), codepoints.data(), static_cast<int>(codepoints.size()), RLVec2(position), fontSize, spacing, RLColor(tint));
 		EndShaderMode();
 	}
 

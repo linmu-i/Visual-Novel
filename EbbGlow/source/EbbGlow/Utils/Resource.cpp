@@ -7,296 +7,200 @@
 
 #include <EbbGlow/Utils/Resource.h>
 #include "ResourceCreator.h"
+#include "ResourceBlock.h"
 
 namespace ebbglow::resource
 {
-	// SharedImage 实现
-	SharedImage::SharedImage() noexcept : image(nullptr), ref(nullptr) {}
+#pragma region SharedImage 实现
 
-	SharedImage::SharedImage(const char* imagePath) noexcept
+	SharedImage::SharedImage() noexcept : data(nullptr) {}
+
+	SharedImage::SharedImage(const std::filesystem::path& path) noexcept : data(nullptr)
 	{
-		image = new(std::nothrow) ::Image(LoadImage(imagePath));
-		if (image == nullptr)
+		data = new(std::nothrow) ImageBlock(1, ::LoadImage(reinterpret_cast<const char*>(path.u8string().c_str())));
+		if (data == nullptr)
 		{
-			ref = nullptr;
 			return;
 		}
-		if (((::Image*)image)->data == nullptr)
+		if (!::IsImageValid(((ImageBlock*)data)->image))
 		{
-			delete (::Image*)image;
-			ref = nullptr;
+			delete (ImageBlock*)data;
+			data = nullptr;
 			return;
-		}
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
-		{
-			UnloadImage(*((::Image*)image));
-			delete (::Image*)image;
-			image = nullptr;
 		}
 	}
 
-	SharedImage::SharedImage(std::u8string_view imagePath) noexcept : SharedImage(reinterpret_cast<const char*>(std::u8string{ imagePath }.c_str()))
+	SharedImage::SharedImage(const SharedFile& file) noexcept : data(nullptr)
 	{
-		/*
-		std::filesystem::path path(imagePath);
-		std::ifstream file(path, std::ios::binary);
-		if (!file)
+		if (!file.valid())
 		{
-			image = nullptr;
-			ref = nullptr;
 			return;
 		}
-		std::vector<uint8_t> data{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
-		file.close();
-
-		image = new(std::nothrow) ::Image(LoadImageFromMemory(path.extension().string().c_str(), data.data(), static_cast<int>(data.size())));
-		if (image == nullptr)
+		data = new(std::nothrow) ImageBlock(1, ::LoadImageFromMemory(reinterpret_cast<const char*>(file.fileExtension().u8string().c_str()), file.get(), file.size()));
+		if (data == nullptr)
 		{
-			ref = nullptr;
 			return;
 		}
-		if (((::Image*)image)->data == nullptr)
+		if (!::IsImageValid(((ImageBlock*)data)->image))
 		{
-			delete (::Image*)image;
-			ref = nullptr;
+			delete (ImageBlock*)data;
+			data = nullptr;
 			return;
 		}
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
-		{
-			UnloadImage(*((::Image*)image));
-			delete (::Image*)image;
-			image = nullptr;
-		}
-		*/
 	}
 
-	SharedImage::SharedImage(const SharedImage& other) : image(other.image), ref(other.ref)
+	SharedImage::SharedImage(const SharedImage& other) noexcept : data(other.data)
 	{
-		if (ref)
+		if (data)
 		{
-			++(*ref);
+			++(((ImageBlock*)data)->refCnt);
 		}
 	}
 
-	SharedImage::SharedImage(SharedImage&& other) noexcept : image(other.image), ref(other.ref)
+	SharedImage::SharedImage(SharedImage&& other) noexcept : data(other.data)
 	{
-		other.image = nullptr;
-		other.ref = nullptr;
+		other.data = nullptr;
 	}
 
-	SharedImage::~SharedImage()
+	SharedImage::~SharedImage() noexcept
 	{
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				UnloadImage(*((::Image*)image));
-				delete (::Image*)image;
-				image = nullptr;
-				delete ref;
-				ref = nullptr;
-			}
-		}
+		release();
 	}
 
-	SharedImage& SharedImage::operator=(const SharedImage& other)
+	SharedImage& SharedImage::operator=(const SharedImage& other) noexcept
 	{
-		if (&other == this)
+		if (other.data == data)
 		{
 			return *this;
 		}
-		if (ref)
+		release();
+		data = other.data;
+		if (data)
 		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				UnloadImage(*((::Image*)image));
-				delete (::Image*)image;
-				delete ref;
-			}
-		}
-		image = other.image;
-		ref = other.ref;
-		if (ref)
-		{
-			++(*ref);
+			++(((ImageBlock*)data)->refCnt);
 		}
 		return *this;
 	}
 
 	SharedImage& SharedImage::operator=(SharedImage&& other) noexcept
 	{
-		if (other.ref == ref)
+		if (&other == this)
 		{
 			return *this;
 		}
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				UnloadImage(*((::Image*)image));
-				delete (::Image*)image;
-				delete ref;
-			}
-		}
-		image = other.image;
-		ref = other.ref;
-		other.image = nullptr;
-		other.ref = nullptr;
+		release();
+		data = other.data;
+		other.data = nullptr;
 		return *this;
 	}
 
 	int SharedImage::width() const noexcept
 	{
-		return static_cast<Image*>(image)->width;
+		if (data == nullptr) return 0;
+		return static_cast<ImageBlock*>(data)->image.width;
 	}
 
 	int SharedImage::height() const noexcept
 	{
-		return static_cast<Image*>(image)->height;
+		if (data == nullptr) return 0;
+		return static_cast<ImageBlock*>(data)->image.height;
 	}
 
-	// SharedTexture 实现
-	SharedTexture::SharedTexture() noexcept : texture(nullptr), ref(nullptr) {}
-
-	SharedTexture::SharedTexture(const char* texturePath) noexcept
+	void* SharedImage::get() noexcept
 	{
-		auto* loaded = new(std::nothrow) Texture2D(LoadTexture(texturePath));
-		if (loaded == nullptr || loaded->id == 0)
-		{
-			if (loaded) delete loaded;
-			texture = nullptr;
-			ref = nullptr;
-			return;
-		}
-		texture = loaded;
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
-		{
-			UnloadTexture(*static_cast<::Texture*>(texture));
-			delete static_cast<::Texture*>(texture);
-			texture = nullptr;
-		}
+		if (data == nullptr) return nullptr;
+		return &(static_cast<ImageBlock*>(data)->image);
 	}
 
-	SharedTexture::SharedTexture(std::u8string_view texturePath) noexcept : SharedTexture(reinterpret_cast<const char*>(std::u8string{ texturePath }.c_str()))
+	const void* SharedImage::get() const noexcept
 	{
-		/*
-		std::filesystem::path path(texturePath);
-		std::ifstream file(path, std::ios::binary);
-		if (!file)
-		{
-			texture = nullptr;
-			ref = nullptr;
-			return;
-		}
-		std::vector<uint8_t> data{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
-		file.close();
-
-		Image img = LoadImageFromMemory(path.extension().string().c_str(), data.data(), static_cast<int>(data.size()));
-		auto* loaded = new(std::nothrow) Texture2D(LoadTextureFromImage(img));
-		UnloadImage(img);
-
-		if (loaded == nullptr || loaded->id == 0)
-		{
-			if (loaded) delete loaded;
-			texture = nullptr;
-			ref = nullptr;
-			return;
-		}
-		texture = loaded;
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
-		{
-			UnloadTexture(*static_cast<::Texture*>(texture));
-			delete static_cast<::Texture*>(texture);
-			texture = nullptr;
-		}
-		*/
+		if (data == nullptr) return nullptr;
+		return &(static_cast<ImageBlock*>(data)->image);
 	}
 
-	SharedTexture::SharedTexture(const SharedTexture& other) : texture(other.texture), ref(other.ref)
+	void SharedImage::release() noexcept
 	{
-		if (ref)
+		if (data)
 		{
-			++(*ref);
-		}
-	}
-
-	SharedTexture::SharedTexture(SharedTexture&& other) noexcept
-		: texture(other.texture), ref(other.ref)
-	{
-		other.texture = nullptr;
-		other.ref = nullptr;
-	}
-
-	SharedTexture::SharedTexture(const SharedImage& img) noexcept
-	{
-		if (!img.valid())
-		{
-			texture = nullptr;
-			ref = nullptr;
-			return;
-		}
-		auto* loaded = new(std::nothrow) Texture(::LoadTextureFromImage(*static_cast<::Image*>(img.get())));
-		if (loaded == nullptr || loaded->id == 0)
-		{
-			if(loaded) delete loaded;
-			texture = nullptr;
-			ref = nullptr;
-			return;
-		}
-		texture = loaded;
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
-		{
-			UnloadTexture(*static_cast<::Texture*>(texture));
-			delete static_cast<::Texture*>(texture);
-			texture = nullptr;
-		}
-	}
-
-	SharedTexture::~SharedTexture()
-	{
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
+			--(((ImageBlock*)data)->refCnt);
+			if (((ImageBlock*)data)->refCnt == 0)
 			{
-				UnloadTexture(*static_cast<::Texture*>(texture));
-				delete static_cast<::Texture*>(texture);
-				texture = nullptr;
-				delete ref;
-				ref = nullptr;
+				UnloadImage(((ImageBlock*)data)->image);
+				delete (ImageBlock*)data;
 			}
+			data = nullptr;
 		}
 	}
 
-	SharedTexture& SharedTexture::operator=(const SharedTexture& other)
+#pragma endregion
+
+#pragma region SharedTexture 实现
+
+	SharedTexture::SharedTexture() noexcept : data(nullptr) {}
+
+	SharedTexture::SharedTexture(const std::filesystem::path& path) noexcept : data(nullptr)
 	{
-		if (&other == this)
+		data = new(std::nothrow) TextureBlock(1, ::LoadTexture(reinterpret_cast<const char*>(path.u8string().c_str())));
+		if (data == nullptr)
+		{
+			return;
+		}
+		if (!::IsTextureValid(((TextureBlock*)data)->texture))
+		{
+			delete (TextureBlock*)data;
+			data = nullptr;
+			return;
+		}
+	}
+
+	SharedTexture::SharedTexture(const SharedImage& image) noexcept : data(nullptr)
+	{
+		if (!image.valid())
+		{
+			return;
+		}
+		data = new(std::nothrow) TextureBlock(1, ::LoadTextureFromImage(*reinterpret_cast<const ::Image*>(image.get())));
+		if (data == nullptr)
+		{
+			return;
+		}
+		if (!::IsTextureValid(((TextureBlock*)data)->texture))
+		{
+			delete (TextureBlock*)data;
+			data = nullptr;
+			return;
+		}
+	}
+
+	SharedTexture::SharedTexture(const SharedTexture& other) noexcept : data(other.data)
+	{
+		if (data)
+		{
+			++(static_cast<TextureBlock*>(data)->refCnt);
+		}
+	}
+
+	SharedTexture::SharedTexture(SharedTexture&& other) noexcept : data(other.data)
+	{
+		other.data = nullptr;
+	}
+
+	SharedTexture::~SharedTexture() noexcept
+	{
+		release();
+	}
+
+	SharedTexture& SharedTexture::operator=(const SharedTexture& other) noexcept
+	{
+		if (other.data == data)
 		{
 			return *this;
 		}
-		if (ref)
+		release();
+		data = other.data;
+		if (data)
 		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				UnloadTexture(*static_cast<::Texture*>(texture));
-				delete static_cast<::Texture*>(texture);
-				delete ref;
-			}
-		}
-		texture = other.texture;
-		ref = other.ref;
-		if (ref)
-		{
-			++(*ref);
+			++(static_cast<TextureBlock*>(data)->refCnt);
 		}
 		return *this;
 	}
@@ -307,122 +211,138 @@ namespace ebbglow::resource
 		{
 			return *this;
 		}
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				UnloadTexture(*static_cast<::Texture*>(texture));
-				delete static_cast<::Texture*>(texture);
-				delete ref;
-			}
-		}
-		texture = other.texture;
-		ref = other.ref;
-		other.texture = nullptr;
-		other.ref = nullptr;
+		release();
+		data = other.data;
+		other.data = nullptr;
 		return *this;
 	}
 
 	int SharedTexture::width() const noexcept
 	{
-		if (texture == nullptr) return 0;
-		return static_cast<Texture*>(texture)->width;
+		if (data == nullptr) return 0;
+		return static_cast<TextureBlock*>(data)->texture.width;
 	}
 
 	int SharedTexture::height() const noexcept
 	{
-		if (texture == nullptr) return 0;
-		return static_cast<Texture*>(texture)->height;
+		if (data == nullptr) return 0;
+		return static_cast<TextureBlock*>(data)->texture.height;
 	}
 
 	Vec2 SharedTexture::size() const noexcept
 	{
-		if (texture == nullptr) return Vec2{ 0.0f, 0.0f };
-		return Vec2{ static_cast<float>(static_cast<Texture*>(texture)->width), static_cast<float>(static_cast<Texture*>(texture)->height) };
+		if (data == nullptr) return Vec2{ 0.0f, 0.0f };
+		return Vec2{ static_cast<float>(width()), static_cast<float>(height())};
 	}
 
-	// SharedFont 实现
-	SharedFont::SharedFont() noexcept : font(nullptr), ref(nullptr) {}
-
-	SharedFont::SharedFont(const char* fontPath) noexcept
+	void SharedTexture::release() noexcept
 	{
-		if (fontPath == nullptr)
+		if (data)
 		{
-			font = nullptr;
-			ref = nullptr;
-			return;
-		}
-		auto* loaded = new(std::nothrow) ::Font(LoadFont(fontPath));
-		if (loaded == nullptr || loaded->texture.id == 0)
-		{
-			if (loaded) delete loaded;
-			font = nullptr;
-			ref = nullptr;
-			return;
-		}
-		font = loaded;
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
-		{
-			UnloadFont(*static_cast<::Font*>(font));
-			delete static_cast<::Font*>(font);
-			font = nullptr;
+			--(((TextureBlock*)data)->refCnt);
+			if (((TextureBlock*)data)->refCnt == 0)
+			{
+				UnloadTexture(((TextureBlock*)data)->texture);
+				delete (TextureBlock*)data;
+			}
+			data = nullptr;
 		}
 	}
 
-	SharedFont::SharedFont(const SharedFont& other) : font(other.font), ref(other.ref)
+	void* SharedTexture::get() noexcept
 	{
-		if (ref)
+		if (data) return &(static_cast<TextureBlock*>(data)->texture);
+		return nullptr;
+	}
+
+	const void* SharedTexture::get() const noexcept
+	{
+		if (data) return &(static_cast<TextureBlock*>(data)->texture);
+		return nullptr;
+	}
+
+#pragma endregion
+
+#pragma region SharedFont 实现
+
+	SharedFont::SharedFont() noexcept : data(nullptr) {}
+
+	SharedFont::SharedFont(const std::filesystem::path& path, float fontSize, std::vector<int32_t> codepoints) noexcept
+	{
+		if (codepoints.empty())
 		{
-			++(*ref);
+			codepoints.reserve(98);
+			for (int32_t i = 32; i < 127; ++i)
+			{
+				codepoints.push_back(i);
+			}
+		}
+		codepoints.reserve(codepoints.size() + 3);
+		codepoints.push_back('1');
+		codepoints.push_back('1');
+		codepoints.push_back('1');
+		data = new(std::nothrow) FontBlock(1, LoadFontEx(reinterpret_cast<const char*>(path.u8string().c_str()), fontSize, codepoints.data(), codepoints.size()));
+		if (!data) return;
+		if (!::IsFontValid(static_cast<FontBlock*>(data)->font))
+		{
+			delete static_cast<FontBlock*>(data);
+			data = nullptr;
 		}
 	}
 
-	SharedFont::SharedFont(SharedFont&& other) noexcept
-		: font(other.font), ref(other.ref)
+	SharedFont::SharedFont(const SharedFile& fileData, float fontSize, std::vector<int32_t> codepoints) noexcept : data(nullptr)
 	{
-		other.font = nullptr;
-		other.ref = nullptr;
+		if (!fileData.valid()) return;
+		if (codepoints.empty())
+		{
+			codepoints.reserve(98);
+			for (int32_t i = 32; i < 127; ++i)
+			{
+				codepoints.push_back(i);
+			}
+		}
+		codepoints.reserve(codepoints.size() + 3);
+		codepoints.push_back('1');
+		codepoints.push_back('1');
+		codepoints.push_back('1');
+		data = new(std::nothrow) FontBlock(1, LoadFontFromMemory(fileData.fileExtension().string().c_str(), fileData.get(), fontSize, fileData.size(), codepoints.data(), codepoints.size()));
+		if (!data) return;
+		if (!::IsFontValid(static_cast<FontBlock*>(data)->font))
+		{
+			delete static_cast<FontBlock*>(data);
+			data = nullptr;
+		}
+	}
+
+	SharedFont::SharedFont(const SharedFont& other) noexcept : data(other.data)
+	{
+		if (data)
+		{
+			++(static_cast<FontBlock*>(data)->refCnt);
+		}
+	}
+
+	SharedFont::SharedFont(SharedFont&& other) noexcept : data(other.data)
+	{
+		other.data = nullptr;
 	}
 
 	SharedFont::~SharedFont()
 	{
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				UnloadFont(*static_cast<::Font*>(font));
-				delete static_cast<::Font*>(font);
-				font = nullptr;
-				delete ref;
-				ref = nullptr;
-			}
-		}
+		release();
 	}
 
-	SharedFont& SharedFont::operator=(const SharedFont& other)
+	SharedFont& SharedFont::operator=(const SharedFont& other) noexcept
 	{
-		if (&other == this)
+		if (other.data == data)
 		{
 			return *this;
 		}
-		if (ref)
+		release();
+		data = other.data;
+		if (data)
 		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				UnloadFont(*static_cast<::Font*>(font));
-				delete static_cast<::Font*>(font);
-				delete ref;
-			}
-		}
-		font = other.font;
-		ref = other.ref;
-		if (ref)
-		{
-			++(*ref);
+			++(static_cast<FontBlock*>(data)->refCnt);
 		}
 		return *this;
 	}
@@ -433,95 +353,110 @@ namespace ebbglow::resource
 		{
 			return *this;
 		}
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				UnloadFont(*static_cast<::Font*>(font));
-				delete static_cast<::Font*>(font);
-				delete ref;
-			}
-		}
-		font = other.font;
-		ref = other.ref;
-		other.font = nullptr;
-		other.ref = nullptr;
+		release();
+		data = other.data;
+		other.data = nullptr;
 		return *this;
 	}
 
-	// SharedMusic 实现
-	SharedMusic::SharedMusic() noexcept : music(nullptr), ref(nullptr) {}
-
-	SharedMusic::SharedMusic(const SharedMusic& other) noexcept
+	void SharedFont::release() noexcept
 	{
-		if (other.ref != nullptr)
+		if (data)
 		{
-			music = other.music;
-			ref = other.ref;
-			++(*ref);
-		}
-		else
-		{
-			music = nullptr;
-			ref = nullptr;
+			--(static_cast<FontBlock*>(data)->refCnt);
+			if (static_cast<FontBlock*>(data)->refCnt == 0)
+			{
+				UnloadFont(static_cast<FontBlock*>(data)->font);
+				delete static_cast<FontBlock*>(data);
+			}
+			data = nullptr;
 		}
 	}
 
-	SharedMusic::SharedMusic(SharedMusic&& other) noexcept : music(other.music), ref(other.ref)
+	void* SharedFont::get() noexcept
 	{
-		other.music = nullptr;
-		other.ref = nullptr;
+		if (data) return &(static_cast<FontBlock*>(data)->font);
+		return nullptr;
 	}
 
-	SharedMusic::SharedMusic(const char* musicPath) noexcept
+	const void* SharedFont::get() const noexcept
 	{
-		auto* loaded = new(std::nothrow) ::Music(LoadMusicStream(musicPath));
-		if (loaded == nullptr || !IsMusicValid(*loaded))
+		if (data) return &(static_cast<FontBlock*>(data)->font);
+		return nullptr;
+	}
+
+#pragma endregion
+
+#pragma region SharedMusic 实现
+
+	SharedMusic::SharedMusic() noexcept : data(nullptr) {}
+
+	SharedMusic::SharedMusic(const SharedMusic& other) noexcept : data(other.data)
+	{
+		if (data != nullptr)
 		{
-			if (loaded) delete loaded;
-			music = nullptr;
-			ref = nullptr;
+			++(static_cast<MusicBlock*>(data)->refCnt);
+		}
+	}
+
+	SharedMusic::SharedMusic(SharedMusic&& other) noexcept : data(other.data)
+	{
+		other.data = nullptr;
+	}
+
+	SharedMusic::SharedMusic(const std::filesystem::path& musicPath) noexcept
+	{
+		std::string pathStr = musicPath.string();
+		std::filesystem::path path(musicPath);
+		if (path != musicPath)//有损转换，改为文件读取
+		{
+			*this = SharedMusic(SharedFile(musicPath));
 			return;
 		}
-		music = loaded;
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
+
+		data = new(std::nothrow) MusicBlock(1, LoadMusicStream(pathStr.c_str()));
+		if (data == nullptr)
 		{
-			UnloadMusicStream(*static_cast<::Music*>(music));
-			delete static_cast<::Music*>(music);
-			music = nullptr;
+			return;
+		}
+		if (!::IsMusicValid(static_cast<MusicBlock*>(data)->music))
+		{
+			delete static_cast<MusicBlock*>(data);
+			data = nullptr;
+			return;
 		}
 	}
 
-	SharedMusic::SharedMusic(std::u8string_view musicPath) noexcept : SharedMusic(reinterpret_cast<const char*>(std::u8string{ musicPath }.c_str())) {}
+	SharedMusic::SharedMusic(const SharedFile& fileData) noexcept : data(nullptr)
+	{
+		if (!fileData.valid())
+		{
+			return;
+		}
+		data = new(std::nothrow) MusicBlock(1, ::LoadMusicStreamFromMemory(fileData.fileExtension().string().c_str(), fileData.get(), fileData.size()), fileData);
+		if (data == nullptr)
+		{
+			return;
+		}
+		if (!::IsMusicValid(static_cast<MusicBlock*>(data)->music))
+		{
+			delete static_cast<MusicBlock*>(data);
+			data = nullptr;
+			return;
+		}
+	}
 
 	SharedMusic& SharedMusic::operator=(const SharedMusic& other) noexcept
 	{
-		if (other.ref == ref)
+		if (other.data == data)
 		{
 			return *this;
 		}
-		if (ref)
+		release();
+		if (other.data != nullptr)
 		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				UnloadMusicStream(*static_cast<::Music*>(music));
-				delete static_cast<::Music*>(music);
-			}
-		}
-		if (other.ref != nullptr)
-		{
-			music = other.music;
-			ref = other.ref;
-			++(*ref);
-		}
-		else
-		{
-			music = nullptr;
-			ref = nullptr;
+			data = other.data;
+			++(static_cast<MusicBlock*>(data)->refCnt);
 		}
 		return *this;
 	}
@@ -532,109 +467,108 @@ namespace ebbglow::resource
 		{
 			return *this;
 		}
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				UnloadMusicStream(*static_cast<::Music*>(music));
-				delete static_cast<::Music*>(music);
-			}
-		}
-		music = other.music;
-		ref = other.ref;
-		other.music = nullptr;
-		other.ref = nullptr;
+		release();
+		data = other.data;
+		other.data = nullptr;
 		return *this;
 	}
 
-	SharedMusic::~SharedMusic()
+	SharedMusic::~SharedMusic() noexcept
 	{
-		if (ref != nullptr)
+		release();
+	}
+
+	void SharedMusic::release() noexcept
+	{
+		if (data != nullptr)
 		{
-			--(*ref);
-			if (*ref == 0)
+			--(static_cast<MusicBlock*>(data)->refCnt);
+			if (static_cast<MusicBlock*>(data)->refCnt == 0)
 			{
-				delete ref;
-				UnloadMusicStream(*static_cast<::Music*>(music));
-				delete static_cast<::Music*>(music);
+				UnloadMusicStream(static_cast<MusicBlock*>(data)->music);
+				delete static_cast<MusicBlock*>(data);
 			}
-			ref = nullptr;
-			music = nullptr;
+			data = nullptr;
 		}
 	}
 
-	// SharedShader 实现
-	SharedShader::SharedShader() noexcept : shader(nullptr), ref(nullptr) {}
-
-	SharedShader::SharedShader(const SharedShader& other) noexcept
+	void* SharedMusic::get() noexcept
 	{
-		if (other.ref != nullptr)
+		if (data) return &(static_cast<MusicBlock*>(data)->music);
+		return nullptr;
+	}
+
+	const void* SharedMusic::get() const noexcept
+	{
+		if (data) return &(static_cast<MusicBlock*>(data)->music);
+		return nullptr;
+	}
+
+#pragma endregion
+
+#pragma region SharedShader 实现
+
+	SharedShader::SharedShader() noexcept : data(nullptr) {}
+
+	SharedShader::SharedShader(const SharedShader& other) noexcept : data(other.data)
+	{
+		if (data)
 		{
-			shader = other.shader;
-			ref = other.ref;
-			++(*ref);
-		}
-		else
-		{
-			shader = nullptr;
-			ref = nullptr;
+			++(static_cast<ShaderBlock*>(data)->refCnt);
 		}
 	}
 
-	SharedShader::SharedShader(SharedShader&& other) noexcept : shader(other.shader), ref(other.ref)
+	SharedShader::SharedShader(SharedShader&& other) noexcept : data(other.data)
 	{
-		other.shader = nullptr;
-		other.ref = nullptr;
+		other.data = nullptr;
 	}
 
-	SharedShader::SharedShader(const char* shaderPath) noexcept
+	SharedShader::SharedShader(const std::filesystem::path& vs, const std::filesystem::path& fs) noexcept
 	{
-		auto* loaded = new(std::nothrow) ::Shader(LoadShader(0, shaderPath));
-		if (loaded == nullptr || !IsShaderValid(*loaded))
+		std::string vsPath = vs.empty() ? "" : reinterpret_cast<const char*>(vs.u8string().c_str());
+		std::string fsPath = fs.empty() ? "" : reinterpret_cast<const char*>(fs.u8string().c_str());
+		data = new(std::nothrow) ShaderBlock(1, LoadShader(vsPath.empty() ? nullptr : vsPath.c_str(), fsPath.empty() ? nullptr : fsPath.c_str()));
+		if (data == nullptr)
 		{
-			if (loaded) delete loaded;
-			shader = nullptr;
-			ref = nullptr;
 			return;
 		}
-		shader = loaded;
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
+		if (!::IsShaderValid(static_cast<ShaderBlock*>(data)->shader))
 		{
-			UnloadShader(*static_cast<::Shader*>(shader));
-			delete static_cast<::Shader*>(shader);
-			shader = nullptr;
+			delete static_cast<ShaderBlock*>(data);
+			data = nullptr;
+			return;
+		}
+	}
+
+	SharedShader::SharedShader(const SharedFile& vs, const SharedFile& fs) noexcept
+	{
+		std::string vsData = vs.valid() ? std::string(reinterpret_cast<const char*>(vs.get()), vs.size()) : "";
+		std::string fsData = fs.valid() ? std::string(reinterpret_cast<const char*>(fs.get()), fs.size()) : "";
+
+		data = new(std::nothrow) ShaderBlock(1, LoadShaderFromMemory(vsData.empty() ? nullptr : vsData.c_str(), fsData.empty() ? nullptr : fsData.c_str()));
+		if (data == nullptr)
+		{
+			return;
+		}
+		if (!::IsShaderValid(static_cast<ShaderBlock*>(data)->shader))
+		{
+			delete static_cast<ShaderBlock*>(data);
+			data = nullptr;
+			return;
 		}
 	}
 
 	SharedShader& SharedShader::operator=(const SharedShader& other) noexcept
 	{
-		if (other.ref == ref)
+		if (other.data == data)
 		{
 			return *this;
 		}
-		if (ref)
+		release();
+		data = other.data;
+		if (data)
 		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				UnloadShader(*static_cast<::Shader*>(shader));
-				delete static_cast<::Shader*>(shader);
-			}
-		}
-		if (other.ref != nullptr)
-		{
-			shader = other.shader;
-			ref = other.ref;
-			++(*ref);
-		}
-		else
-		{
-			shader = nullptr;
-			ref = nullptr;
+			++(static_cast<ShaderBlock*>(data)->refCnt);
 		}
 		return *this;
 	}
@@ -645,251 +579,213 @@ namespace ebbglow::resource
 		{
 			return *this;
 		}
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				UnloadShader(*static_cast<::Shader*>(shader));
-				delete static_cast<::Shader*>(shader);
-			}
-		}
-		shader = other.shader;
-		ref = other.ref;
-		other.shader = nullptr;
-		other.ref = nullptr;
+		release();
+		data = other.data;
+		other.data = nullptr;
 		return *this;
 	}
 
 	SharedShader::~SharedShader()
 	{
-		if (ref != nullptr)
+		release();
+	}
+
+	void SharedShader::release() noexcept
+	{
+		if (data)
 		{
-			--(*ref);
-			if (*ref == 0)
+			--(static_cast<ShaderBlock*>(data)->refCnt);
+			if (static_cast<ShaderBlock*>(data)->refCnt == 0)
 			{
-				delete ref;
-				UnloadShader(*static_cast<::Shader*>(shader));
-				delete static_cast<::Shader*>(shader);
+				UnloadShader(static_cast<ShaderBlock*>(data)->shader);
+				delete static_cast<ShaderBlock*>(data);
 			}
-			ref = nullptr;
-			shader = nullptr;
+			data = nullptr;
 		}
 	}
 
-	// SharedFile 实现
-	SharedFile::SharedFile() noexcept : ref(nullptr), fileData(nullptr), dataSize(0), name(nullptr) {}
-
-	SharedFile::SharedFile(const char* filePath) noexcept : fileData(nullptr), ref(nullptr), dataSize(0), name(nullptr)
+	void* SharedShader::get() noexcept
 	{
-		size_t len = strlen(filePath);
-		name = new(std::nothrow) char[len + 1];
-		if (!name)
-		{
-			return;
-		}
-		memcpy(name, filePath, len + 1);
-		std::ifstream file(filePath, std::ios::binary);
-		if (!file)
-		{
-			delete[] name;
-			name = nullptr;
-			return;
-		}
-		std::vector<uint8_t> data{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
-		file.close();
-		fileData = new(std::nothrow) unsigned char[data.size()];
-		if (!fileData)
-		{
-			delete[] name;
-			name = nullptr;
-			return;
-		}
-		memcpy(fileData, data.data(), data.size());
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (!ref)
-		{
-			delete[] name;
-			name = nullptr;
-			delete[] fileData;
-			fileData = nullptr;
-			return;
-		}
-		dataSize = data.size();
+		if (data) return &(static_cast<ShaderBlock*>(data)->shader);
+		return nullptr;
 	}
 
-	SharedFile::SharedFile(std::u8string_view filePath) noexcept : fileData(nullptr), ref(nullptr), dataSize(0), name(nullptr)
+	const void* SharedShader::get() const noexcept
 	{
-		name = new(std::nothrow) char[filePath.size() + 1];
-		if (!name) return;
-		std::filesystem::path path(filePath);
-		std::ifstream file(path, std::ios::binary);
-		memcpy(name, filePath.data(), filePath.size());
-		name[filePath.size()] = '\0';
-		if (!file)
-		{
-			delete[] name;
-			name = nullptr;
-			return;
-		}
-		std::vector<uint8_t> data{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
-		file.close();
-		fileData = new(std::nothrow) unsigned char[data.size()];
-		if (!fileData)
-		{
-			delete[] name;
-			name = nullptr;
-			return;
-		}
-		memcpy(fileData, data.data(), data.size());
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (!ref)
-		{
-			delete[] name;
-			name = nullptr;
-			delete[] fileData;
-			fileData = nullptr;
-			return;
-		}
-		dataSize = data.size();
+		if (data) return &(static_cast<ShaderBlock*>(data)->shader);
+		return nullptr;
 	}
 
-	SharedFile::SharedFile(unsigned char* fileData, int dataSize, const char* name) noexcept
-		: ref(new(std::nothrow) std::atomic<size_t>(1)), dataSize(dataSize)
+#pragma endregion
+
+#pragma region SharedFile 实现
+
+	SharedFile::SharedFile() noexcept : data(nullptr) {}
+
+	SharedFile::SharedFile(std::span<const char> dat, std::filesystem::path path) noexcept : SharedFile(std::span<const std::byte>{reinterpret_cast<const std::byte*>(dat.data()), dat.size_bytes()}, std::move(path)) {}
+	SharedFile::SharedFile(std::span<const signed char> dat, std::filesystem::path path) noexcept : SharedFile(std::span<const std::byte>{reinterpret_cast<const std::byte*>(dat.data()), dat.size_bytes()}, std::move(path)) {}
+	SharedFile::SharedFile(std::span<const unsigned char> dat, std::filesystem::path path) noexcept : SharedFile(std::span<const std::byte>{reinterpret_cast<const std::byte*>(dat.data()), dat.size_bytes()}, std::move(path)) {}
+	SharedFile::SharedFile(std::span<const std::byte> dat, std::filesystem::path path) noexcept : data(nullptr)
 	{
-		size_t len = strlen(name);
-		this->name = new(std::nothrow) char[len + 1];
-		this->fileData = new unsigned char[dataSize];
-
-		if (!this->name || !this->fileData || !ref)
-		{
-			delete[] this->name;
-			delete[] this->fileData;
-			delete ref;
-			ref = nullptr;
-			this->name = nullptr;
-			this->fileData = nullptr;
-			dataSize = 0;
-			return;
-		}
-
-		memcpy(this->name, name, len + 1);
-		memcpy(this->fileData, fileData, dataSize);
+		data = ::operator new(sizeof(ControlBlock) + dat.size_bytes(), std::nothrow);
+		if (!data) return;
+		::new(reinterpret_cast<ControlBlock*>(data)) ControlBlock(1, dat.size_bytes(), std::move(path));
+		memcpy(reinterpret_cast<char*>(data) + sizeof(ControlBlock), dat.data(), dat.size_bytes());
 	}
 
-	SharedFile::SharedFile(const SharedFile& other) noexcept
-		: fileData(other.fileData), ref(other.ref), dataSize(other.dataSize), name(other.name)
+	SharedFile::SharedFile(std::filesystem::path path) noexcept : data(nullptr)
 	{
-		if (ref)
+		std::ifstream ifs{ path, std::ios::binary };
+		if (!ifs) return;
+
+		ifs.seekg(0, std::ios::end);
+		const auto endPos = ifs.tellg();
+		ifs.seekg(0, std::ios::beg);
+		if (!ifs || endPos == std::streampos(-1)) return;
+
+		const auto fileSize = static_cast<size_t>(endPos);
+		*this = SharedFile(ifs, fileSize, std::move(path));
+	}
+
+	SharedFile::SharedFile(std::istream& is, size_t size, std::filesystem::path path) noexcept : data(nullptr)
+	{
+		if (size == 0)
 		{
-			++(*ref);
+			std::vector<uint8_t> dataArr;
+			try
+			{
+				dataArr.insert(dataArr.begin(), std::istreambuf_iterator<char>{is}, std::istreambuf_iterator<char>{});
+			}
+			catch (...)
+			{
+				return;
+			}
+			if (is.fail()) return;
+			data = ::operator new(sizeof(ControlBlock) + dataArr.size(), std::nothrow);
+			if (!data) return;
+			::new(reinterpret_cast<ControlBlock*>(data)) ControlBlock(1, dataArr.size(), std::move(path));
+			std::memcpy(reinterpret_cast<char*>(data) + sizeof(ControlBlock), dataArr.data(), dataArr.size());
+		}
+		else
+		{
+			data = ::operator new(sizeof(ControlBlock) + size, std::nothrow);
+			if (!data) return;
+			::new(reinterpret_cast<ControlBlock*>(data)) ControlBlock(1, size, std::move(path));
+			try
+			{
+				is.read(reinterpret_cast<char*>(data) + sizeof(ControlBlock), size);
+			}
+			catch (...)
+			{
+				reinterpret_cast<ControlBlock*>(data)->~ControlBlock();
+				::operator delete(data);
+				data = nullptr;
+				return;
+			}
+			if (!is.good())
+			{
+				reinterpret_cast<ControlBlock*>(data)->~ControlBlock();
+				::operator delete(data);
+				data = nullptr;
+			}
 		}
 	}
 
-	SharedFile::SharedFile(SharedFile&& other) noexcept
-		: fileData(other.fileData), ref(other.ref), dataSize(other.dataSize), name(other.name)
+	SharedFile::SharedFile(const SharedFile& other) noexcept : data(other.data)
 	{
-		other.fileData = nullptr;
-		other.ref = nullptr;
-		other.name = nullptr;
-		other.dataSize = 0;
+		if (data)
+		{
+			++(reinterpret_cast<ControlBlock*>(data)->ref);
+		}
+	}
+
+	SharedFile::SharedFile(SharedFile&& other) noexcept : data(other.data)
+	{
+		other.data = nullptr;
 	}
 
 	SharedFile& SharedFile::operator=(const SharedFile& other) noexcept
 	{
-		if (ref == other.ref)
+		if (data == other.data)
 		{
 			return *this;
 		}
-		if (ref)
+		release();
+		data = other.data;
+		if (data)
 		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				delete[] name;
-				delete[] fileData;
-			}
-		}
-		ref = other.ref;
-		fileData = other.fileData;
-		dataSize = other.dataSize;
-		name = other.name;
-		if (ref)
-		{
-			++(*ref);
+			++(reinterpret_cast<ControlBlock*>(data)->ref);
 		}
 		return *this;
 	}
 
 	SharedFile& SharedFile::operator=(SharedFile&& other) noexcept
 	{
-		if (ref == other.ref)
+		if (&other == this)
 		{
 			return *this;
 		}
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				delete[] name;
-				delete[] fileData;
-			}
-		}
-		ref = other.ref;
-		fileData = other.fileData;
-		dataSize = other.dataSize;
-		name = other.name;
-		other.fileData = nullptr;
-		other.ref = nullptr;
-		other.dataSize = 0;
-		other.name = nullptr;
+		release();
+		data = other.data;
+		other.data = nullptr;
 		return *this;
 	}
 
 	SharedFile::~SharedFile() noexcept
 	{
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				delete[] name;
-				delete[] fileData;
-			}
-			ref = nullptr;
-			dataSize = 0;
-			name = nullptr;
-		}
+		release();
 	}
 
-	SharedFile::Iterator SharedFile::begin()
+	SharedFile::Iterator SharedFile::begin() noexcept
 	{
 		return Iterator(*this);
 	}
 
-	SharedFile::Iterator SharedFile::end()
+	SharedFile::Iterator SharedFile::end() noexcept
 	{
-		return Iterator(*this, dataSize);
+		return Iterator(*this, size());
 	}
 
-	// SharedFile::Iterator 实现
+	SharedFile::ConstIterator SharedFile::cbegin() const noexcept
+	{
+		return ConstIterator(*this);
+	}
+
+	SharedFile::ConstIterator SharedFile::cend() const noexcept
+	{
+		return ConstIterator(*this, size());
+	}
+
+	void SharedFile::release() noexcept
+	{
+		if (data)
+		{
+			auto& ctrl = *reinterpret_cast<ControlBlock*>(data);
+			--(ctrl.ref);
+			if (ctrl.ref == 0)
+			{
+				ctrl.~ControlBlock();
+				::operator delete(data);
+			}
+			data = nullptr;
+		}
+	}
+
+#pragma endregion
+
+#pragma region SharedFile::Iterator 实现
 	SharedFile::Iterator::Iterator() : fileSize(0), offset(0), pointer(nullptr) {}
 
 	SharedFile::Iterator::Iterator(size_t size, unsigned char* data, int64_t offset)
 		: fileSize(size), pointer(data + offset), offset(offset) {
 	}
 
-	SharedFile::Iterator::Iterator(const SharedFile& file)
-		: fileSize(file.dataSize), pointer(file.fileData), offset(0) {
+	SharedFile::Iterator::Iterator(SharedFile& file)
+		: fileSize(reinterpret_cast<SharedFile::ControlBlock*>(file.data)->dataSize), pointer(reinterpret_cast<unsigned char*>(file.data) + sizeof(SharedFile::ControlBlock)), offset(0) {
 	}
 
-	SharedFile::Iterator::Iterator(const SharedFile& file, int64_t offset)
-		: fileSize(file.dataSize), pointer(file.fileData + offset), offset(offset) {
+	SharedFile::Iterator::Iterator(SharedFile& file, int64_t offset)
+		: fileSize(reinterpret_cast<SharedFile::ControlBlock*>(file.data)->dataSize), pointer(reinterpret_cast<unsigned char*>(file.data) + sizeof(SharedFile::ControlBlock) + offset), offset(offset) {
 	}
 
 	SharedFile::Iterator::Iterator(const Iterator& other)
@@ -1094,77 +990,99 @@ namespace ebbglow::resource
 		return pointer;
 	}
 
-	// SharedRenderTexture 实现
-	SharedRenderTexture::SharedRenderTexture() noexcept : renderTexture(nullptr), ref(nullptr) {}
+#pragma endregion
 
-	SharedRenderTexture::SharedRenderTexture(const SharedRenderTexture& other) noexcept
+#pragma region SharedFile::ConstIterator 实现
+	
+	SharedFile::ConstIterator::ConstIterator() = default;
+	SharedFile::ConstIterator::ConstIterator(size_t size, unsigned char* data, int64_t offset) : it(size, data, offset) {}
+	SharedFile::ConstIterator::ConstIterator(const SharedFile& file) : it(const_cast<SharedFile&>(file)) {}
+	SharedFile::ConstIterator::ConstIterator(const SharedFile& file, int64_t offset) : it(const_cast<SharedFile&>(file), offset) {}
+
+	SharedFile::ConstIterator::ConstIterator(const ConstIterator& other) : it(other.it) {}
+	SharedFile::ConstIterator::ConstIterator(ConstIterator&& other) noexcept : it(std::move(other.it)) {}
+
+	SharedFile::ConstIterator::ConstIterator(const Iterator& other) : it(other) {};
+	SharedFile::ConstIterator::ConstIterator(Iterator&& other) noexcept : it(std::move(other)) {}
+
+	SharedFile::ConstIterator& SharedFile::ConstIterator::operator=(const SharedFile::ConstIterator& other) noexcept { it = other.it; return *this; }
+	SharedFile::ConstIterator& SharedFile::ConstIterator::operator=(SharedFile::ConstIterator&& other) noexcept { it = std::move(other.it); return *this; };
+
+	SharedFile::ConstIterator& SharedFile::ConstIterator::operator++() noexcept { ++it; return *this; }
+	SharedFile::ConstIterator SharedFile::ConstIterator::operator++(int) noexcept { auto r = *this; ++it; return r; }
+	SharedFile::ConstIterator& SharedFile::ConstIterator::operator--() noexcept { --it; return *this; }
+	SharedFile::ConstIterator SharedFile::ConstIterator::operator--(int) noexcept { auto r = *this; --it; return r; }
+
+	const unsigned char& SharedFile::ConstIterator::operator*() const noexcept { return *it; }
+	const unsigned char& SharedFile::ConstIterator::operator[](int64_t _offset) const noexcept { return it[_offset]; }
+
+	bool SharedFile::ConstIterator::eof() const noexcept { return it.eof(); }
+	bool SharedFile::ConstIterator::valid() const noexcept { return it.valid(); }
+	void SharedFile::ConstIterator::reset() noexcept { it.reset(); }
+	SharedFile::ConstIterator::operator bool() const noexcept { return static_cast<bool>(it); }
+
+	SharedFile::ConstIterator& SharedFile::ConstIterator::operator+=(int64_t _offset) noexcept { it += _offset; return *this; }
+	SharedFile::ConstIterator& SharedFile::ConstIterator::operator-=(int64_t _offset) noexcept { it -= _offset; return *this; }
+	SharedFile::ConstIterator SharedFile::ConstIterator::operator+(int64_t _offset) const noexcept { auto r = *this; return r += _offset; }
+	SharedFile::ConstIterator SharedFile::ConstIterator::operator-(int64_t _offset) const noexcept { auto r = *this; return r -= _offset; }
+	int64_t SharedFile::ConstIterator::operator-(const SharedFile::ConstIterator& other) const noexcept { return it - other.it; }
+
+	bool SharedFile::ConstIterator::operator==(const SharedFile::ConstIterator& other) const noexcept { return it == other.it; }
+	bool SharedFile::ConstIterator::operator>(const SharedFile::ConstIterator& other) const noexcept { return it > other.it; }
+	bool SharedFile::ConstIterator::operator>=(const SharedFile::ConstIterator& other) const noexcept { return it >= other.it; }
+	bool SharedFile::ConstIterator::operator<(const SharedFile::ConstIterator& other) const noexcept { return it < other.it; }
+	bool SharedFile::ConstIterator::operator<=(const SharedFile::ConstIterator& other) const noexcept { return it <= other.it; }
+	bool SharedFile::ConstIterator::operator!=(const SharedFile::ConstIterator& other) const noexcept { return it != other.it; }
+
+	size_t SharedFile::ConstIterator::size() const noexcept { return it.size(); }
+	size_t SharedFile::ConstIterator::remaining() const noexcept { return it.remaining(); }
+	int64_t SharedFile::ConstIterator::position() const noexcept { return it.position(); }
+	const unsigned char* SharedFile::ConstIterator::get() const noexcept { return it.get(); }
+
+#pragma endregion
+
+#pragma region SharedRenderTexture 实现
+
+	SharedRenderTexture::SharedRenderTexture() noexcept : data(nullptr) {}
+
+	SharedRenderTexture::SharedRenderTexture(const SharedRenderTexture& other) noexcept : data(other.data)
 	{
-		if (other.ref)
+		if (data)
 		{
-			renderTexture = other.renderTexture;
-			ref = other.ref;
-			++(*ref);
-		}
-		else
-		{
-			renderTexture = nullptr;
-			ref = nullptr;
+			++(static_cast<RenderTextureBlock*>(data)->refCnt);
 		}
 	}
 
-	SharedRenderTexture::SharedRenderTexture(SharedRenderTexture&& other) noexcept
-		: renderTexture(other.renderTexture), ref(other.ref)
+	SharedRenderTexture::SharedRenderTexture(SharedRenderTexture&& other) noexcept : data(other.data)
 	{
-		other.renderTexture = nullptr;
-		other.ref = nullptr;
+		other.data = nullptr;
 	}
 
 	SharedRenderTexture::SharedRenderTexture(int x, int y) noexcept
 	{
-		auto* loaded = new(std::nothrow) ::RenderTexture(LoadRenderTexture(x, y));
-		if (loaded == nullptr || !IsRenderTextureValid(*loaded))
+		data = new(std::nothrow) RenderTextureBlock(1, LoadRenderTexture(x, y));
+		if (data == nullptr)
 		{
-			if (loaded) delete loaded;
-			renderTexture = nullptr;
-			ref = nullptr;
 			return;
 		}
-		renderTexture = loaded;
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
+		if (!::IsRenderTextureValid(static_cast<RenderTextureBlock*>(data)->renderTexture))
 		{
-			UnloadRenderTexture(*static_cast<::RenderTexture*>(renderTexture));
-			delete static_cast<::RenderTexture*>(renderTexture);
-			renderTexture = nullptr;
+			delete static_cast<RenderTextureBlock*>(data);
+			data = nullptr;
 		}
 	}
 
 	SharedRenderTexture& SharedRenderTexture::operator=(const SharedRenderTexture& other) noexcept
 	{
-		if (other.ref == ref)
+		if (other.data == data)
 		{
 			return *this;
 		}
-		if (ref)
+		release();
+		data = other.data;
+		if (data != nullptr)
 		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				UnloadRenderTexture(*static_cast<::RenderTexture*>(renderTexture));
-				delete static_cast<::RenderTexture*>(renderTexture);
-			}
-		}
-		if (other.ref != nullptr)
-		{
-			renderTexture = other.renderTexture;
-			ref = other.ref;
-			++(*ref);
-		}
-		else
-		{
-			renderTexture = nullptr;
-			ref = nullptr;
+			++(static_cast<RenderTextureBlock*>(data)->refCnt);
 		}
 		return *this;
 	}
@@ -1175,159 +1093,103 @@ namespace ebbglow::resource
 		{
 			return *this;
 		}
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				UnloadRenderTexture(*static_cast<::RenderTexture*>(renderTexture));
-				delete static_cast<::RenderTexture*>(renderTexture);
-			}
-		}
-		renderTexture = other.renderTexture;
-		ref = other.ref;
-		other.renderTexture = nullptr;
-		other.ref = nullptr;
+		release();
+		data = other.data;
+		other.data = nullptr;
 		return *this;
 	}
 
 	SharedRenderTexture::~SharedRenderTexture()
 	{
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				UnloadRenderTexture(*static_cast<::RenderTexture*>(renderTexture));
-				delete static_cast<::RenderTexture*>(renderTexture);
-			}
-			ref = nullptr;
-			renderTexture = nullptr;
-		}
+		release();
 	}
 
 	int SharedRenderTexture::width() const noexcept
 	{
-		return static_cast<::RenderTexture*>(renderTexture)->texture.width;
+		if (data) return static_cast<RenderTextureBlock*>(data)->renderTexture.texture.width;
+		return 0;
 	}
 
 	int SharedRenderTexture::height() const noexcept
 	{
-		return static_cast<::RenderTexture*>(renderTexture)->texture.height;
+		if (data) return static_cast<RenderTextureBlock*>(data)->renderTexture.texture.height;
+		return 0;
 	}
 
 	Vec2 SharedRenderTexture::size() const noexcept
 	{
-		return Vec2{ static_cast<float>(static_cast<::RenderTexture*>(renderTexture)->texture.width),
-					 static_cast<float>(static_cast<::RenderTexture*>(renderTexture)->texture.height) };
+		return Vec2{ static_cast<float>(width()), static_cast<float>(height()) };
 	}
 
-	// SharedSound 实现
-	SharedSound::SharedSound() noexcept : sound(nullptr), ref(nullptr) {}
-
-	SharedSound::SharedSound(const SharedSound& other) noexcept
+	void SharedRenderTexture::release() noexcept
 	{
-		if (other.ref)
+		if (data)
 		{
-			sound = other.sound;
-			ref = other.ref;
-			++(*ref);
-		}
-		else
-		{
-			sound = nullptr;
-			ref = nullptr;
+			--(static_cast<RenderTextureBlock*>(data)->refCnt);
+			if (static_cast<RenderTextureBlock*>(data)->refCnt == 0)
+			{
+				::UnloadRenderTexture(static_cast<RenderTextureBlock*>(data)->renderTexture);
+				delete static_cast<RenderTextureBlock*>(data);
+			}
+			data = nullptr;
 		}
 	}
 
-	SharedSound::SharedSound(SharedSound&& other) noexcept : sound(other.sound), ref(other.ref)
+	void* SharedRenderTexture::get() noexcept
 	{
-		other.sound = nullptr;
-		other.ref = nullptr;
+		if (data) return &(static_cast<RenderTextureBlock*>(data)->renderTexture);
+		return nullptr;
 	}
 
-	SharedSound::SharedSound(const char* soundPath) noexcept
+	const void* SharedRenderTexture::get() const noexcept
 	{
-		auto* loaded = new(std::nothrow) ::Sound(LoadSound(soundPath));
-		if (loaded == nullptr || !IsSoundValid(*loaded))
+		if (data) return &(static_cast<RenderTextureBlock*>(data)->renderTexture);
+		return nullptr;
+	}
+
+#pragma endregion
+
+#pragma region SharedSound 实现
+	SharedSound::SharedSound() noexcept : data(nullptr) {}
+
+	SharedSound::SharedSound(const SharedSound& other) noexcept : data(other.data)
+	{
+		if (data)
 		{
-			if (loaded) delete loaded;
-			sound = nullptr;
-			ref = nullptr;
+			++(static_cast<SoundBlock*>(data)->refCnt);
+		}
+	}
+
+	SharedSound::SharedSound(SharedSound&& other) noexcept : data(other.data)
+	{
+		other.data = nullptr;
+	}
+
+	SharedSound::SharedSound(const std::filesystem::path& soundPath) noexcept
+	{
+		data = new(std::nothrow) SoundBlock(1, LoadSound(reinterpret_cast<const char*>(soundPath.u8string().c_str())));
+		if (data == nullptr)
+		{
 			return;
 		}
-		sound = loaded;
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
+		if (!::IsSoundValid(static_cast<SoundBlock*>(data)->sound))
 		{
-			UnloadSound(*static_cast<::Sound*>(sound));
-			delete static_cast<::Sound*>(sound);
-			sound = nullptr;
+			delete static_cast<SoundBlock*>(data);
+			data = nullptr;
 		}
-	}
-
-	SharedSound::SharedSound(std::u8string_view soundPath) noexcept : SharedSound(reinterpret_cast<const char*>(std::u8string{ soundPath }.c_str()))
-	{
-		/*
-		std::filesystem::path path(soundPath);
-		std::ifstream file(path, std::ios::binary);
-		if (!file)
-		{
-			sound = nullptr;
-			ref = nullptr;
-			return;
-		}
-		std::vector<uint8_t> data{ std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>() };
-		file.close();
-		Wave wave = LoadWaveFromMemory(path.extension().string().c_str(), data.data(), static_cast<int>(data.size()));
-		auto* loaded = new(std::nothrow) ::Sound(LoadSoundFromWave(wave));
-		UnloadWave(wave);
-		if (loaded == nullptr || !IsSoundValid(*loaded))
-		{
-			if (loaded) delete loaded;
-			sound = nullptr;
-			ref = nullptr;
-			return;
-		}
-		sound = loaded;
-		ref = new(std::nothrow) std::atomic<size_t>(1);
-		if (ref == nullptr)
-		{
-			UnloadSound(*static_cast<::Sound*>(sound));
-			delete static_cast<::Sound*>(sound);
-			sound = nullptr;
-		}
-		*/
 	}
 
 	SharedSound& SharedSound::operator=(const SharedSound& other) noexcept
 	{
-		if (other.ref == ref)
+		if (other.data == data)
 		{
 			return *this;
 		}
-		if (ref)
+		release();
+		data = other.data;
+		if (data)
 		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				UnloadSound(*static_cast<::Sound*>(sound));
-				delete static_cast<::Sound*>(sound);
-			}
-		}
-		if (other.ref != nullptr)
-		{
-			sound = other.sound;
-			ref = other.ref;
-			++(*ref);
-		}
-		else
-		{
-			sound = nullptr;
-			ref = nullptr;
+			++(static_cast<SoundBlock*>(data)->refCnt);
 		}
 		return *this;
 	}
@@ -1338,38 +1200,46 @@ namespace ebbglow::resource
 		{
 			return *this;
 		}
-		if (ref)
-		{
-			--(*ref);
-			if (*ref == 0)
-			{
-				delete ref;
-				UnloadSound(*static_cast<::Sound*>(sound));
-				delete static_cast<::Sound*>(sound);
-			}
-		}
-		sound = other.sound;
-		ref = other.ref;
-		other.sound = nullptr;
-		other.ref = nullptr;
+		release();
+		data = other.data;
+		other.data = nullptr;
 		return *this;
 	}
 
-	SharedSound::~SharedSound()
+	SharedSound::~SharedSound() noexcept
 	{
-		if (ref)
+		release();
+	}
+
+	void SharedSound::release() noexcept
+	{
+		if (data)
 		{
-			--(*ref);
-			if (*ref == 0)
+			--(static_cast<SoundBlock*>(data)->refCnt);
+			if (static_cast<SoundBlock*>(data)->refCnt == 0)
 			{
-				delete ref;
-				UnloadSound(*static_cast<::Sound*>(sound));
-				delete static_cast<::Sound*>(sound);
+				UnloadSound(static_cast<SoundBlock*>(data)->sound);
+				delete static_cast<SoundBlock*>(data);
 			}
-			ref = nullptr;
-			sound = nullptr;
+			data = nullptr;
 		}
 	}
+
+	void* SharedSound::get() noexcept
+	{
+		if (data) return &(static_cast<SoundBlock*>(data)->sound);
+		return nullptr;
+	}
+
+	const void* SharedSound::get() const noexcept
+	{
+		if (data) return &(static_cast<SoundBlock*>(data)->sound);
+		return nullptr;
+	}
+
+#pragma endregion
+
+#pragma region Image序列化支持
 
 	SharedImage CreateImageFromData(const std::vector<char>& data)
 	{
@@ -1482,4 +1352,6 @@ namespace ebbglow::resource
 		it.data = std::span<char>();
 		return it;
 	}
+
+#pragma endregion
 }
