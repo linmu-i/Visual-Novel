@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <atomic>
 #include <span>
 #include <filesystem>
 
@@ -147,9 +146,9 @@ namespace ebbglow::resource
 
 		const unsigned char* get() const noexcept { return reinterpret_cast<unsigned char*>(data) + sizeof(ControlBlock); }
 		size_t size() const noexcept { return reinterpret_cast<ControlBlock*>(data)->dataSize; }
-		std::filesystem::path fileName() const noexcept { return reinterpret_cast<ControlBlock*>(data)->path.filename(); }
-		std::filesystem::path filePath() const noexcept { return reinterpret_cast<ControlBlock*>(data)->path; }
-		std::filesystem::path fileExtension() const noexcept { return reinterpret_cast<ControlBlock*>(data)->path.extension(); }
+		std::filesystem::path fileName() const noexcept { return data == nullptr ? "" : reinterpret_cast<ControlBlock*>(data)->path.filename(); }
+		std::filesystem::path filePath() const noexcept { return data == nullptr ? "" : reinterpret_cast<ControlBlock*>(data)->path; }
+		std::filesystem::path fileExtension() const noexcept { return data == nullptr ? "" : reinterpret_cast<ControlBlock*>(data)->path.extension(); }
 
 		operator bool() const noexcept { return data; }
 		bool valid() const noexcept { return data; }

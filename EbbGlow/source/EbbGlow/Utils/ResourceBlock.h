@@ -1,5 +1,7 @@
 #pragma once
 
+#include <atomic>
+
 #include <raylib.h>
 #include <EbbGlow/Utils/Resource.h>
 

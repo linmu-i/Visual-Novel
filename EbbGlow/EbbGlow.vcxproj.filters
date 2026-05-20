@@ -413,6 +413,9 @@
     <ClInclude Include="include\EbbGlow\Components\MessageCallback.h">
       <Filter>头文件\Components</Filter>
     </ClInclude>
+    <ClInclude Include="source\EbbGlow\Utils\ResourceBlock.h">
+      <Filter>源文件\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Script.txt">

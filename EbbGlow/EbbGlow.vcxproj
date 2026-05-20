@@ -238,6 +238,7 @@
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\ButtonAttachment.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\MainTextBox.h" />
     <ClInclude Include="include\EbbGlow\VisualNovel\VisualNovel\VisualNovel.h" />
+    <ClInclude Include="source\EbbGlow\Utils\ResourceBlock.h" />
     <ClInclude Include="source\EbbGlow\Utils\ResourceCreator.h" />
     <ClInclude Include="source\EbbGlow\Utils\RLKey.h" />
     <ClInclude Include="source\EbbGlow\Utils\RLTypesCast.h" />

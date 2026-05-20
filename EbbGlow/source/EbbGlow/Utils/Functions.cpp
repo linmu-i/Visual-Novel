@@ -23,7 +23,7 @@ namespace ebbglow::utils
 		std::string fileNameTmp = fontData.fileName().string();
 		const char* p = fileNameTmp.c_str();
 		while (*p != '\0') ++p;
-		while (*p != '.' && p != fontData.fileName()) --p;
+		while (*p != '.' && p != fileNameTmp.c_str()) --p;
 		if (*p != '.') return rsc::SharedFont();
 
 		std::vector<int> uniqueCodePoints;

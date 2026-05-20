@@ -305,7 +305,7 @@ namespace ebbglow::resource
 		codepoints.push_back('1');
 		codepoints.push_back('1');
 		codepoints.push_back('1');
-		data = new(std::nothrow) FontBlock(1, LoadFontFromMemory(fileData.fileExtension().string().c_str(), fileData.get(), fontSize, fileData.size(), codepoints.data(), codepoints.size()));
+		data = new(std::nothrow) FontBlock(1, LoadFontFromMemory(fileData.fileExtension().string().c_str(), fileData.get(), fileData.size(), fontSize, codepoints.data(), codepoints.size()));
 		if (!data) return;
 		if (!::IsFontValid(static_cast<FontBlock*>(data)->font))
 		{
