@@ -286,7 +286,7 @@ namespace ebbglow::visualnovel
 		return &scLoader.numberStorage[index];
 	}
 
-	std::future<void> ScriptLoader::init(const std::string& filePath)
+	std::future<void> ScriptLoader::init(const std::filesystem::path& filePath)
 	{
 		return std::async(std::launch::async, [this, filePath]()
 			{

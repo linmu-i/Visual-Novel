@@ -100,7 +100,7 @@ namespace ebbglow::visualnovel
 		core::DoubleComs<SaveAttachment>* coms;
 		ScriptLoader* scLoader;
 		core::MessageManager* msgMgr;
-		int32_t btReleaseId;
+		core::MessageTypeId btReleaseId;
 		SLControlSystem* slCtrlSys;
 
 	public:
@@ -122,7 +122,7 @@ namespace ebbglow::visualnovel
 		core::DoubleComs<LoadAttachment>* coms;
 		ScriptLoader* scLoader;
 		core::MessageManager* msgMgr;
-		int32_t btReleaseId;
+		core::MessageTypeId btReleaseId;
 		SLControlSystem* slCtrlSys;
 
 	public:

@@ -2,7 +2,7 @@
 
 namespace ebbglow::visualnovel
 {
-	ScriptData::ScriptData(const const std::string& filePath)
+	ScriptData::ScriptData(const const std::filesystem::path& filePath)
 	{
 		std::ifstream file(filePath, std::ios::binary | std::ios::ate);
 		if (file)

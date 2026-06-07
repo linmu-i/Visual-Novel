@@ -83,7 +83,7 @@ namespace ebbglow::visualnovel
 		ScriptLoader(core::World2D& world, VisualNovelConfig& cfg, MusicManager* musicMgr) : world(world), cfg(cfg),
 			musicMgr(*musicMgr) {
 		}
-		std::future<void> init(const std::string& filePath);
+		std::future<void> init(const std::filesystem::path& filePath);
 		bool loadScene(rsc::SharedFile::Iterator& it);
 		bool loadScene(const std::string& sceneName);
 		void start();

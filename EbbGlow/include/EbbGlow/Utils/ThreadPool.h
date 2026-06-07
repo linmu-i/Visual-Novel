@@ -12,7 +12,7 @@ namespace ebbglow::utils
 	class ThreadPool
 	{
 	private:
-		size_t size;
+		size_t size_;
 		bool stop;
 
 		std::vector<std::thread> workers;
@@ -53,6 +53,7 @@ namespace ebbglow::utils
 			return result;
 		}
 
+		size_t size() const { return size_; }
 		void wait();
 	};
 }

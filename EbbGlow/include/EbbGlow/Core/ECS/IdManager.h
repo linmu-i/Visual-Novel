@@ -10,8 +10,8 @@ namespace ebbglow::core
 		uint64_t countId = 0;
 		std::set<entity> inactive;
 	public:
-		uint64_t getId();
-		void recycleId(uint64_t id);
+		entity getId();
+		void recycleId(entity id);
 		size_t size() const;
 	};
 }

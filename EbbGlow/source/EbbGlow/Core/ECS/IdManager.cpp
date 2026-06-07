@@ -2,21 +2,21 @@
 
 namespace ebbglow::core
 {
-	uint64_t IdManager::getId()
+	entity IdManager::getId()
 	{
 		if (inactive.empty())
 		{
-			return countId++;
+			return entity(countId++, 0);
 		}
 		else
 		{
-			uint64_t tmp = *inactive.begin();
+			entity tmp = *inactive.begin();
 			inactive.erase(inactive.begin());
-			return tmp;
+			return entity(tmp.index(), tmp.version() + 1);
 		}
 	}
 
-	void IdManager::recycleId(uint64_t id)
+	void IdManager::recycleId(entity id)
 	{
 		inactive.insert(id);
 	}

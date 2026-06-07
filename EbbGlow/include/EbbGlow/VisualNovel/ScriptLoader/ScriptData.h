@@ -14,7 +14,7 @@ namespace ebbglow::visualnovel
 
 	public:
 		ScriptData() : data(nullptr), size(0) {}
-		ScriptData(const std::string& filePath);
+		ScriptData(const std::filesystem::path& filePath);
 		ScriptData(const ScriptData&) = delete;
 		ScriptData(ScriptData&& other) noexcept : data(other.data), size(other.size)
 		{

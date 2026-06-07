@@ -4,7 +4,7 @@
 
 namespace ebbglow::core
 {
-	using MessageTypeId = uint64_t;
+	using MessageTypeId = entity;
 
 	class MessageBase
 	{

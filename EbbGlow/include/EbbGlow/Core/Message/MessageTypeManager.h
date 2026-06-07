@@ -29,20 +29,19 @@ namespace ebbglow::core
 				MessageTypeId id = idManager.getId();
 				typeToId.emplace(std::type_index(typeid(T)), id);
 
-				if (id >= idToType.size())
+				if (id.index() >= idToType.size())
 				{
-					idToType.resize(id + 10, std::type_index(typeid(void)));//预分配
+					idToType.resize(id.index() + 10, std::type_index(typeid(void)));//预分配
 				}
-				idToType[id] = std::type_index(typeid(T));
-
+				idToType[id.index()] = std::type_index(typeid(T));
 				return id;
 			}
 		}
 		std::type_index getType(MessageTypeId id)
 		{
-			if (id < idToType.size())
+			if (id.index() < idToType.size())
 			{
-				return idToType[id];
+				return idToType[id.index()];
 			}
 			else
 			{
@@ -59,7 +58,7 @@ namespace ebbglow::core
 			}
 			else
 			{
-				return SIZE_MAX;
+				return InvalidEntity;
 			}
 		}
 	};

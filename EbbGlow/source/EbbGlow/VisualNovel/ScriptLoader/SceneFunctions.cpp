@@ -234,7 +234,7 @@ namespace ebbglow::visualnovel
 
 	struct KeyFrameAnimationBufCom
 	{
-		core::entity id = 0;
+		core::entity id = core::InvalidEntity;
 		ui::KeyFramesAnimationCom com;
 	};
 
@@ -296,7 +296,7 @@ namespace ebbglow::visualnovel
 		auto& buf = KeyframeAnimBuffer();
 		loader->idList.push_back(buf.id);
 		loader->world.createUnit(buf.id, buf.com);
-		buf.id = 0;
+		buf.id = core::InvalidEntity;
 		buf.com = ui::KeyFramesAnimationCom();
 	}
 

@@ -4,7 +4,43 @@
 
 namespace ebbglow::core
 {
-	using entity = uint64_t;
+	//using entity = uint64_t;
+
+	using EntityIndexT = uint32_t;
+	using EntityVersionT = uint32_t;
+
+	constexpr EntityIndexT InvalidIndex = 0xffffffffu;
+
+	class entity
+	{
+	private:
+		uint32_t index_;
+		uint32_t version_;
+
+	public:
+		constexpr entity() : index_(0), version_(0) {}
+		constexpr entity(uint32_t index, uint32_t version) : index_(index), version_(version) {}
+		constexpr uint32_t index() const { return index_; }
+		constexpr uint32_t version() const { return version_; }
+		constexpr bool operator==(const entity& other) const
+		{
+			return index_ == other.index_ && version_ == other.version_;
+		}
+		constexpr bool operator!=(const entity& other) const
+		{
+			return !(*this == other);
+		}
+		constexpr bool operator<(const entity& other) const
+		{
+			return index_ < other.index_;
+		}
+		constexpr bool operator>(const entity& other) const
+		{
+			return index_ > other.index_;
+		}
+	};
+	
+	constexpr entity InvalidEntity = entity(0xffffffffu, 0xffffffffu);
 
 	template<typename T>
 	class DoubleBuffered;

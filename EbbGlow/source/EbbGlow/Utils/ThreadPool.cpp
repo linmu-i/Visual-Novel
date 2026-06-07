@@ -2,7 +2,7 @@
 
 namespace ebbglow::utils
 {
-	ThreadPool::ThreadPool(size_t size) : size(size), stop(false), activeCount(0)
+	ThreadPool::ThreadPool(size_t size) : size_(size), stop(false), activeCount(0)
 	{
 		for (size_t i = 0; i < size; i++)
 		{
