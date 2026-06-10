@@ -70,7 +70,7 @@ namespace ebbglow
 		return file.good();
 	}
 
-	static bool u8SaveFileText(const char* u8FileName, char* text)
+	static bool u8SaveFileText(const char* u8FileName, const char* text)
 	{
 		if (u8FileName == nullptr || text == nullptr) return false;
 		std::filesystem::path filePath(reinterpret_cast<const char8_t*>(u8FileName));

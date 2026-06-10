@@ -79,7 +79,7 @@ namespace ebbglow::gfx
 
 	void DrawCircleGradient(Vec2 pos, float radius, Color color1, Color color2)
 	{
-		DrawCircleGradient(static_cast<int>(lroundf(pos.x)), static_cast<int>(lroundf(pos.y)), radius, RLColor(color1), RLColor(color2));
+		::DrawCircleGradient(RLVec2(pos), radius, RLColor(color1), RLColor(color2));
 	}
 
 	void DrawCircleSector(Vec2 center, float radius, float startAngle, float endAngle, Color color, int segments)

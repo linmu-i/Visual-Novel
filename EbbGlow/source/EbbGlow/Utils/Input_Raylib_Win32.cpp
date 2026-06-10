@@ -119,7 +119,9 @@ namespace ebbglow::input
 				break;
 			case PT_PEN:
 				penPoints.push_back(points.back());
-			default:;
+				break;
+			default:
+				break;
 			}
 			break;
 
@@ -204,7 +206,8 @@ namespace ebbglow::input
 			}
 			CloseTouchInputHandle((HTOUCHINPUT)lParam);
 		}
-		default:;
+		default:
+			break;
 		}
 		return CallWindowProc(originalWndProc, hwnd, msg, wParam, lParam);
 	}

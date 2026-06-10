@@ -58,8 +58,8 @@ namespace ebbglow::utils
 			}
 			Font sdfFont = {};
 			sdfFont.baseSize = fontSize;
-			sdfFont.glyphs = LoadFontData(fontData.get(), fontData.size(), fontSize, uniqueCodePoints.data(), uniqueCodePoints.size(), FONT_SDF);
-			sdfFont.glyphCount = uniqueCodePoints.size();
+			sdfFont.glyphs = LoadFontData(fontData.get(), fontData.size(), fontSize, uniqueCodePoints.data(), uniqueCodePoints.size(), FONT_SDF, &sdfFont.glyphCount);
+			//sdfFont.glyphCount = uniqueCodePoints.size();
 			Image atlas = GenImageFontAtlas(sdfFont.glyphs, &sdfFont.recs, uniqueCodePoints.size(), fontSize, 2, 1);
 			sdfFont.texture = LoadTextureFromImage(atlas);
 			sdfFont.glyphPadding = 2;
