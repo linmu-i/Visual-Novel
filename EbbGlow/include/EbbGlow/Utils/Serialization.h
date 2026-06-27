@@ -10,6 +10,7 @@
 #include <concepts>
 #include <iostream>
 #include <bit>
+#include <filesystem>
 
 namespace ebbglow::utils
 {
@@ -117,6 +118,23 @@ namespace ebbglow::utils
 		if (!Serialize(os, static_cast<uint64_t>(value.size())))
 			return false;
 		return static_cast<bool>(os.write(reinterpret_cast<const char*>(value.data()), static_cast<uint64_t>(value.size())));
+	}
+
+	template<OutStream OS>
+	bool Serialize(OS& os, const std::u8string& value)
+	{
+		if (!Serialize(os, static_cast<uint64_t>(value.size())))
+			return false;
+		return static_cast<bool>(os.write(reinterpret_cast<const char*>(value.data()), static_cast<uint64_t>(value.size())));
+	}
+
+	template<OutStream OS>
+	bool Serialize(OS& os, const std::filesystem::path& value)
+	{
+		std::u8string tmp = value.generic_u8string();
+		if (!Serialize(os, static_cast<uint64_t>(tmp.size())))
+			return false;
+		return static_cast<bool>(os.write(reinterpret_cast<const char*>(tmp.data()), static_cast<uint64_t>(tmp.size())));
 	}
 
 	template<OutStream OS>
@@ -242,9 +260,37 @@ namespace ebbglow::utils
 		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
-		str.clear();
-		str.resize(size);
-		return static_cast<bool>(is.read(reinterpret_cast<char*>(str.data()), size));
+		std::string tmp;
+		tmp.resize(size);
+		if (!static_cast<bool>(is.read(reinterpret_cast<char*>(tmp.data()), size))) return false;
+		str = std::move(tmp);
+		return true;
+	}
+
+	template<InStream IS>
+	bool Deserialize(IS& is, std::u8string& str)
+	{
+		uint64_t size = {};
+		if (!Deserialize(is, size))
+			return false;
+		std::u8string tmp;
+		tmp.resize(size);
+		if (!static_cast<bool>(is.read(reinterpret_cast<char*>(tmp.data()), size))) return false;
+		str = std::move(tmp);
+		return true;
+	}
+
+	template<InStream IS>
+	bool Deserialize(IS& is, std::filesystem::path& path)
+	{
+		uint64_t size = {};
+		if (!Deserialize(is, size))
+			return false;
+		std::u8string tmp;
+		tmp.resize(size);
+		if (!static_cast<bool>(is.read(reinterpret_cast<char*>(tmp.data()), size))) return false;
+		path = std::filesystem::path{ std::move(tmp) };
+		return true;
 	}
 
 	template<InStream IS, typename DataT>
@@ -253,12 +299,14 @@ namespace ebbglow::utils
 		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
-		vec.resize(size);
-		for (auto& item : vec)
+		std::vector<DataT> tmp;
+		tmp.resize(size);
+		for (auto& item : tmp)
 		{
 			if (!Deserialize(is, item))
 				return false;
 		}
+		vec = std::move(tmp);
 		return true;
 	}
 
@@ -268,14 +316,15 @@ namespace ebbglow::utils
 		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
-		lst.clear();
+		std::list<DataT> tmp;
 		for (uint64_t i = 0; i < size; ++i)
 		{
 			DataT item = {};
 			if (!Deserialize(is, item))
 				return false;
-			lst.push_back(std::move(item));
+			tmp.push_back(std::move(item));
 		}
+		lst = std::move(tmp);
 		return true;
 	}
 
@@ -285,14 +334,15 @@ namespace ebbglow::utils
 		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
-		st.clear();
+		std::set<DataT> tmp;
 		for (uint64_t i = 0; i < size; ++i)
 		{
 			DataT item = {};
 			if (!Deserialize(is, item))
 				return false;
-			st.insert(std::move(item));
+			tmp.insert(std::move(item));
 		}
+		st = std::move(tmp);
 		return true;
 	}
 
@@ -302,14 +352,15 @@ namespace ebbglow::utils
 		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
-		deq.clear();
+		std::deque<DataT> tmp;
 		for (uint64_t i = 0; i < size; ++i)
 		{
 			DataT item = {};
 			if (!Deserialize(is, item))
 				return false;
-			deq.push_back(std::move(item));
+			tmp.push_back(std::move(item));
 		}
+		deq = std::move(tmp);
 		return true;
 	}
 
@@ -330,6 +381,7 @@ namespace ebbglow::utils
 		uint64_t size = {};
 		if (!Deserialize(is, size))
 			return false;
+		std::unordered_map<KeyT, ValueT> tmp;
 		for (uint64_t i = 0; i < size; ++i)
 		{
 			KeyT key = {};
@@ -338,18 +390,23 @@ namespace ebbglow::utils
 				return false;
 			if (!Deserialize(is, value))
 				return false;
-			map.emplace(std::move(key), std::move(value));
+			tmp.emplace(std::move(key), std::move(value));
 		}
+		map = std::move(tmp);
 		return true;
 	}
 
 	template<InStream IS, typename FirstT, typename SecondT>
 	bool Deserialize(IS& is, std::pair<FirstT, SecondT>& pair)
 	{
-		if (!Deserialize(is, pair.first))
+		FirstT tmpFirst = {};
+		if (!Deserialize(is, tmpFirst))
 			return false;
-		if (!Deserialize(is, pair.second))
+		SecondT tmpSecond = {};
+		if (!Deserialize(is, tmpSecond))
 			return false;
+		pair.first = std::move(tmpFirst);
+		pair.second = std::move(tmpSecond);
 		return true;
 	}
 }
