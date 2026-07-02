@@ -162,7 +162,7 @@ namespace ebbglow
 		return stack;
 	}
 
-	void BeginShaderMode(rsc::SharedShader& shader)
+	void BeginShaderMode(const rsc::SharedShader& shader)
 	{
 		auto& stack = GetShaderStack();
 		if (!stack.empty()) ::EndShaderMode();

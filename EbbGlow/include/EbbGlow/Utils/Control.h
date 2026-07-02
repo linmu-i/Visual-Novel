@@ -70,7 +70,7 @@ namespace ebbglow
 		}
 	};
 
-	void BeginShaderMode(rsc::SharedShader& shader);
+	void BeginShaderMode(const rsc::SharedShader& shader);
 	void EndShaderMode();
 	void ClearShaderMode();
 	class ShaderModeGuard
@@ -79,7 +79,7 @@ namespace ebbglow
 		bool active;
 
 	public:
-		ShaderModeGuard(rsc::SharedShader& renderTexture)
+		ShaderModeGuard(const rsc::SharedShader& renderTexture)
 		{
 			active = true;
 			BeginShaderMode(renderTexture);

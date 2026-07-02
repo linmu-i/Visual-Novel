@@ -1,6 +1,8 @@
 #include <raylib.h>
 #include <cmath>
 #include <EbbGlow/Graphics/Graphics.h>
+#include <EbbGlow/Utils/Control.h>
+#include <EbbGlow/Utils/Math.h>
 #include "../Utils/RLTypesCast.h"
 #include "../Utils/ResourceCreator.h"
 
@@ -8,34 +10,34 @@ namespace ebbglow::gfx
 {
 	void DrawPixel(Vec2 pos, Color color)
 	{
-		DrawPixelV({ pos.x, pos.y }, RLColor(color));
+		::DrawPixelV({ pos.x, pos.y }, RLColor(color));
 	}
 
 	void DrawLine(Vec2 startPos, Vec2 endPos, Color color, float lineThick)
 	{
-		DrawLineEx(RLVec2(startPos), RLVec2(endPos), lineThick, RLColor(color));
+		::DrawLineEx(RLVec2(startPos), RLVec2(endPos), lineThick, RLColor(color));
 	}
 
 	void DrawRect(Rect rect, Color color, float rotation, Vec2 origin)
 	{
 		if (rotation == 0.0f)
 		{
-			DrawRectangleRec(RLRect(rect), RLColor(color));
+			::DrawRectangleRec(RLRect(rect), RLColor(color));
 		}
 		else
 		{
-			DrawRectanglePro(RLRect(rect), RLVec2(origin), rotation, RLColor(color));
+			::DrawRectanglePro(RLRect(rect), RLVec2(origin), RadToDeg(rotation), RLColor(color));
 		}
 	}
 
 	void DrawRectLines(Rect rect, Color color, float lineThick)
 	{
-		DrawRectangleLinesEx(RLRect(rect), lineThick, RLColor(color));
+		::DrawRectangleLinesEx(RLRect(rect), lineThick, RLColor(color));
 	}
 
 	void DrawRectangleGradientV(Rect rect, Color color1, Color color2)
 	{
-		DrawRectangleGradientV(
+		::DrawRectangleGradientV(
 			static_cast<int>(lroundf(rect.x)),
 			static_cast<int>(lroundf(rect.y)),
 			static_cast<int>(lroundf(rect.width)),
@@ -47,7 +49,7 @@ namespace ebbglow::gfx
 
 	void DrawRectangleGradientH(Rect rect, Color color1, Color color2)
 	{
-		DrawRectangleGradientH(
+		::DrawRectangleGradientH(
 			static_cast<int>(lroundf(rect.x)),
 			static_cast<int>(lroundf(rect.y)),
 			static_cast<int>(lroundf(rect.width)),
@@ -59,20 +61,20 @@ namespace ebbglow::gfx
 
 	void DrawCircle(Vec2 center, float radius, Color color)
 	{
-		DrawCircleV(RLVec2(center), radius, RLColor(color));
+		::DrawCircleV(RLVec2(center), radius, RLColor(color));
 	}
 
 	void DrawCircleLines(Vec2 center, float radius, Color color, float lineThick)
 	{
 		if (lineThick <= 1.0f)
 		{
-			DrawCircleLines(static_cast<int>(lroundf(center.x)), static_cast<int>(lroundf(center.y)), radius, RLColor(color));
+			::DrawCircleLines(static_cast<int>(lroundf(center.x)), static_cast<int>(lroundf(center.y)), radius, RLColor(color));
 		}
 		else
 		{
 			for (float r = radius - lineThick / 2.0f; r <= radius + lineThick / 2.0f; r += 1.0f)
 			{
-				DrawCircleLines(static_cast<int>(lroundf(center.x)), static_cast<int>(lroundf(center.y)), r, RLColor(color));
+				::DrawCircleLines(static_cast<int>(lroundf(center.x)), static_cast<int>(lroundf(center.y)), r, RLColor(color));
 			}
 		}
 	}
@@ -84,35 +86,35 @@ namespace ebbglow::gfx
 
 	void DrawCircleSector(Vec2 center, float radius, float startAngle, float endAngle, Color color, int segments)
 	{
-		DrawCircleSector(RLVec2(center), radius, startAngle, endAngle, segments, RLColor(color));
+		::DrawCircleSector(RLVec2(center), radius, RadToDeg(startAngle), RadToDeg(endAngle), segments, RLColor(color));
 	}
 
 	void DrawCircleSectorLines(Vec2 center, float radius, float startAngle, float endAngle, Color color, float lineThick, int segments)
 	{
 		float halfLineThick = lineThick / 2.0f;
-		DrawRing(center, radius - halfLineThick, radius + halfLineThick, startAngle, endAngle, color);
+		DrawRing(center, radius - halfLineThick, radius + halfLineThick, startAngle, endAngle, color, segments);
 	}
 
 	void DrawRing(Vec2 center, float innerRadius, float outerRadius, float startAngle, float endAngle, Color color, int segments)
 	{
-		DrawRing(RLVec2(center), innerRadius, outerRadius, startAngle, endAngle, segments, RLColor(color));
+		::DrawRing(RLVec2(center), innerRadius, outerRadius, RadToDeg(startAngle), RadToDeg(endAngle), segments, RLColor(color));
 	}
 
 	void DrawRingLines(Vec2 center, float innerRadius, float outerRadius, float startAngle, float endAngle, Color color, float lineThick, int segments)
 	{
 		float halfLineThick = lineThick / 2.0f;
-		DrawRing(center, innerRadius - halfLineThick, innerRadius + halfLineThick, startAngle, endAngle, color);
-		DrawRing(center, outerRadius - halfLineThick, outerRadius + halfLineThick, startAngle, endAngle, color);
+		DrawRing(center, innerRadius - halfLineThick, innerRadius + halfLineThick, startAngle, endAngle, color, segments);
+		DrawRing(center, outerRadius - halfLineThick, outerRadius + halfLineThick, startAngle, endAngle, color, segments);
 	}
 
 	void DrawTriangle(Vec2 v1, Vec2 v2, Vec2 v3, Color color)
 	{
-		DrawTriangle(RLVec2(v1), RLVec2(v2), RLVec2(v3), RLColor(color));
+		::DrawTriangle(RLVec2(v1), RLVec2(v2), RLVec2(v3), RLColor(color));
 	}
 
 	void DrawTriangleLines(Vec2 v1, Vec2 v2, Vec2 v3, Color color)
 	{
-		DrawTriangleLines(RLVec2(v1), RLVec2(v2), RLVec2(v3), RLColor(color));
+		::DrawTriangleLines(RLVec2(v1), RLVec2(v2), RLVec2(v3), RLColor(color));
 	}
 
 	void DrawTriangleFan(const std::vector<Vec2>& pos, Color color)
@@ -123,7 +125,7 @@ namespace ebbglow::gfx
 		{
 			rlPoints.push_back(RLVec2(p));
 		}
-		DrawTriangleFan(rlPoints.data(), static_cast<int>(rlPoints.size()), RLColor(color));
+		::DrawTriangleFan(rlPoints.data(), static_cast<int>(rlPoints.size()), RLColor(color));
 	}
 
 	void DrawTriangleStrip(const std::vector<Vec2>& pos, Color color)
@@ -134,57 +136,57 @@ namespace ebbglow::gfx
 		{
 			rlPoints.push_back(RLVec2(p));
 		}
-		DrawTriangleStrip(rlPoints.data(), static_cast<int>(rlPoints.size()), RLColor(color));
+		::DrawTriangleStrip(rlPoints.data(), static_cast<int>(rlPoints.size()), RLColor(color));
 	}
 
 	void DrawPoly(Vec2 center, int sides, float radius, float rotation, Color color)
 	{
-		DrawPoly(RLVec2(center), sides, radius, rotation, RLColor(color));
+		::DrawPoly(RLVec2(center), sides, radius, RadToDeg(rotation), RLColor(color));
 	}
 
 	void DrawPolyLines(Vec2 center, int sides, float radius, float rotation, Color color, float lineThick)
 	{
-		DrawPolyLinesEx(RLVec2(center), sides, radius, rotation, lineThick, RLColor(color));
+		::DrawPolyLinesEx(RLVec2(center), sides, radius, RadToDeg(rotation), lineThick, RLColor(color));
 	}
 
 	void DrawTexture(const rsc::SharedTexture2D& texture, Vec2 pos, float scale, float rotation, Color tint)
 	{
-		DrawTextureEx(*static_cast<const Texture2D*>(texture.get()), RLVec2(pos), rotation, scale, RLColor(tint));
+		::DrawTextureEx(*static_cast<const Texture2D*>(texture.get()), RLVec2(pos), RadToDeg(rotation), scale, RLColor(tint));
 	}
 
 	void DrawTextureRegionToRegion(const rsc::SharedTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
 	{
-		DrawTexturePro(*static_cast<const Texture2D*>(texture.get()), RLRect(sourceRec), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
+		::DrawTexturePro(*static_cast<const Texture2D*>(texture.get()), RLRect(sourceRec), RLRect(destRec), RLVec2(origin), RadToDeg(rotation), RLColor(tint));
 	}
 
 	void DrawTextureRegion(const rsc::SharedTexture2D& texture, Rect sourceRec, Vec2 pos, Color tint)
 	{
-		DrawTextureRec(*static_cast<const Texture2D*>(texture.get()), RLRect(sourceRec), RLVec2(pos), RLColor(tint));
+		::DrawTextureRec(*static_cast<const Texture2D*>(texture.get()), RLRect(sourceRec), RLVec2(pos), RLColor(tint));
 	}
 
 	void DrawTexture(const rsc::SharedRenderTexture2D& texture, Vec2 pos, float scale, float rotation, Color tint)
 	{
-		DrawTextureRec(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(-texture.height()) }), RLVec2(pos), RLColor(tint));//raylib的RenderTexture2D的纹理坐标系以左下角为原点，在此统一修正
+		::DrawTexturePro(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(-texture.height()) }), RLRect(Rect{ pos, texture.size() * scale }), {0, 0}, RadToDeg(rotation), RLColor(tint));//raylib的RenderTexture2D的纹理坐标系以左下角为原点，在此统一修正
 	}
 
 	void DrawTextureRegionToRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
 	{
-		DrawTexturePro(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLRect(destRec), RLVec2(origin), rotation, RLColor(tint));
+		::DrawTexturePro(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLRect(destRec), RLVec2(origin), RadToDeg(rotation), RLColor(tint));
 	}
 
 	void DrawTextureRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Vec2 pos, Color tint)
 	{
-		DrawTextureRec(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLVec2(pos), RLColor(tint));
+		::DrawTextureRec(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLVec2(pos), RLColor(tint));
 	}
 
 	void DrawText(const rsc::SharedFont& font, const std::string& text, Vec2 position, float fontSize, float spacing, Color tint, Vec2 origin, float rotation)
 	{
-		DrawTextPro(*static_cast<const Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(origin), rotation, fontSize, spacing, RLColor(tint));
+		::DrawTextPro(*static_cast<const Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(origin), RadToDeg(rotation), fontSize, spacing, RLColor(tint));
 	}
 
 	void DrawTextCodepoints(const rsc::SharedFont& font, const std::vector<int32_t>& codepoints, Vec2 position, float fontSize, float spacing, Color tint)
 	{
-		DrawTextCodepoints(*static_cast<const Font*>(font.get()), codepoints.data(), static_cast<int>(codepoints.size()), RLVec2(position), fontSize, spacing, RLColor(tint));
+		::DrawTextCodepoints(*static_cast<const Font*>(font.get()), codepoints.data(), static_cast<int>(codepoints.size()), RLVec2(position), fontSize, spacing, RLColor(tint));
 	}
 
 	const char* DefaultSDFShaderCode = R"(
@@ -258,16 +260,14 @@ void main()
 
 	void DrawSDFText(const rsc::SharedFont& font, const std::string& text, Vec2 position, float fontSize, float spacing, Color tint, Vec2 origin, float rotation, const rsc::SharedShader& shader)
 	{
-		BeginShaderMode(*static_cast<const Shader*>(shader.get()));
-		DrawTextPro(*static_cast<const Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(origin), rotation, fontSize, spacing, RLColor(tint));
-		EndShaderMode();
+		ShaderModeGuard guard(shader);
+		::DrawTextPro(*static_cast<const Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(origin), RadToDeg(rotation), fontSize, spacing, RLColor(tint));
 	}
 
 	void DrawSDFTextCodepoints(const rsc::SharedFont& font, const std::vector<int32_t>& codepoints, Vec2 position, float fontSize, float spacing, Color tint, const rsc::SharedShader& shader)
 	{
-		BeginShaderMode(*static_cast<const Shader*>(shader.get()));
-		DrawTextCodepoints(*static_cast<const Font*>(font.get()), codepoints.data(), static_cast<int>(codepoints.size()), RLVec2(position), fontSize, spacing, RLColor(tint));
-		EndShaderMode();
+		ShaderModeGuard guard(shader);
+		::DrawTextCodepoints(*static_cast<const Font*>(font.get()), codepoints.data(), static_cast<int>(codepoints.size()), RLVec2(position), fontSize, spacing, RLColor(tint));
 	}
 
 	void DrawLineStrip(const std::vector<Vec2>& points, Color color, float lineThick)
@@ -278,11 +278,11 @@ void main()
 		{
 			rlPoints.push_back(RLVec2(p));
 		}
-		DrawSplineLinear(rlPoints.data(), static_cast<int>(rlPoints.size()), lineThick, RLColor(color));
+		::DrawSplineLinear(rlPoints.data(), static_cast<int>(rlPoints.size()), lineThick, RLColor(color));
 	}
 
 	void ClearBackground(Color color)
 	{
-		ClearBackground(RLColor(color));
+		::ClearBackground(RLColor(color));
 	}
 }
