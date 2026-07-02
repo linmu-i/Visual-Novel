@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cmath>
 #include <concepts>
+#include <numbers>
 
 namespace ebbglow
 {
@@ -16,6 +17,68 @@ namespace ebbglow
 
 		template<std::convertible_to<float> T0, std::convertible_to<float> T1>
 		constexpr Vec2(T0 x, T1 y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
+
+		constexpr Vec2& operator+=(Vec2 other) noexcept
+		{
+			x += other.x;
+			y += other.y;
+			return *this;
+		}
+		[[nodiscard]] constexpr Vec2 operator+(Vec2 other) const noexcept
+		{
+			return Vec2(x + other.x, y + other.y);
+		}
+
+		constexpr Vec2& operator-=(Vec2 other) noexcept
+		{
+			x -= other.x;
+			y -= other.y;
+			return *this;
+		}
+		[[nodiscard]] constexpr Vec2 operator-(Vec2 other) const noexcept
+		{
+			return Vec2(x - other.x, y - other.y);
+		}
+
+		[[nodiscard]] constexpr Vec2 operator-() const noexcept
+		{
+			return Vec2(-x, -y);
+		}
+
+		[[nodiscard]] constexpr Vec2 operator*(float scalar) const noexcept
+		{
+			return Vec2(x * scalar, y * scalar);
+		}
+		constexpr Vec2& operator*=(float scalar) noexcept
+		{
+			x *= scalar;
+			y *= scalar;
+			return *this;
+		}
+
+		[[nodiscard]] constexpr Vec2 operator/(float scalar) const noexcept
+		{
+			return Vec2(x / scalar, y / scalar);
+		}
+		constexpr Vec2& operator/=(float scalar) noexcept
+		{
+			x /= scalar;
+			y /= scalar;
+			return *this;
+		}
+
+		[[nodiscard]] constexpr bool operator==(const Vec2& other) const noexcept = default;
+		[[nodiscard]] constexpr bool operator!=(const Vec2& other) const noexcept = default;
+
+		[[nodiscard]] constexpr float dot(Vec2 other) const noexcept
+		{
+			return x * other.x + y * other.y;
+		}
+
+		[[nodiscard]] constexpr float cross(Vec2 other) const noexcept
+		{
+			return x * other.y - y * other.x;
+		}
 
 		[[nodiscard]] float length() const noexcept
 		{
@@ -33,7 +96,41 @@ namespace ebbglow
 			if (len < 1e-8f) return Vec2(0.0f, 0.0f);
 			return Vec2(x / len, y / len);
 		}
+
+		[[nodiscard]] Vec2 rotated(float rad) const noexcept
+		{
+			float cosTheta = std::cos(rad);
+			float sinTheta = std::sin(rad);
+			return Vec2(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
+		}
+
+		[[nodiscard]] constexpr Vec2 lerp(Vec2 other, float t) const noexcept
+		{
+			return Vec2(x + (other.x - x) * t, y + (other.y - y) * t);
+		}
+
+		[[nodiscard]] float rad() const noexcept
+		{
+			return std::atan2(y, x);
+		}
+
+		[[nodiscard]] float deg() const noexcept
+		{
+			constexpr float factor = 180.0f / std::numbers::pi_v<float>;
+			return rad() * factor;
+		}
+
+		static constexpr Vec2 Zero() noexcept { return Vec2{ 0.0f, 0.0f }; }
+		static constexpr Vec2 XUnit() noexcept { return Vec2{ 1.0f, 0.0f }; }
+		static constexpr Vec2 YUnit() noexcept { return Vec2{ 0.0f, 1.0f }; }
+		static Vec2 Polar(float length, float rad) noexcept { return Vec2{ length * std::cos(rad), length * std::sin(rad) }; }
+
 	};
+
+	[[nodiscard]] inline constexpr Vec2 operator*(float a, Vec2 b) noexcept
+	{
+		return b * a;
+	}
 
 	struct ColorR8G8B8A8
 	{
