@@ -243,6 +243,11 @@ namespace ebbglow
 		{
 			return Rect{ x , y , width * scale, height * scale };
 		}
+		[[nodiscard]] constexpr Rect scaleAround(Vec2 pivot, float scale) const noexcept
+		{
+			Vec2 newPos = pivot + (position() - pivot) * scale;
+			return Rect{ newPos.x, newPos.y, width * scale, height * scale };
+		}
 		[[nodiscard]] constexpr float area() const noexcept
 		{
 			return  width * height;
