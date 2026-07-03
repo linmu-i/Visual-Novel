@@ -103,6 +103,11 @@ namespace ebbglow
 			float sinTheta = std::sin(rad);
 			return Vec2(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
 		}
+		[[nodiscard]] Vec2 rotatedAround(Vec2 pivot, float rad) const noexcept
+		{
+			Vec2 direction = *this - pivot;
+			return pivot + direction.rotated(rad);
+		}
 
 		[[nodiscard]] constexpr Vec2 lerp(Vec2 other, float t) const noexcept
 		{
@@ -118,6 +123,35 @@ namespace ebbglow
 		{
 			constexpr float factor = 180.0f / std::numbers::pi_v<float>;
 			return rad() * factor;
+		}
+
+		[[nodiscard]] float angleTo(Vec2 other) const noexcept
+		{
+			float dotProd = dot(other);
+			float lenProd = length() * other.length();
+			if (lenProd < 1e-8f) return 0.0f;
+			float cosTheta = dotProd / lenProd;
+			cosTheta = std::clamp(cosTheta, -1.0f, 1.0f);
+			return std::acos(cosTheta);
+		}
+		[[nodiscard]] float signedAngleTo(Vec2 other) const noexcept
+		{
+			return std::atan2(cross(other), dot(other));
+		}
+
+		[[nodiscard]] Vec2 reflect(Vec2 normal) const noexcept
+		{
+			if (normal.lengthSqr() < 1e-8f) return *this;
+			normal = normal.normalized();
+			return *this - normal * (2.0f * dot(normal));
+		}
+
+		[[nodiscard]] Vec2 projectOnto(Vec2 other) const noexcept
+		{
+			float otherLenSqr = other.lengthSqr();
+			if (otherLenSqr < 1e-8f) return Vec2(0.0f, 0.0f);
+			float projectionScale = dot(other) / otherLenSqr;
+			return other * projectionScale;
 		}
 
 		static constexpr Vec2 Zero() noexcept { return Vec2{ 0.0f, 0.0f }; }
