@@ -239,6 +239,10 @@ namespace ebbglow
 		{
 			return Rect{ x , y , width + extension.x, height + extension.y };
 		}
+		[[nodiscard]] constexpr Rect scaleOf(float scale) const noexcept
+		{
+			return Rect{ x , y , width * scale, height * scale };
+		}
 		[[nodiscard]] constexpr float area() const noexcept
 		{
 			return  width * height;
