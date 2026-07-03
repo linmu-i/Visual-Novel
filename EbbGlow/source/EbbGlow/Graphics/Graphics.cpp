@@ -149,9 +149,9 @@ namespace ebbglow::gfx
 		::DrawPolyLinesEx(RLVec2(center), sides, radius, RadToDeg(rotation), lineThick, RLColor(color));
 	}
 
-	void DrawTexture(const rsc::SharedTexture2D& texture, Vec2 pos, float scale, float rotation, Color tint)
+	void DrawTexture(const rsc::SharedTexture2D& texture, Vec2 pos, float scale, float rotation, Vec2 pivot, Color tint)
 	{
-		::DrawTextureEx(*static_cast<const Texture2D*>(texture.get()), RLVec2(pos), RadToDeg(rotation), scale, RLColor(tint));
+		DrawTexturePro(*static_cast<const Texture2D*>(texture.get()), RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(texture.height()) }), RLRect(Rect{ pos, texture.size() }.scaleAround(pivot, scale)), RLVec2(pivot * scale), RadToDeg(rotation), RLColor(tint));
 	}
 
 	void DrawTextureRegionToRegion(const rsc::SharedTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
@@ -164,9 +164,9 @@ namespace ebbglow::gfx
 		::DrawTextureRec(*static_cast<const Texture2D*>(texture.get()), RLRect(sourceRec), RLVec2(pos), RLColor(tint));
 	}
 
-	void DrawTexture(const rsc::SharedRenderTexture2D& texture, Vec2 pos, float scale, float rotation, Color tint)
+	void DrawTexture(const rsc::SharedRenderTexture2D& texture, Vec2 pos, float scale, float rotation, Vec2 pivot, Color tint)
 	{
-		::DrawTexturePro(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(-texture.height()) }), RLRect(Rect{ pos, texture.size() * scale }), {0, 0}, RadToDeg(rotation), RLColor(tint));//raylib的RenderTexture2D的纹理坐标系以左下角为原点，在此统一修正
+		::DrawTexturePro(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(-texture.height()) }), RLRect(Rect{ pos, texture.size() }.scaleAround(pivot, scale)), RLVec2(pivot * scale), RadToDeg(rotation), RLColor(tint));//raylib的RenderTexture2D的纹理坐标系以左下角为原点，在此统一修正
 	}
 
 	void DrawTextureRegionToRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
