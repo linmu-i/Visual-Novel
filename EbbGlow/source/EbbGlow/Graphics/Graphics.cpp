@@ -151,7 +151,7 @@ namespace ebbglow::gfx
 
 	void DrawTexture(const rsc::SharedTexture2D& texture, Vec2 pos, float scale, float rotation, Vec2 pivot, Color tint)
 	{
-		DrawTexturePro(*static_cast<const Texture2D*>(texture.get()), RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(texture.height()) }), RLRect(Rect{ pos, texture.size() }.scaleAround(pivot, scale)), RLVec2(pivot * scale), RadToDeg(rotation), RLColor(tint));
+		DrawTexturePro(*static_cast<const Texture2D*>(texture.get()), RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(texture.height()) }), RLRect(Rect{ pos, texture.size() }.scaleAround(pos + pivot, scale)), RLVec2(pivot * scale), RadToDeg(rotation), RLColor(tint));
 	}
 
 	void DrawTextureRegionToRegion(const rsc::SharedTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
@@ -166,7 +166,7 @@ namespace ebbglow::gfx
 
 	void DrawTexture(const rsc::SharedRenderTexture2D& texture, Vec2 pos, float scale, float rotation, Vec2 pivot, Color tint)
 	{
-		::DrawTexturePro(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(-texture.height()) }), RLRect(Rect{ pos, texture.size() }.scaleAround(pivot, scale)), RLVec2(pivot * scale), RadToDeg(rotation), RLColor(tint));//raylib的RenderTexture2D的纹理坐标系以左下角为原点，在此统一修正
+		::DrawTexturePro(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ 0, 0, static_cast<float>(texture.width()), static_cast<float>(-texture.height()) }), RLRect(Rect{ pos, texture.size() }.scaleAround(pos + pivot, scale)), RLVec2(pivot * scale), RadToDeg(rotation), RLColor(tint));//raylib的RenderTexture2D的纹理坐标系以左下角为原点，在此统一修正
 	}
 
 	void DrawTextureRegionToRegion(const rsc::SharedRenderTexture2D& texture, Rect sourceRec, Rect destRec, Vec2 origin, float rotation, Color tint)
