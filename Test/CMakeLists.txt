@@ -1,0 +1,17 @@
+cmake_minimum_required (VERSION 3.12)
+
+project(EbbGlow_Test VERSION 0.0.0)
+add_executable(EbbGlow_Test)
+
+target_compile_features(EbbGlow_Test PRIVATE cxx_std_20)
+
+target_link_libraries(EbbGlow_Test PUBLIC EbbGlow)
+
+set_property(TARGET EbbGlow_Test
+             PROPERTY VS_DEBUGGER_WORKING_DIRECTORY 
+             "${CMAKE_SOURCE_DIR}/working_dir")
+
+target_include_directories(EbbGlow_Test PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_sources(EbbGlow_Test PRIVATE
+	"src/Test.cpp"
+)

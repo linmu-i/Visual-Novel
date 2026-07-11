@@ -4,6 +4,7 @@
 #include <cmath>
 #include <concepts>
 #include <numbers>
+#include <algorithm>
 
 namespace ebbglow
 {
@@ -222,6 +223,17 @@ namespace ebbglow
 				other.x >= x + width ||
 				other.y + other.height <= y ||
 				other.y >= y + height);
+		}
+		[[nodiscard]] constexpr Rect intersection(const Rect& other) const noexcept
+		{
+			if (!intersect(other)) return {};
+			return Rect
+			{
+				std::max(x, other.x),
+				std::max(y, other.y),
+				std::min(x + width, other.x + other.width) - std::max(x, other.x),
+				std::min(y + height, other.y + other.height) - std::max(y, other.y)
+			};
 		}
 		[[nodiscard]] constexpr Vec2 position() const noexcept
 		{

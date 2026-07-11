@@ -5,7 +5,7 @@
 #include <EbbGlow/Utils/Serialization.h>
 #include <EbbGlow/Utils/Control.h>
 #include <EbbGlow/Graphics/Graphics.h>
-#include "../source/EbbGlow/Utils/ResourceCreator.h"
+#include "../src/EbbGlow/Utils/ResourceCreator.h"
 
 namespace ebbglow::visualnovel
 {
