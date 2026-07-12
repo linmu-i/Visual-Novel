@@ -54,7 +54,7 @@ set(UI_YUI_SOURCES
 	"src/EbbGlow/UI/YUI/YUITransform.cpp"
 	"src/EbbGlow/UI/YUI/YUIView.cpp"
 	"src/EbbGlow/UI/YUI/ImageBox/YUIImageBox.cpp"
-
+	"src/EbbGlow/UI/YUI/Button/YUIButtonLogic.cpp"
 )
 
 set(COMPONENTS_SOURCES
