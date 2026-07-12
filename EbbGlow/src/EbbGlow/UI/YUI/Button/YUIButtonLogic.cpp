@@ -48,15 +48,31 @@ namespace ebbglow::ui::yui
 				for (auto& point : points)
 				{
 
-					if (!act.isDown && input::PointPressed(point.id))
+					if (point.type == input::PointType::Mouse)
 					{
-						newPressed = true;
+						if (!act.isDown && input::MousePressed(input::MouseButton::Left))
+						{
+							newPressed = true;
 
+						}
+
+						if (act.isDown && (!input::MouseReleased(input::MouseButton::Left) || input::MouseDown(input::MouseButton::Left)))
+						{
+							allReleased = false;
+						}
 					}
-
-					if (act.isDown && (!input::PointReleased(point.id) || input::PointDown(point.id)))
+					else
 					{
-						allReleased = false;
+						if (!act.isDown && input::PointPressed(point.id))
+						{
+							newPressed = true;
+
+						}
+
+						if (act.isDown && (!input::PointReleased(point.id) || input::PointDown(point.id)))
+						{
+							allReleased = false;
+						}
 					}
 				}
 
