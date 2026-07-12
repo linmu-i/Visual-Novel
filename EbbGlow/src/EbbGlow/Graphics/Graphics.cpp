@@ -315,9 +315,10 @@ namespace ebbglow::gfx
 		::DrawTextureRec(static_cast<const RenderTexture2D*>(texture.get())->texture, RLRect(Rect{ sourceRec.position(), Vec2{ sourceRec.width, -sourceRec.height } }), RLVec2(pos), RLColor(tint));
 	}
 
-	void DrawText(const rsc::SharedFont& font, const std::string& text, Vec2 position, float fontSize, float spacing, Color tint, Vec2 origin, float rotation)
+	void DrawText(const rsc::SharedFont& font, const std::string& text, Vec2 position, float fontSize, float spacing, Color tint, Vec2 pivot, float rotation)
 	{
-		::DrawTextPro(*static_cast<const Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(origin), RadToDeg(rotation), fontSize, spacing, RLColor(tint));
+		position += pivot;//修正为pivot语义，以position为原点，origin为旋转中心
+		::DrawTextPro(*static_cast<const Font*>(font.get()), text.c_str(), RLVec2(position), RLVec2(pivot), RadToDeg(rotation), fontSize, spacing, RLColor(tint));
 	}
 
 	void DrawTextCodepoints(const rsc::SharedFont& font, const std::vector<int32_t>& codepoints, Vec2 position, float fontSize, float spacing, Color tint)

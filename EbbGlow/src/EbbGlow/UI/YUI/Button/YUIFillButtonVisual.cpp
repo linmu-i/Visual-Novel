@@ -12,10 +12,10 @@ namespace ebbglow::ui::yui
 
 		Rect rectScaled = rect.scaleAround(transform.pivot, transform.scale);
 		Vec2 textPos = rectScaled.center() - (textSize * 0.5f);
-		Vec2 textOrigin = transform.pivot - textPos;
+		Vec2 textPivot = transform.pivot - textPos;
 		textPos += transform.position;
 
-		gfx::DrawText(visual.font, visual.text, textPos + textOrigin, visual.fontSize * transform.scale, visual.spacing * transform.scale, visual.textColor, textOrigin, transform.rotation);
+		gfx::DrawText(visual.font, visual.text, textPos, visual.fontSize * transform.scale, visual.spacing * transform.scale, visual.textColor, textPivot, transform.rotation);
 		gfx::DrawRectRounded(rect.offsetOf(transform.position).extendOf({ 2.0f, 2.0f }).offsetOf({-1.0f, -1.0f}), 0.2f, Color{ 255, 255, 255, static_cast<uint8_t>(255 * visual.interpolation) }, transform.scale, transform.rotation, transform.pivot);
 	}
 
