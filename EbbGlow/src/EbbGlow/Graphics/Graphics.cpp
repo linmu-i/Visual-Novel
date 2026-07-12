@@ -26,6 +26,7 @@ namespace ebbglow::gfx
 		}
 		else
 		{
+			pivot += rect.position();
 			Rect finalRect = rect.scaleAround(pivot, scale);
 			Vec2 lt = finalRect.position().rotatedAround(pivot, rotation);
 			Vec2 rt = Vec2{ finalRect.x + finalRect.width, finalRect.y }.rotatedAround(pivot, rotation);
@@ -41,6 +42,7 @@ namespace ebbglow::gfx
 		if (rotation == 0.0f) ::DrawRectangleLinesEx(RLRect(rect.scaleAround(pivot, scale)), lineThick, RLColor(color));
 		else
 		{
+			pivot += rect.position();
 			auto scaledRect = rect.scaleAround(pivot, scale);
 			Vec2 lt = scaledRect.position().rotatedAround(pivot, rotation);
 			Vec2 rt = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y }.rotatedAround(pivot, rotation);
@@ -88,7 +90,8 @@ namespace ebbglow::gfx
 		}
 		else
 		{
-			Rect scaledRect = rect.scaleAround(pivot, scale);
+			Vec2 worldPivot = pivot + rect.position();
+			Rect scaledRect = rect.scaleAround(worldPivot, scale);
 
 			float radius = std::min(scaledRect.width, scaledRect.height) * roundness;
 			radius = std::min(radius, std::min(scaledRect.width, scaledRect.height) * 0.5f);
@@ -108,8 +111,8 @@ namespace ebbglow::gfx
 				scaledRect.height
 			};
 
-			DrawRect(vertRect, color, 1.0f, rotation, pivot);
-			DrawRect(horiRect, color, 1.0f, rotation, pivot);
+			DrawRect(vertRect, color, 1.0f, rotation, pivot - Vec2{ 0, radius });
+			DrawRect(horiRect, color, 1.0f, rotation, pivot - Vec2{ radius, 0 });
 
 			Vec2 centers[4] =
 			{
@@ -121,33 +124,34 @@ namespace ebbglow::gfx
 
 			for (int i = 0; i < 4; ++i)
 			{
-				Vec2 rotatedCenter = centers[i].rotatedAround(pivot, rotation);
+				Vec2 rotatedCenter = centers[i].rotatedAround(worldPivot, rotation);
 				DrawCircle(rotatedCenter, radius, color);
 			}
 		}
 	}
-	void DrawRectRoundedLines(Rect rect, float roundness, Color color, float lineThick, float scale, float rotation, Vec2 origin, int segments)
+	void DrawRectRoundedLines(Rect rect, float roundness, Color color, float lineThick, float scale, float rotation, Vec2 pivot, int segments)
 	{
 		if (rotation == 0.0f)
 		{
-			::DrawRectangleRoundedLinesEx(RLRect(rect.scaleAround(origin, scale)), roundness, segments, lineThick, RLColor(color));
+			::DrawRectangleRoundedLinesEx(RLRect(rect.scaleAround(pivot, scale)), roundness, segments, lineThick, RLColor(color));
 		}
 		else
 		{
+			Vec2 worldOrigin = pivot + rect.position();
 			float radius = std::min(rect.width, rect.height) * roundness * scale;
-			Rect scaledRect = rect.scaleAround(origin, scale);
-			Vec2 lt = Vec2{ scaledRect.x, scaledRect.y + radius }.rotatedAround(origin, rotation);
-			Vec2 rt = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y + radius }.rotatedAround(origin, rotation);
-			Vec2 rb = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y + scaledRect.height - radius }.rotatedAround(origin, rotation);
-			Vec2 lb = Vec2{ scaledRect.x, scaledRect.y + scaledRect.height - radius }.rotatedAround(origin, rotation);
-			Vec2 tl = Vec2{ scaledRect.x + radius, scaledRect.y }.rotatedAround(origin, rotation);
-			Vec2 tr = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y }.rotatedAround(origin, rotation);
-			Vec2 br = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height }.rotatedAround(origin, rotation);
-			Vec2 bl = Vec2{ scaledRect.x + radius, scaledRect.y + scaledRect.height }.rotatedAround(origin, rotation);
-			Vec2 clt = Vec2{ scaledRect.x + radius, scaledRect.y + radius }.rotatedAround(origin, rotation);
-			Vec2 crt = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + radius }.rotatedAround(origin, rotation);
-			Vec2 crb = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height - radius }.rotatedAround(origin, rotation);
-			Vec2 clb = Vec2{ scaledRect.x + radius, scaledRect.y + scaledRect.height - radius }.rotatedAround(origin, rotation);
+			Rect scaledRect = rect.scaleAround(worldOrigin, scale);
+			Vec2 lt = Vec2{ scaledRect.x, scaledRect.y + radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 rt = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y + radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 rb = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y + scaledRect.height - radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 lb = Vec2{ scaledRect.x, scaledRect.y + scaledRect.height - radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 tl = Vec2{ scaledRect.x + radius, scaledRect.y }.rotatedAround(worldOrigin, rotation);
+			Vec2 tr = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y }.rotatedAround(worldOrigin, rotation);
+			Vec2 br = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height }.rotatedAround(worldOrigin, rotation);
+			Vec2 bl = Vec2{ scaledRect.x + radius, scaledRect.y + scaledRect.height }.rotatedAround(worldOrigin, rotation);
+			Vec2 clt = Vec2{ scaledRect.x + radius, scaledRect.y + radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 crt = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 crb = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height - radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 clb = Vec2{ scaledRect.x + radius, scaledRect.y + scaledRect.height - radius }.rotatedAround(worldOrigin, rotation);
 
 			DrawLine(lt, lb, color, lineThick);
 			DrawLine(rt, rb, color, lineThick);
