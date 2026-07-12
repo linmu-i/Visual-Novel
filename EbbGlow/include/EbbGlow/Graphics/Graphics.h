@@ -12,10 +12,13 @@ namespace ebbglow::gfx
 
 	void DrawLine(Vec2 startPos, Vec2 endPos, Color color, float lineThick = 1.0f);
 
-	void DrawRect(Rect rect, Color color, float rotation = 0.0f, Vec2 origin = { 0.0f, 0.0f });
-	void DrawRectLines(Rect rect, Color color, float lineThick = 1.0f);
+	void DrawRect(Rect rect, Color color, float scale = 1.0f, float rotation = 0.0f, Vec2 pivot = { 0.0f, 0.0f });
+	void DrawRectLines(Rect rect, Color color, float lineThick = 1.0f, float scale = 1.0f, float rotation = 0.0f, Vec2 pivot = { 0.0f, 0.0f });
 	void DrawRectangleGradientV(Rect rect, Color color1, Color color2);
 	void DrawRectangleGradientH(Rect rect, Color color1, Color color2);
+
+	void DrawRectRounded(Rect rect, float roundness, Color color, float scale = 1.0f, float rotation = 0.0f, Vec2 pivot = { 0.0f, 0.0f }, int segments = 32);
+	void DrawRectRoundedLines(Rect rect, float roundness, Color color, float lineThick = 1.0f, float scale = 1.0f, float rotation = 0.0f, Vec2 pivot = { 0.0f, 0.0f }, int segments = 32);
 
 	void DrawCircle(Vec2 center, float radius, Color color);
 	void DrawCircleLines(Vec2 center, float radius, Color color, float lineThick = 1.0f);

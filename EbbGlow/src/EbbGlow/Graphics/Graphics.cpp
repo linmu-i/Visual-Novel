@@ -18,7 +18,7 @@ namespace ebbglow::gfx
 		::DrawLineEx(RLVec2(startPos), RLVec2(endPos), lineThick, RLColor(color));
 	}
 
-	void DrawRect(Rect rect, Color color, float rotation, Vec2 origin)
+	void DrawRect(Rect rect, Color color, float scale, float rotation, Vec2 pivot)
 	{
 		if (rotation == 0.0f)
 		{
@@ -26,13 +26,34 @@ namespace ebbglow::gfx
 		}
 		else
 		{
-			::DrawRectanglePro(RLRect(rect), RLVec2(origin), RadToDeg(rotation), RLColor(color));
+			Rect finalRect = rect.scaleAround(pivot, scale);
+			Vec2 lt = finalRect.position().rotatedAround(pivot, rotation);
+			Vec2 rt = Vec2{ finalRect.x + finalRect.width, finalRect.y }.rotatedAround(pivot, rotation);
+			Vec2 rb = Vec2{ finalRect.x + finalRect.width, finalRect.y + finalRect.height }.rotatedAround(pivot, rotation);
+			Vec2 lb = Vec2{ finalRect.x, finalRect.y + finalRect.height }.rotatedAround(pivot, rotation);
+			DrawTriangle(rt, lt, lb, color);
+			DrawTriangle(lb, rb, rt, color);
 		}
 	}
 
-	void DrawRectLines(Rect rect, Color color, float lineThick)
+	void DrawRectLines(Rect rect, Color color, float lineThick, float scale, float rotation, Vec2 pivot)
 	{
-		::DrawRectangleLinesEx(RLRect(rect), lineThick, RLColor(color));
+		if (rotation == 0.0f) ::DrawRectangleLinesEx(RLRect(rect.scaleAround(pivot, scale)), lineThick, RLColor(color));
+		else
+		{
+			auto scaledRect = rect.scaleAround(pivot, scale);
+			Vec2 lt = scaledRect.position().rotatedAround(pivot, rotation);
+			Vec2 rt = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y }.rotatedAround(pivot, rotation);
+			Vec2 rb = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y + scaledRect.height }.rotatedAround(pivot, rotation);
+			Vec2 lb = Vec2{ scaledRect.x, scaledRect.y + scaledRect.height }.rotatedAround(pivot, rotation);
+
+			Vec2 off = (lt - rt).normalized() * (lineThick / 2.0f);
+
+			DrawLine(lt + off, rt - off, color, lineThick);
+			DrawLine(rt, rb, color, lineThick);
+			DrawLine(rb - off, lb + off, color, lineThick);
+			DrawLine(lb, lt, color, lineThick);
+		}
 	}
 
 	void DrawRectangleGradientV(Rect rect, Color color1, Color color2)
@@ -57,6 +78,103 @@ namespace ebbglow::gfx
 			RLColor(color1),
 			RLColor(color2)
 		);
+	}
+
+	void DrawRectRounded(Rect rect, float roundness, Color color, float scale, float rotation, Vec2 pivot, int segments)
+	{
+		if (rotation == 0.0f)
+		{
+			::DrawRectangleRounded(RLRect(rect.scaleAround(pivot, scale)), roundness, segments, RLColor(color));
+		}
+		else
+		{
+			Rect scaledRect = rect.scaleAround(pivot, scale);
+
+			float radius = std::min(scaledRect.width, scaledRect.height) * roundness;
+			radius = std::min(radius, std::min(scaledRect.width, scaledRect.height) * 0.5f);
+
+			Rect vertRect
+			{
+				scaledRect.x,
+				scaledRect.y + radius,
+				scaledRect.width,
+				scaledRect.height - 2.0f * radius
+			};
+			Rect horiRect
+			{
+				scaledRect.x + radius,
+				scaledRect.y,
+				scaledRect.width - 2.0f * radius,
+				scaledRect.height
+			};
+
+			DrawRect(vertRect, color, 1.0f, rotation, pivot);
+			DrawRect(horiRect, color, 1.0f, rotation, pivot);
+
+			Vec2 centers[4] =
+			{
+				{ scaledRect.x + radius, scaledRect.y + radius },
+				{ scaledRect.x + scaledRect.width - radius, scaledRect.y + radius },
+				{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height - radius },
+				{ scaledRect.x + radius, scaledRect.y + scaledRect.height - radius }
+			};
+
+			for (int i = 0; i < 4; ++i)
+			{
+				Vec2 rotatedCenter = centers[i].rotatedAround(pivot, rotation);
+				DrawCircle(rotatedCenter, radius, color);
+			}
+		}
+	}
+	void DrawRectRoundedLines(Rect rect, float roundness, Color color, float lineThick, float scale, float rotation, Vec2 origin, int segments)
+	{
+		if (rotation == 0.0f)
+		{
+			::DrawRectangleRoundedLinesEx(RLRect(rect.scaleAround(origin, scale)), roundness, segments, lineThick, RLColor(color));
+		}
+		else
+		{
+			float radius = std::min(rect.width, rect.height) * roundness * scale;
+			Rect scaledRect = rect.scaleAround(origin, scale);
+			Vec2 lt = Vec2{ scaledRect.x, scaledRect.y + radius }.rotatedAround(origin, rotation);
+			Vec2 rt = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y + radius }.rotatedAround(origin, rotation);
+			Vec2 rb = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y + scaledRect.height - radius }.rotatedAround(origin, rotation);
+			Vec2 lb = Vec2{ scaledRect.x, scaledRect.y + scaledRect.height - radius }.rotatedAround(origin, rotation);
+			Vec2 tl = Vec2{ scaledRect.x + radius, scaledRect.y }.rotatedAround(origin, rotation);
+			Vec2 tr = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y }.rotatedAround(origin, rotation);
+			Vec2 br = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height }.rotatedAround(origin, rotation);
+			Vec2 bl = Vec2{ scaledRect.x + radius, scaledRect.y + scaledRect.height }.rotatedAround(origin, rotation);
+			Vec2 clt = Vec2{ scaledRect.x + radius, scaledRect.y + radius }.rotatedAround(origin, rotation);
+			Vec2 crt = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + radius }.rotatedAround(origin, rotation);
+			Vec2 crb = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height - radius }.rotatedAround(origin, rotation);
+			Vec2 clb = Vec2{ scaledRect.x + radius, scaledRect.y + scaledRect.height - radius }.rotatedAround(origin, rotation);
+
+			DrawLine(lt, lb, color, lineThick);
+			DrawLine(rt, rb, color, lineThick);
+			DrawLine(tl, tr, color, lineThick);
+			DrawLine(bl, br, color, lineThick);
+
+			float rotCltBegin = (tl - clt).rad();
+			float rotCltEnd = (lt - clt).rad();
+			rotCltEnd = rotCltEnd < rotCltBegin ? rotCltEnd : rotCltEnd - 2 * std::numbers::pi_v<float>;
+
+			float rotCrtBegin = (rt - crt).rad();
+			float rotCrtEnd = (tr - crt).rad();
+			rotCrtEnd = rotCrtEnd < rotCrtBegin ? rotCrtEnd : rotCrtEnd - 2 * std::numbers::pi_v<float>;
+
+			float rotCrbBegin = (br - crb).rad();
+			float rotCrbEnd = (rb - crb).rad();
+			rotCrbEnd = rotCrbEnd < rotCrbBegin ? rotCrbEnd : rotCrbEnd - 2 * std::numbers::pi_v<float>;
+
+			float rotClbBegin = (lb - clb).rad();
+			float rotClbEnd = (bl - clb).rad();
+			rotClbEnd = rotClbEnd < rotClbBegin ? rotClbEnd : rotClbEnd - 2 * std::numbers::pi_v<float>;
+
+			DrawCircleSectorLines(clt, radius, rotCltBegin, rotCltEnd, color, lineThick, segments);
+			DrawCircleSectorLines(crt, radius, rotCrtBegin, rotCrtEnd, color, lineThick, segments);
+			DrawCircleSectorLines(crb, radius, rotCrbBegin, rotCrbEnd, color, lineThick, segments);
+			DrawCircleSectorLines(clb, radius, rotClbBegin, rotClbEnd, color, lineThick, segments);
+		}
 	}
 
 	void DrawCircle(Vec2 center, float radius, Color color)
