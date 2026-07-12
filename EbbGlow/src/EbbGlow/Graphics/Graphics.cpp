@@ -86,8 +86,9 @@ namespace ebbglow::gfx
 	{
 		if (rotation == 0.0f)
 		{
-			::DrawRectangleRounded(RLRect(rect.scaleAround(pivot, scale)), roundness, segments, RLColor(color));
+			::DrawRectangleRounded(RLRect(rect.scaleAround((pivot + rect.position()), scale)), roundness, segments, RLColor(color));
 		}
+		else
 		{
 			Vec2 worldOrigin = pivot + rect.position();
 			float radius = std::min(rect.width, rect.height) * roundness * scale;
@@ -141,52 +142,12 @@ namespace ebbglow::gfx
 			DrawCircleSector(crb, radius, rotCrbBegin, rotCrbEnd, color, segments);
 			DrawCircleSector(clb, radius, rotClbBegin, rotClbEnd, color, segments);
 		}
-		/*else
-		{
-			Vec2 worldPivot = pivot + rect.position();
-			Rect scaledRect = rect.scaleAround(worldPivot, scale);
-
-			float radius = std::min(scaledRect.width, scaledRect.height) * roundness;
-			radius = std::min(radius, std::min(scaledRect.width, scaledRect.height) * 0.5f);
-
-			Rect vertRect
-			{
-				scaledRect.x,
-				scaledRect.y + radius,
-				scaledRect.width,
-				scaledRect.height - 2.0f * radius
-			};
-			Rect horiRect
-			{
-				scaledRect.x + radius,
-				scaledRect.y,
-				scaledRect.width - 2.0f * radius,
-				scaledRect.height
-			};
-
-			DrawRect(vertRect, color, 1.0f, rotation, pivot - Vec2{ 0, radius });
-			DrawRect(horiRect, color, 1.0f, rotation, pivot - Vec2{ radius, 0 });
-
-			Vec2 centers[4] =
-			{
-				{ scaledRect.x + radius, scaledRect.y + radius },
-				{ scaledRect.x + scaledRect.width - radius, scaledRect.y + radius },
-				{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height - radius },
-				{ scaledRect.x + radius, scaledRect.y + scaledRect.height - radius }
-			};
-
-			for (int i = 0; i < 4; ++i)
-			{
-				Vec2 rotatedCenter = centers[i].rotatedAround(worldPivot, rotation);
-				DrawCircle(rotatedCenter, radius, color);
-			}
-		}*/
 	}
 	void DrawRectRoundedLines(Rect rect, float roundness, Color color, float lineThick, float scale, float rotation, Vec2 pivot, int segments)
 	{
 		if (rotation == 0.0f)
 		{
-			::DrawRectangleRoundedLinesEx(RLRect(rect.scaleAround(pivot, scale)), roundness, segments, lineThick, RLColor(color));
+			::DrawRectangleRoundedLinesEx(RLRect(rect.scaleAround((pivot + rect.position()), scale)), roundness, segments, lineThick, RLColor(color));
 		}
 		else
 		{
