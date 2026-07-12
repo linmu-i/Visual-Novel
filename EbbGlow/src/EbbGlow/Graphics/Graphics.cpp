@@ -88,7 +88,60 @@ namespace ebbglow::gfx
 		{
 			::DrawRectangleRounded(RLRect(rect.scaleAround(pivot, scale)), roundness, segments, RLColor(color));
 		}
-		else
+		{
+			Vec2 worldOrigin = pivot + rect.position();
+			float radius = std::min(rect.width, rect.height) * roundness * scale;
+			Rect scaledRect = rect.scaleAround(worldOrigin, scale);
+			Vec2 lt = Vec2{ scaledRect.x, scaledRect.y + radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 rt = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y + radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 rb = Vec2{ scaledRect.x + scaledRect.width, scaledRect.y + scaledRect.height - radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 lb = Vec2{ scaledRect.x, scaledRect.y + scaledRect.height - radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 tl = Vec2{ scaledRect.x + radius, scaledRect.y }.rotatedAround(worldOrigin, rotation);
+			Vec2 tr = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y }.rotatedAround(worldOrigin, rotation);
+			Vec2 br = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height }.rotatedAround(worldOrigin, rotation);
+			Vec2 bl = Vec2{ scaledRect.x + radius, scaledRect.y + scaledRect.height }.rotatedAround(worldOrigin, rotation);
+			Vec2 clt = Vec2{ scaledRect.x + radius, scaledRect.y + radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 crt = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 crb = Vec2{ scaledRect.x + scaledRect.width - radius, scaledRect.y + scaledRect.height - radius }.rotatedAround(worldOrigin, rotation);
+			Vec2 clb = Vec2{ scaledRect.x + radius, scaledRect.y + scaledRect.height - radius }.rotatedAround(worldOrigin, rotation);
+
+			DrawTriangle(tl, clt, crt, color);
+			DrawTriangle(crt, tr, tl, color);
+
+			DrawTriangle(clb, clt, lt, color);
+			DrawTriangle(lt, lb, clb, color);
+
+			DrawTriangle(clb, bl, br, color);
+			DrawTriangle(br, crb, clb, color);
+
+			DrawTriangle(crt, crb, rb, color);
+			DrawTriangle(rb, rt, crt, color);
+
+			DrawTriangle(crt, clt, clb, color);
+			DrawTriangle(clb, crb, crt, color);
+
+			float rotCltBegin = (tl - clt).rad();
+			float rotCltEnd = (lt - clt).rad();
+			rotCltEnd = rotCltEnd < rotCltBegin ? rotCltEnd : rotCltEnd - 2 * std::numbers::pi_v<float>;
+
+			float rotCrtBegin = (rt - crt).rad();
+			float rotCrtEnd = (tr - crt).rad();
+			rotCrtEnd = rotCrtEnd < rotCrtBegin ? rotCrtEnd : rotCrtEnd - 2 * std::numbers::pi_v<float>;
+
+			float rotCrbBegin = (br - crb).rad();
+			float rotCrbEnd = (rb - crb).rad();
+			rotCrbEnd = rotCrbEnd < rotCrbBegin ? rotCrbEnd : rotCrbEnd - 2 * std::numbers::pi_v<float>;
+
+			float rotClbBegin = (lb - clb).rad();
+			float rotClbEnd = (bl - clb).rad();
+			rotClbEnd = rotClbEnd < rotClbBegin ? rotClbEnd : rotClbEnd - 2 * std::numbers::pi_v<float>;
+
+			DrawCircleSector(clt, radius, rotCltBegin, rotCltEnd, color, segments);
+			DrawCircleSector(crt, radius, rotCrtBegin, rotCrtEnd, color, segments);
+			DrawCircleSector(crb, radius, rotCrbBegin, rotCrbEnd, color, segments);
+			DrawCircleSector(clb, radius, rotClbBegin, rotClbEnd, color, segments);
+		}
+		/*else
 		{
 			Vec2 worldPivot = pivot + rect.position();
 			Rect scaledRect = rect.scaleAround(worldPivot, scale);
@@ -127,7 +180,7 @@ namespace ebbglow::gfx
 				Vec2 rotatedCenter = centers[i].rotatedAround(worldPivot, rotation);
 				DrawCircle(rotatedCenter, radius, color);
 			}
-		}
+		}*/
 	}
 	void DrawRectRoundedLines(Rect rect, float roundness, Color color, float lineThick, float scale, float rotation, Vec2 pivot, int segments)
 	{
