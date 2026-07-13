@@ -3,6 +3,7 @@
 #include <EbbGlow/Core/World.h>
 #include <EbbGlow/UI/YUI/Button/YUIButtonLogic.h>
 #include <EbbGlow/UI/YUI/Button/YUIFillButtonVisual.h>
+#include <EbbGlow/UI/YUI/Button/YUIButtonMessage.h>
 
 namespace ebbglow::ui::yui
 {
