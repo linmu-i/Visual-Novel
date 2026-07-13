@@ -21,7 +21,7 @@ namespace ebbglow::ui::yui
 
 			});
 	}
-	core::entity ScrollContainerListSystem::addItem(core::entity scListId, float itemHeight, int index = -1)
+	core::entity ScrollContainerListSystem::addItem(core::entity scListId, float itemHeight, int index)
 	{
 		auto scListPtr = scListPool->active()->get(scListId);
 		if (!scListPtr) return core::InvalidEntity;
@@ -56,14 +56,14 @@ namespace ebbglow::ui::yui
 		world->createUnit(itemId, itemTrans);
 		return itemId;
 	}
-	void ScrollContainerListSystem::addItem(core::entity scListId, core::entity itemId, float itemHeight, int index = -1)
+	void ScrollContainerListSystem::addItem(core::entity scListId, core::entity itemId, float itemHeight, int index)
 	{
 
 	}
 
 	core::entity ScrollContainerListSystem::removeItem(core::entity scListId, int index)
 	{
-
+		return core::InvalidEntity;
 	}
 	void ScrollContainerListSystem::removeItem(core::entity scListId, core::entity itemId)
 	{
