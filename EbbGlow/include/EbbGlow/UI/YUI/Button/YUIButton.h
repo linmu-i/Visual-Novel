@@ -11,8 +11,10 @@ namespace ebbglow::ui::yui
 	{
 		world.addPool<ButtonLogic>();
 		world.addPool<FillButtonVisual>();
+		world.addPool<ButtonMessage>();
 
 		world.addSystem(ButtonLogicSystem(world));
 		world.addSystem(FillButtonVisualSystem(world));
+		world.addSystem(ButtonMessageSystem(world));
 	}
 }
