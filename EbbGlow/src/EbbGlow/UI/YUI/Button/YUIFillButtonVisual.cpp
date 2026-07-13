@@ -1,11 +1,16 @@
 #include <EbbGlow/UI/YUI/Button/YUIFillButtonVisual.h>
 #include <EbbGlow/Graphics/Graphics.h>
 #include <EbbGlow/Utils/Functions.h>
+#include <EbbGlow/Utils/Control.h>
 
 namespace ebbglow::ui::yui
 {
 	void FillButtonVisualDraw::draw()
 	{
+		if (viewPort.has_value())
+		{
+			BeginScissorMode(*viewPort);
+		}
 		gfx::DrawRectRounded(rect.offsetOf(transform.position), 0.2f, visual.fillColor, transform.scale, transform.rotation, transform.pivot);
 		gfx::DrawRectRoundedLines(rect.offsetOf(transform.position), 0.2f, visual.borderColor, 2.0f, transform.scale, transform.rotation, transform.pivot);
 		Vec2 textSize = utils::MeasureTextSize(visual.font, visual.text, visual.fontSize * transform.scale, visual.spacing * transform.scale);
@@ -17,6 +22,10 @@ namespace ebbglow::ui::yui
 
 		gfx::DrawText(visual.font, visual.text, textPos, visual.fontSize * transform.scale, visual.spacing * transform.scale, visual.textColor, textPivot, transform.rotation);
 		gfx::DrawRectRounded(rect.offsetOf(transform.position).extendOf({ 2.0f, 2.0f }).offsetOf({-1.0f, -1.0f}), 0.2f, Color{ 255, 255, 255, static_cast<uint8_t>(255 * visual.interpolation) }, transform.scale, transform.rotation, transform.pivot);
+		if (viewPort.has_value())
+		{
+			EndScissorMode();
+		}
 	}
 
 	FillButtonVisualSystem::FillButtonVisualSystem(core::World2D& world)

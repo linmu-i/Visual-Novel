@@ -1,3 +1,5 @@
+#pragma once
+
 #include <EbbGlow/UI/YUI/YUIBasic.h>
 #include <EbbGlow/UI/YUI/Button/YUIButtonLogic.h>
 

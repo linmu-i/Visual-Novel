@@ -7,6 +7,8 @@
 
 #include <EbbGlow/UI/YUI/ImageBox/YUIImageBox.h>
 #include <EbbGlow/UI/YUI/Button/YUIButton.h>
+#include <EbbGlow/UI/YUI/TextBox/YUITextBox.h>
+#include <EbbGlow/UI/YUI/ScrollContainer/YUIScrollContainer.h>
 
 namespace ebbglow::ui::yui
 {

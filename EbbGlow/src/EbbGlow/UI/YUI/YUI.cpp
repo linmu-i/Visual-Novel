@@ -11,5 +11,7 @@ namespace ebbglow::ui::yui
 
 		ApplyImageBox(world);
 		ApplyButton(world);
+		ApplyTextBox(world);
+		ApplyScrollContainer(world);
 	}
 }
