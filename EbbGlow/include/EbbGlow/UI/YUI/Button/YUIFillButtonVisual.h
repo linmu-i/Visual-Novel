@@ -18,6 +18,7 @@ namespace ebbglow::ui::yui
 		std::string text;
 
 		float interpolation = 0.0f;
+		float roundness = 0.2f;
 	};
 
 	class FillButtonVisualDraw : public core::DrawBase
