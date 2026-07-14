@@ -17,7 +17,7 @@ namespace ebbglow::ui::yui
 				if (!IsControlActive(controlPool->active(), act.panelId)) return;
 
 				panelIna.transform.position.y = act.offset;
-				ina.offset -= input::MouseWheelDelta() * act.speed;
+				ina.offset += input::MouseWheelDelta() * act.speed;
 				ina.offset = std::clamp(ina.offset, ina.minOffset, ina.maxOffset);
 			});
 	}
