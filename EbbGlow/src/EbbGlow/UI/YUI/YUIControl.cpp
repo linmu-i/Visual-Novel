@@ -20,9 +20,9 @@ namespace ebbglow::ui::yui
 
 	bool IsControlActive(core::ComponentPool<ControlCom>* pool, core::entity id)
 	{
-		if (!pool) return false;
+		if (!pool) return true;
 		auto* controlCom = pool->get(id);
-		if (!controlCom) return false;
+		if (!controlCom) return true;
 		if (!controlCom->isActive) return false;
 
 		for (auto& otherId : controlCom->others)
@@ -38,9 +38,9 @@ namespace ebbglow::ui::yui
 		core::ComponentPool<ControlCom>* ctrlPool,
 		core::ComponentPool<TransformCom>* transPool, core::entity id)
 	{
-		if (!ctrlPool || !transPool) return {};
+		if (!ctrlPool || !transPool) return input::PointList();
 		auto* controlCom = ctrlPool->get(id);
-		if (!controlCom) return {};
+		if (!controlCom) return input::PointList();
 		if (!IsControlActive(ctrlPool, id)) return {};
 
 
