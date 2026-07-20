@@ -18,7 +18,7 @@ namespace ebbglow::core
 		uint32_t version_;
 
 	public:
-		constexpr entity() : index_(0), version_(0) {}
+		constexpr entity() : index_(InvalidIndex), version_(0xffffffffu) {}
 		constexpr entity(uint32_t index, uint32_t version) : index_(index), version_(version) {}
 		constexpr uint32_t index() const { return index_; }
 		constexpr uint32_t version() const { return version_; }

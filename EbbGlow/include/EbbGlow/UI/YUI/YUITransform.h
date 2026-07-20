@@ -18,7 +18,7 @@ namespace ebbglow::ui::yui
 	struct TransformCom
 	{
 		Transform transform;
-		std::vector<core::entity> others;
+		core::entity parent = core::InvalidEntity;
 	};
 
 	std::vector<Transform> GetTransforms(core::ComponentPool<TransformCom>* pool, core::entity id);
@@ -27,6 +27,6 @@ namespace ebbglow::ui::yui
 
 	Transform GetFinalTransform(std::span<const Transform> trans);
 
-	void TransformAttachTo(TransformCom& child, const TransformCom& parent, core::entity parentId);
+	void TransformAttachTo(TransformCom& child, core::entity parentId);
 	void TransformAttachTo(core::World2D& world, core::entity child, core::entity parent);
 }

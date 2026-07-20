@@ -63,7 +63,7 @@ namespace ebbglow::core
 		Camera2D* getCamera() { return &camera; }
 		MessageManager* getMessageManager() { return &messageManager; }
 
-		World2D(int screenX, int screenY) : screenX(screenX), screenY(screenY)//, renderTexture0(screenX, screenY), renderTexture1(screenX, screenY)
+		World2D(int screenX, int screenY) : screenX(screenX), screenY(screenY)
 		{
 			camera.offset = { 0,0 };
 			camera.target = { 0,0 };
@@ -133,6 +133,29 @@ namespace ebbglow::core
 				buffer.second->deleteUnit(id);//从添加缓冲区删除，处理一帧内被创建又被删除的实体
 			}
 		}
+
+		template<typename T>
+		T* getWaitAdd(entity id)
+		{
+			auto it = waitAdd.find(std::type_index(typeid(T)));
+			if (it == waitAdd.end())
+			{
+				return nullptr;
+			}
+			else
+			{
+				AddBuffer<T>* buffer = static_cast<AddBuffer<T>*>((it->second).get());
+				for (auto& [eid, com] : buffer->buffer)
+				{
+					if (eid == id)
+					{
+						return &com;
+					}
+				}
+				return nullptr;
+			}
+		}
+
 		void draw();
 		void update();
 	};

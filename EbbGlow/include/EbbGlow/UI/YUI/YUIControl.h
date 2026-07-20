@@ -11,7 +11,7 @@ namespace ebbglow::ui::yui
 		Rect interactiveArea;
 		bool isActive = true;
 		bool isVisible = true;
-		std::vector<core::entity> others;
+		core::entity parent;
 	};
 
 	bool IsVisible(core::ComponentPool<ControlCom>* pool, core::entity id);
@@ -22,6 +22,6 @@ namespace ebbglow::ui::yui
 		core::ComponentPool<ControlCom>* ctrlPool,
 		core::ComponentPool<TransformCom>* transPool, core::entity id);
 
-	void ControlAttachTo(ControlCom& child, const ControlCom& parent, core::entity parentId);
+	void ControlAttachTo(ControlCom& child, core::entity parentId);
 	void ControlAttachTo(core::World2D& world, core::entity child, core::entity parent);
 }

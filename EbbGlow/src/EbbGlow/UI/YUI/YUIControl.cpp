@@ -5,15 +5,13 @@ namespace ebbglow::ui::yui
 	bool IsVisible(core::ComponentPool<ControlCom>* pool, core::entity id)
 	{
 		if (!pool) return true;
-		auto* controlCom = pool->get(id);
-		if (!controlCom) return true;
-		if (!controlCom->isVisible) return false;
-
-		for (auto& otherId : controlCom->others)
+		core::entity actId = id;
+		while (actId != core::InvalidEntity)
 		{
-			auto* otherControl = pool->get(otherId);
-			if (!otherControl) continue;
-			if (!otherControl->isVisible) return false;
+			auto* controlCom = pool->get(actId);
+			if (!controlCom) return true;
+			if (!controlCom->isVisible) return false;
+			actId = controlCom->parent;
 		}
 		return true;
 	}
@@ -21,15 +19,13 @@ namespace ebbglow::ui::yui
 	bool IsControlActive(core::ComponentPool<ControlCom>* pool, core::entity id)
 	{
 		if (!pool) return true;
-		auto* controlCom = pool->get(id);
-		if (!controlCom) return true;
-		if (!controlCom->isActive) return false;
-
-		for (auto& otherId : controlCom->others)
+		core::entity actId = id;
+		while (actId != core::InvalidEntity)
 		{
-			auto* otherControl = pool->get(otherId);
-			if (!otherControl) continue;
-			if (!otherControl->isActive) return false;
+			auto* controlCom = pool->get(actId);
+			if (!controlCom) return true;
+			if (!controlCom->isActive) return false;
+			actId = controlCom->parent;
 		}
 		return true;
 	}
@@ -39,10 +35,6 @@ namespace ebbglow::ui::yui
 		core::ComponentPool<TransformCom>* transPool, core::entity id)
 	{
 		if (!ctrlPool || !transPool) return input::PointList();
-		auto* controlCom = ctrlPool->get(id);
-		if (!controlCom) return input::PointList();
-		if (!IsControlActive(ctrlPool, id)) return {};
-
 
 		auto IsActPoint = [](Transform finalTransform, Rect activeArea, Vec2 point)
 			{
@@ -51,47 +43,39 @@ namespace ebbglow::ui::yui
 				return activeArea.scaleAround(finalTransform.pivot, finalTransform.scale).contain(finalPoint);
 			};
 
-		Transform finalTransform = GetFinalTransform(GetTransforms(transPool, id));
-
 		std::vector<input::InputPoint> result = input::PointList();
-		result.erase(std::remove_if(result.begin(), result.end(),
-			[&](const input::InputPoint& point)
-			{
-				return !IsActPoint(finalTransform, controlCom->interactiveArea, point.position);
-			}), result.end());
-
-		if (result.empty()) return {};
-
-		for (auto& otherId : controlCom->others)
+		core::entity actId = id;
+		while (actId != core::InvalidEntity)
 		{
-			auto* otherControl = ctrlPool->get(otherId);
-			if (!otherControl) continue;
-			Transform otherFinalTransform = GetFinalTransform(GetTransforms(transPool, otherId));
+			auto* control = ctrlPool->get(actId);
+			if (!control) break;
+			Transform finalTransform = GetFinalTransform(GetTransforms(transPool, actId));
 
 			result.erase(std::remove_if(result.begin(), result.end(),
 				[&](const input::InputPoint& point)
 				{
-					return !IsActPoint(otherFinalTransform, otherControl->interactiveArea, point.position);
+					return !IsActPoint(finalTransform, control->interactiveArea, point.position);
 				}), result.end());
 			if (result.empty()) return {};
+
+			actId = control->parent;
 		}
 		return result;
 	}
 
-	void ControlAttachTo(ControlCom& child, const ControlCom& parent, core::entity parentId)
+	void ControlAttachTo(ControlCom& child, core::entity parentId)
 	{
-		child.others.clear();
-		child.others.reserve(parent.others.size() + 1);
-		child.others.insert(child.others.begin(), parent.others.begin(), parent.others.end());
-		child.others.push_back(parentId);
+		child.parent = parentId;
 	}
 
 	void ControlAttachTo(core::World2D& world, core::entity child, core::entity parent)
 	{
 		auto* c = world.getDoubleBuffer<ControlCom>()->inactive()->get(child);
+		if (!c)
+		{
+			c = world.getWaitAdd<ControlCom>(child);
+		}
 		if (!c) return;
-		auto* p = world.getDoubleBuffer<ControlCom>()->active()->get(parent);
-		if (!p) return;
-		ControlAttachTo(*c, *p, parent);
+		ControlAttachTo(*c, parent);
 	}
 }

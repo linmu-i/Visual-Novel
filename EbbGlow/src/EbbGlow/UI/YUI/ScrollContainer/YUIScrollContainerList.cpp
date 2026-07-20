@@ -52,7 +52,7 @@ namespace ebbglow::ui::yui
 		TransformCom itemTrans{ Transform{ { 0, targetY }, { 0, 0 }, 0.0f, 1.0f }, {} };
 		auto& panelTrans = *world->getDoubleBuffer<TransformCom>()->active()->get(scPtr->panelId);
 
-		TransformAttachTo(itemTrans, panelTrans, scPtr->panelId);
+		TransformAttachTo(itemTrans, scPtr->panelId);
 		world->createUnit(itemId, itemTrans);
 		return itemId;
 	}

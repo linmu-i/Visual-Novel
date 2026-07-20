@@ -8,14 +8,17 @@ namespace ebbglow::ui::yui
 		auto* transformCom = pool->get(id);
 		if (!transformCom) return {};
 		std::vector<Transform> result;
-		result.reserve(transformCom->others.size() + 1);
-		for (auto& otherId : transformCom->others)
+		result.reserve(5);
+		auto actId = id;
+
+		while (actId != core::InvalidEntity)
 		{
-			auto* otherTransform = pool->get(otherId);
-			if (!otherTransform) continue;
-			result.push_back(otherTransform->transform);
+			auto* actTransform = pool->get(actId);
+			if (!actTransform) break;
+			result.push_back(actTransform->transform);
+			actId = actTransform->parent;
 		}
-		result.push_back(transformCom->transform);
+		std::reverse(result.begin(), result.end());
 		return result;
 	}
 
@@ -45,20 +48,22 @@ namespace ebbglow::ui::yui
 		return Transform{ finalPosition, trans.back().pivot, rot, scl };
 	}
 
-	void TransformAttachTo(TransformCom& child, const TransformCom& parent, core::entity parentId)
+	void TransformAttachTo(TransformCom& child, core::entity parentId)
 	{
-		child.others.clear();
-		child.others.reserve(parent.others.size() + 1);
-		child.others.insert(child.others.begin(), parent.others.begin(), parent.others.end());
-		child.others.push_back(parentId);
+		child.parent = parentId;
 	}
 
 	void TransformAttachTo(core::World2D& world, core::entity child, core::entity parent)
 	{
-		auto* c = world.getDoubleBuffer<TransformCom>()->inactive()->get(child);
-		if (!c) return;
-		auto* p = world.getDoubleBuffer<TransformCom>()->active()->get(parent);
-		if (!p) return;
-		TransformAttachTo(*c, *p, parent);
+		auto* pool = world.getDoubleBuffer<TransformCom>()->inactive();
+		if (!pool) return;
+		auto* childTransform = pool->get(child);
+		if (!childTransform)
+		{
+			childTransform = world.getWaitAdd<TransformCom>(child);
+		}
+		if (!childTransform) return;
+
+		childTransform->parent = parent;
 	}
 }

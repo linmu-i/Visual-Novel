@@ -83,6 +83,8 @@ namespace ebbglow::core
 	private:
 		std::vector<std::pair<entity, T>> buffer;
 
+		friend class World2D;
+
 	public:
 		AddBuffer(ComponentPoolBase* pool0, ComponentPoolBase* pool1) : AddBufferBase(pool0, pool1) {}
 		template<typename U>
