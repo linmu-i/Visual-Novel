@@ -14,8 +14,6 @@ namespace ebbglow::ui::yui
 		Vec2 finalPos = (transform.position + transform.pivot * (1 - transform.scale));
 		
 		gfx::DrawText(textBox.font, textBox.text, finalPos, textBox.textSize * transform.scale, textBox.spacing * transform.scale, textBox.textColor, transform.pivot * transform.scale, transform.rotation);
-		Vec2 textSize = utils::MeasureTextSize(textBox.font, textBox.text, textBox.textSize * transform.scale, textBox.spacing * transform.scale);
-		gfx::DrawRectLines(Rect{finalPos, textSize}, 0xff0000ff, 1.0, 1.0, transform.rotation, transform.pivot * transform.scale);
 		if (viewPort.has_value()) EndScissorMode();
 	}
 
