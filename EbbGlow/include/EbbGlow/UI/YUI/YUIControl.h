@@ -22,6 +22,9 @@ namespace ebbglow::ui::yui
 		core::ComponentPool<ControlCom>* ctrlPool,
 		core::ComponentPool<TransformCom>* transPool, core::entity id);
 
+	bool IsActivePoint(core::ComponentPool<ControlCom>* ctrlPool,
+		core::ComponentPool<TransformCom>* trans, core::entity id, const Vec2& pointPos);
+
 	void ControlAttachTo(ControlCom& child, core::entity parentId);
 	void ControlAttachTo(core::World2D& world, core::entity child, core::entity parent);
 }

@@ -63,6 +63,38 @@ namespace ebbglow::ui::yui
 		return result;
 	}
 
+	bool IsActivePoint(core::ComponentPool<ControlCom>* ctrlPool,
+		core::ComponentPool<TransformCom>* trans, core::entity id, const Vec2& pointPos)
+	{
+		if (!ctrlPool || !trans) return true;
+
+		auto IsActPoint = [](Transform finalTransform, Rect activeArea, Vec2 point)
+			{
+
+				Vec2 finalPoint = (point - finalTransform.position).rotatedAround(finalTransform.pivot, -finalTransform.rotation);
+				return activeArea.scaleAround(finalTransform.pivot, finalTransform.scale).contain(finalPoint);
+			};
+
+		core::entity actId = id;
+		while (actId != core::InvalidEntity)
+		{
+			if (auto* control = ctrlPool->get(actId))
+			{
+				Transform finalTransform = GetFinalTransform(GetTransforms(trans, actId));
+				if (!IsActPoint(finalTransform, control->interactiveArea, pointPos))
+				{
+					return false;
+				}
+				actId = control->parent;
+			}
+			else
+			{
+				break;
+			}
+		}
+		return true;
+	}
+
 	void ControlAttachTo(ControlCom& child, core::entity parentId)
 	{
 		child.parent = parentId;

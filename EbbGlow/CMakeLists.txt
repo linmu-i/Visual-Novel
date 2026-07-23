@@ -83,7 +83,6 @@ set(VISUALNOVEL_SOURCES
     "src/EbbGlow/VisualNovel/VisualNovel/VisualNovel.cpp"
 	"src/EbbGlow/UI/YUI/TextBox/YUITextBox.cpp"
 	"src/EbbGlow/UI/YUI/ScrollContainer/YUIScrollContainer.cpp"
-	"src/EbbGlow/UI/YUI/ScrollContainer/YUIScrollContainerList.cpp"
 )
 
 target_sources(EbbGlow PRIVATE
