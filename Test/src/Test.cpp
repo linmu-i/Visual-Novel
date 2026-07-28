@@ -85,42 +85,75 @@ int main()
 
 #include <EbbGlow/UI/YUI/YUI.h>
 
+
 int main()
 {
 	using namespace ebbglow;
-	Init(1280, 720, "");
+	ebbglow::Init(1280, 720, "");
+	ebbglow::SetTargetFPS(120);
 
-	core::World2D world{ 800, 600 };
+	rsc::SharedFile fontData(std::filesystem::path{ "resource/font/Noto_Sans_SC/static/NotoSansSC-SemiBold.ttf" });
+
+	core::World2D world(ebbglow::utils::ScreenSize().x, ebbglow::utils::ScreenSize().y);
 
 	ui::yui::ApplyYUI(world);
 
-	ui::yui::ViewPortCom winvp{ Rect{0, 0, 400, 400}, {} };
-	ui::yui::TransformCom wintrans{ ui::yui::Transform{Vec2{500, 0}, {200, 200}, 3.14159265f / 2, 1.0f}, {}};
+	auto idList = ui::yui::layout::UICreator{ .world = &world }([fontData]
+	{
+		using namespace ebbglow::ui::yui::layout;
+		Column{}([&]
+		{
+			Spacer{.heightMode = SizeMode::Weight, .heightValue = 0.50f}();
 
-	core::entity winId = world.getEntityManager()->getId();
-	world.createUnit(winId, winvp, wintrans);
+			Button
+			{
+				.widthMode = SizeMode::Pixels,
+				.widthValue = 200.0f,
+				.heightMode = SizeMode::Pixels,
+				.heightValue = 100.0f,
+				.font = ebbglow::utils::DynamicLoadFont(fontData, "测试", 48),
+				.fontSize = 48.0f,
+				.text = "测试"
+			}();
 
-	ui::yui::TransformCom trans{ { {}, {}, 0.0f, 0.6666666f }, {} };
-	ui::yui::ViewPortCom vp{};
+			Button
+			{
+				.widthMode = SizeMode::Pixels,
+				.widthValue = 200.0f,
+				.heightMode = SizeMode::Pixels,
+				.heightValue = 100.0f,
+				.font = ebbglow::utils::DynamicLoadFont(fontData, "测试", 48),
+				.fontSize = 48.0f,
+				.text = "测试",
+				.onClick = [](core::World2D& world, core::entity id)
+				{
+					auto& ctrl = *world.getDoubleBuffer<ui::yui::ControlCom>()->inactive()->get(id);
+					ctrl.isVisible = !ctrl.isVisible;
+				}
+			}();
 
-	ui::yui::TransformAttachTo(trans, wintrans, winId);
-	ui::yui::ViewPortAttachTo(vp, winvp, winId);
+			Spacer{.heightMode = SizeMode::Weight, .heightValue = 1.0f }();
+		});
 
-	core::entity imgId = world.getEntityManager()->getId();
-	rsc::SharedTexture bg{ "resource/img/backGround.png" };
-	world.createUnit(imgId,
-		trans,
-		vp,
-		ui::yui::LayerCom{ &(*world.getUiLayer())[0] },
-		ui::yui::ImageBox{ bg });
+		Button
+		{
+			.widthMode = SizeMode::Pixels,
+			.widthValue = 200.0f,
+			.heightMode = SizeMode::Pixels,
+			.heightValue = 100.0f,
+			.alignment = Alignment::Left | Alignment::Top,
+			.font = ebbglow::utils::DynamicLoadFont(fontData, "测试", 48),
+			.fontSize = 48.0f,
+			.text = "测试"
+		}();
+	});
+		
 
 	while (!ebbglow::WindowShouldClose())
 	{
 		world.update();
 		ebbglow::BeginDrawing();
 		ebbglow::gfx::ClearBackground(ebbglow::colors::Black);
-		gfx::DrawLine({ 700,0 }, { 700,1000 }, colors::White);
-		gfx::DrawLine({ 500,0 }, { 500,1000 }, colors::White);
 		world.draw();
 		ebbglow::EndDrawing();
 	}

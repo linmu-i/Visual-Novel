@@ -75,7 +75,7 @@ namespace ebbglow::ui::yui
 
 				core::Layer* layerPtr = layer->active()->get(id)->layer;
 				if (!layerPtr) return;
-				layerPtr->push_back(std::make_unique<FillButtonVisualDraw>(act, rect, transform, viewPortOpt));
+				layerPtr->push_back(std::make_unique<FillButtonVisualDraw>(act, *rect, transform, viewPortOpt));
 			});
 	}
 }

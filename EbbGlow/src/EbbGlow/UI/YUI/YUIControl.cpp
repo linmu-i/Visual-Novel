@@ -49,14 +49,18 @@ namespace ebbglow::ui::yui
 		{
 			auto* control = ctrlPool->get(actId);
 			if (!control) break;
-			Transform finalTransform = GetFinalTransform(GetTransforms(transPool, actId));
+			
+			if (control->interactiveArea.has_value())
+			{
+				Transform finalTransform = GetFinalTransform(GetTransforms(transPool, actId));
 
-			result.erase(std::remove_if(result.begin(), result.end(),
-				[&](const input::InputPoint& point)
-				{
-					return !IsActPoint(finalTransform, control->interactiveArea, point.position);
-				}), result.end());
-			if (result.empty()) return {};
+				result.erase(std::remove_if(result.begin(), result.end(),
+					[&](const input::InputPoint& point)
+					{
+						return !IsActPoint(finalTransform, *control->interactiveArea, point.position);
+					}), result.end());
+				if (result.empty()) return {};
+			}
 
 			actId = control->parent;
 		}
@@ -80,10 +84,13 @@ namespace ebbglow::ui::yui
 		{
 			if (auto* control = ctrlPool->get(actId))
 			{
-				Transform finalTransform = GetFinalTransform(GetTransforms(trans, actId));
-				if (!IsActPoint(finalTransform, control->interactiveArea, pointPos))
+				if (control->interactiveArea.has_value())
 				{
-					return false;
+					Transform finalTransform = GetFinalTransform(GetTransforms(trans, actId));
+					if (!IsActPoint(finalTransform, *control->interactiveArea, pointPos))
+					{
+						return false;
+					}
 				}
 				actId = control->parent;
 			}

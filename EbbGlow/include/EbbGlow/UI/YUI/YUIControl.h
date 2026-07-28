@@ -8,7 +8,7 @@ namespace ebbglow::ui::yui
 {
 	struct ControlCom
 	{
-		Rect interactiveArea;
+		std::optional<Rect> interactiveArea;
 		bool isActive = true;
 		bool isVisible = true;
 		core::entity parent;

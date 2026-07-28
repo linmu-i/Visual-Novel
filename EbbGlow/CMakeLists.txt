@@ -58,6 +58,11 @@ set(UI_YUI_SOURCES
 	"src/EbbGlow/UI/YUI/Button/YUIButtonLogic.cpp"
 	"src/EbbGlow/UI/YUI/Button/YUIFillButtonVisual.cpp"
 	"src/EbbGlow/UI/YUI/Button/YUIButtonMessage.cpp"
+	"src/EbbGlow/UI/YUI/Button/YUIButtonOnClick.cpp"
+	"src/EbbGlow/UI/YUI/TextBox/YUITextBox.cpp"
+	"src/EbbGlow/UI/YUI/ScrollContainer/YUIScrollContainer.cpp"
+	"src/EbbGlow/UI/YUI/UILayout/ContextStack.cpp"
+	"src/EbbGlow/UI/YUI/UILayout/LayoutCom.cpp"
 )
 
 set(COMPONENTS_SOURCES
@@ -81,8 +86,6 @@ set(VISUALNOVEL_SOURCES
     "src/EbbGlow/VisualNovel/VisualNovel/DrawToScreen.cpp"
     "src/EbbGlow/VisualNovel/VisualNovel/MainTextBox.cpp"
     "src/EbbGlow/VisualNovel/VisualNovel/VisualNovel.cpp"
-	"src/EbbGlow/UI/YUI/TextBox/YUITextBox.cpp"
-	"src/EbbGlow/UI/YUI/ScrollContainer/YUIScrollContainer.cpp"
 )
 
 target_sources(EbbGlow PRIVATE

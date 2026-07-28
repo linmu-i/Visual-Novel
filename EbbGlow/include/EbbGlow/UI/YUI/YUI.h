@@ -10,6 +10,8 @@
 #include <EbbGlow/UI/YUI/TextBox/YUITextBox.h>
 #include <EbbGlow/UI/YUI/ScrollContainer/YUIScrollContainer.h>
 
+#include <EbbGlow/UI/YUI/YUILayout.h>
+
 namespace ebbglow::ui::yui
 {
 	void ApplyYUI(core::World2D& world);

@@ -7,6 +7,11 @@ target_compile_features(EbbGlow_Test PRIVATE cxx_std_20)
 
 target_link_libraries(EbbGlow_Test PUBLIC EbbGlow)
 
+target_compile_options(EbbGlow_Test PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/utf-8>
+    $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-finput-charset=UTF-8 -fexec-charset=UTF-8>
+)
+
 set_property(TARGET EbbGlow_Test
              PROPERTY VS_DEBUGGER_WORKING_DIRECTORY 
              "${CMAKE_SOURCE_DIR}/working_dir")

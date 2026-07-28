@@ -4,6 +4,7 @@
 #include <EbbGlow/UI/YUI/Button/YUIButtonLogic.h>
 #include <EbbGlow/UI/YUI/Button/YUIFillButtonVisual.h>
 #include <EbbGlow/UI/YUI/Button/YUIButtonMessage.h>
+#include <EbbGlow/UI/YUI/Button/YUIButtonOnClick.h>
 
 namespace ebbglow::ui::yui
 {
@@ -12,9 +13,11 @@ namespace ebbglow::ui::yui
 		world.addPool<ButtonLogic>();
 		world.addPool<FillButtonVisual>();
 		world.addPool<ButtonMessage>();
+		world.addPool<ButtonOnClick>();
 
 		world.addSystem(ButtonLogicSystem(world));
 		world.addSystem(FillButtonVisualSystem(world));
 		world.addSystem(ButtonMessageSystem(world));
+		world.addSystem(ButtonOnClickSystem(world));
 	}
 }
