@@ -8,10 +8,23 @@ namespace ebbglow::ui::yui
 	struct ScrollContainer
 	{
 		core::entity panelId;
+
+		enum class ScrollDirection
+		{
+			Vertical,
+			Horizontal,
+		} direction = ScrollDirection::Vertical;
+
 		float height = 0;
-		float maxOffset = 0;
-		float minOffset = 0;
-		float offset = 0;
+		float maxOffsetY = 0;
+		float minOffsetY = 0;
+		float offsetY = 0;
+
+		float width = 0;
+		float maxOffsetX = 0;
+		float minOffsetX = 0;
+		float offsetX = 0;
+
 		float speed = 1.0;
 	};
 

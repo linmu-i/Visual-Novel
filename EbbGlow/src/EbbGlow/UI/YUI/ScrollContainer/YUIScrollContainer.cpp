@@ -8,20 +8,29 @@ namespace ebbglow::ui::yui
 		scPool->active()->forEach([this](core::entity id, ScrollContainer& act)
 			{
 				auto& ina = *scPool->inactive()->get(id);
-				ina = act;
+				//ina = act;
 
-				auto& panelAct = *transPool->active()->get(act.panelId);
+				//auto& panelAct = *transPool->active()->get(act.panelId);
 				auto& panelIna = *transPool->inactive()->get(act.panelId);
-				panelIna = panelAct;
+				//panelIna = panelAct;
 
 				if (!IsControlActive(controlPool->active(), act.panelId)) return;
 
-				panelIna.transform.position.y = act.offset;
-
+				panelIna.transform.position.y = act.offsetY;
+				panelIna.transform.position.x = act.offsetX;
+				
 				Vec2 mousePos = input::MousePosition();
 				if (!IsActivePoint(controlPool->active(), transPool->active(), act.panelId, mousePos)) return;
-				ina.offset += input::MouseWheelDelta() * act.speed;
-				ina.offset = std::clamp(ina.offset, ina.minOffset, ina.maxOffset);
+				if (act.direction == ScrollContainer::ScrollDirection::Vertical)
+				{
+					ina.offsetY += input::MouseWheelDelta() * act.speed;
+					ina.offsetY = std::clamp(ina.offsetY, act.minOffsetY, act.maxOffsetY);
+				}
+				else if (act.direction == ScrollContainer::ScrollDirection::Horizontal)
+				{
+					ina.offsetX += input::MouseWheelDelta() * act.speed;
+					ina.offsetX = std::clamp(ina.offsetX, act.minOffsetX, act.maxOffsetX);
+				}
 			});
 	}
 

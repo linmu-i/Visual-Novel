@@ -98,12 +98,23 @@ int main()
 
 	ui::yui::ApplyYUI(world);
 
-	auto idList = ui::yui::layout::UICreator{ .world = &world }([fontData]
+	auto idList = ui::yui::layout::UICreator{ .world = &world }([&fontData]
 	{
 		using namespace ebbglow::ui::yui::layout;
 		Column{}([&]
 		{
 			Spacer{.heightMode = SizeMode::Weight, .heightValue = 0.50f}();
+
+			Text
+			{
+				.widthMode = SizeMode::Auto,
+				.heightMode = SizeMode::Auto,
+				.font = ebbglow::utils::DynamicLoadFont(fontData, "测试", 48),
+				.textSize = 48.0f,
+				.text = "测试"
+			}();
+
+			Spacer{ .heightMode = SizeMode::Weight, .heightValue = 0.50f }();
 
 			Button
 			{
@@ -134,18 +145,6 @@ int main()
 
 			Spacer{.heightMode = SizeMode::Weight, .heightValue = 1.0f }();
 		});
-
-		Button
-		{
-			.widthMode = SizeMode::Pixels,
-			.widthValue = 200.0f,
-			.heightMode = SizeMode::Pixels,
-			.heightValue = 100.0f,
-			.alignment = Alignment::Left | Alignment::Top,
-			.font = ebbglow::utils::DynamicLoadFont(fontData, "测试", 48),
-			.fontSize = 48.0f,
-			.text = "测试"
-		}();
 	});
 		
 

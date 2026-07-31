@@ -7,6 +7,7 @@
 #include <EbbGlow/UI/YUI/UILayout/ContextStack.h>
 #include <EbbGlow/UI/YUI/YUIBasic.h>
 #include <EbbGlow/UI/YUI/Button/YUIButton.h>
+#include <EbbGlow/UI/YUI/TextBox/YUITextBox.h>
 
 namespace ebbglow::ui::yui::layout
 {
@@ -430,4 +431,65 @@ namespace ebbglow::ui::yui::layout
 
 		context.addChild(id, size, layout, callback);
 	}
+
+	void Text::operator()()
+	{
+		auto& context = GetContextStack();
+		auto& world = context.getWorld();
+
+		auto id = context.getNextId();
+		auto parentId = context.getCurrentParent();
+
+		TransformCom trans{};
+		TransformAttachTo(trans, parentId);
+
+		ControlCom ctrl{};
+		ControlAttachTo(ctrl, parentId);
+
+		ViewPortCom vp{};
+		ViewPortAttachTo(vp, parentId);
+
+		TextBox textBox
+		{
+			.text = text,
+			.textSize = textSize,
+			.spacing = spacing,
+			.font = font,
+			.textColor = textColor
+		};
+
+		UILayout layout
+		{
+			.widthMode = widthMode,
+			.widthValue = widthValue,
+			.heightMode = heightMode,
+			.heightValue = heightValue,
+			.alignment = alignment
+		};
+
+		LayerCom layerCom{ .layer = &(*context.getWorld().getUiLayer())[layerDepth] };
+
+		world.createUnit(id, trans, ctrl, vp, textBox, layerCom);
+
+		Vec2 size{};
+
+		if (widthMode == SizeMode::Pixels) size.x = widthValue;
+		if (heightMode == SizeMode::Pixels) size.y = heightValue;
+		if (widthMode == SizeMode::Auto || heightMode == SizeMode::Auto)
+		{
+			auto size_ = utils::MeasureTextSize(font, text, textSize, spacing);
+			if (widthMode == SizeMode::Auto) size.x = size_.x;
+			if (heightMode == SizeMode::Auto) size.y = size_.y;
+		}
+
+		auto callback = [](ChildData& selfData)
+			{
+				auto& world = GetContextStack().getWorld();
+				auto& ctrl = *world.getWaitAdd<ControlCom>(selfData.childId);
+				ctrl.interactiveArea = Rect{ 0.0f, 0.0f, selfData.size.x, selfData.size.y };
+			};
+
+		context.addChild(id, size, layout, callback);
+	};
+
 }

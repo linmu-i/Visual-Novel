@@ -95,4 +95,22 @@ namespace ebbglow::ui::yui::layout
 
 		void operator()();
 	};
+
+	struct [[nodiscard]] Text
+	{
+		SizeMode widthMode = SizeMode::Weight;
+		float widthValue = 1.0f;
+		SizeMode heightMode = SizeMode::Weight;
+		float heightValue = 1.0f;
+		AlignmentType alignment = Alignment::Center | Alignment::Middle;
+
+		Color textColor = 0x2563ebff;
+		uint8_t layerDepth = 8;
+		rsc::SharedFont font;
+		float textSize = 24.0f;
+		float spacing = 1.0f;
+		std::string text;
+
+		void operator()();
+	};
 }
