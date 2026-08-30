@@ -8,164 +8,361 @@
 
 namespace ebbglow
 {
-	struct Vec2
+	template<std::integral T>
+	struct Vec2I;
+
+	template<std::floating_point T>
+	struct Vec2F
 	{
-		float x;
-		float y;
+		T x;
+		T y;
 
-		constexpr Vec2() noexcept : x(0.0f), y(0.0f) {}
-		constexpr Vec2(float x, float y) noexcept : x(x), y(y) {}
+		constexpr Vec2F() noexcept : x(0), y(0) {}
+		constexpr Vec2F(T x, T y) noexcept : x(x), y(y) {}
 
-		template<std::convertible_to<float> T0, std::convertible_to<float> T1>
-		constexpr Vec2(T0 x, T1 y) : x(static_cast<float>(x)), y(static_cast<float>(y)) {}
+		template<std::convertible_to<T> T0, std::convertible_to<T> T1>
+		constexpr Vec2F(T0 x, T1 y) : x(static_cast<T>(x)), y(static_cast<T>(y)) {}
 
-		constexpr Vec2& operator+=(Vec2 other) noexcept
+		template<std::integral U>
+		constexpr Vec2F(Vec2I<U> vec2I);
+
+		template<std::floating_point U>
+		constexpr Vec2F(Vec2F<U> other) noexcept : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)) {}
+
+		constexpr Vec2F& operator+=(Vec2F other) noexcept
 		{
 			x += other.x;
 			y += other.y;
 			return *this;
 		}
-		[[nodiscard]] constexpr Vec2 operator+(Vec2 other) const noexcept
+		[[nodiscard]] constexpr Vec2F operator+(Vec2F other) const noexcept
 		{
-			return Vec2(x + other.x, y + other.y);
+			return Vec2F(x + other.x, y + other.y);
 		}
 
-		constexpr Vec2& operator-=(Vec2 other) noexcept
+		constexpr Vec2F& operator-=(Vec2F other) noexcept
 		{
 			x -= other.x;
 			y -= other.y;
 			return *this;
 		}
-		[[nodiscard]] constexpr Vec2 operator-(Vec2 other) const noexcept
+		[[nodiscard]] constexpr Vec2F operator-(Vec2F other) const noexcept
 		{
-			return Vec2(x - other.x, y - other.y);
+			return Vec2F(x - other.x, y - other.y);
 		}
 
-		[[nodiscard]] constexpr Vec2 operator-() const noexcept
+		[[nodiscard]] constexpr Vec2F operator-() const noexcept
 		{
-			return Vec2(-x, -y);
+			return Vec2F(-x, -y);
 		}
 
-		[[nodiscard]] constexpr Vec2 operator*(float scalar) const noexcept
+		[[nodiscard]] constexpr Vec2F operator*(T scalar) const noexcept
 		{
-			return Vec2(x * scalar, y * scalar);
+			return Vec2F(x * scalar, y * scalar);
 		}
-		constexpr Vec2& operator*=(float scalar) noexcept
+		constexpr Vec2F& operator*=(T scalar) noexcept
 		{
 			x *= scalar;
 			y *= scalar;
 			return *this;
 		}
 
-		[[nodiscard]] constexpr Vec2 operator/(float scalar) const noexcept
+		[[nodiscard]] constexpr Vec2F operator/(T scalar) const noexcept
 		{
-			return Vec2(x / scalar, y / scalar);
+			return Vec2F(x / scalar, y / scalar);
 		}
-		constexpr Vec2& operator/=(float scalar) noexcept
+		constexpr Vec2F& operator/=(T scalar) noexcept
 		{
 			x /= scalar;
 			y /= scalar;
 			return *this;
 		}
 
-		[[nodiscard]] constexpr bool operator==(const Vec2& other) const noexcept = default;
-		[[nodiscard]] constexpr bool operator!=(const Vec2& other) const noexcept = default;
+		[[nodiscard]] constexpr bool operator==(const Vec2F& other) const noexcept = default;
+		[[nodiscard]] constexpr bool operator!=(const Vec2F& other) const noexcept = default;
 
-		[[nodiscard]] constexpr float dot(Vec2 other) const noexcept
+		[[nodiscard]] constexpr T dot(Vec2F other) const noexcept
 		{
 			return x * other.x + y * other.y;
 		}
 
-		[[nodiscard]] constexpr float cross(Vec2 other) const noexcept
+		[[nodiscard]] constexpr T cross(Vec2F other) const noexcept
 		{
 			return x * other.y - y * other.x;
 		}
 
-		[[nodiscard]] float length() const noexcept
+		[[nodiscard]] T length() const noexcept
 		{
 			return std::sqrt(x * x + y * y);
 		}
-		
-		[[nodiscard]] constexpr float lengthSqr() const noexcept
+
+		[[nodiscard]] constexpr T lengthSqr() const noexcept
 		{
 			return x * x + y * y;
 		}
 
-		[[nodiscard]] Vec2 normalized() const noexcept
+		[[nodiscard]] Vec2F normalized() const noexcept
 		{
-			float len = length();
-			if (len < 1e-8f) return Vec2(0.0f, 0.0f);
-			return Vec2(x / len, y / len);
+			T len = length();
+			if (len < T(1e-8)) return Vec2F(0, 0);
+			return Vec2F(x / len, y / len);
 		}
 
-		[[nodiscard]] Vec2 rotated(float rad) const noexcept
+		[[nodiscard]] Vec2F rotated(T rad) const noexcept
 		{
-			float cosTheta = std::cos(rad);
-			float sinTheta = std::sin(rad);
-			return Vec2(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
+			T cosTheta = std::cos(rad);
+			T sinTheta = std::sin(rad);
+			return Vec2F(x * cosTheta - y * sinTheta, x * sinTheta + y * cosTheta);
 		}
-		[[nodiscard]] Vec2 rotatedAround(Vec2 pivot, float rad) const noexcept
+		[[nodiscard]] Vec2F rotatedAround(Vec2F pivot, T rad) const noexcept
 		{
-			Vec2 direction = *this - pivot;
+			Vec2F direction = *this - pivot;
 			return pivot + direction.rotated(rad);
 		}
 
-		[[nodiscard]] constexpr Vec2 lerp(Vec2 other, float t) const noexcept
+		[[nodiscard]] constexpr Vec2F lerp(Vec2F other, T t) const noexcept
 		{
-			return Vec2(x + (other.x - x) * t, y + (other.y - y) * t);
+			return Vec2F(x + (other.x - x) * t, y + (other.y - y) * t);
 		}
 
-		[[nodiscard]] float rad() const noexcept
+		[[nodiscard]] T rad() const noexcept
 		{
 			return std::atan2(y, x);
 		}
 
-		[[nodiscard]] float deg() const noexcept
+		[[nodiscard]] T deg() const noexcept
 		{
-			constexpr float factor = 180.0f / std::numbers::pi_v<float>;
+			constexpr T factor = T(180) / std::numbers::pi_v<T>;
 			return rad() * factor;
 		}
 
-		[[nodiscard]] float angleTo(Vec2 other) const noexcept
+		[[nodiscard]] T angleTo(Vec2F other) const noexcept
 		{
-			float dotProd = dot(other);
-			float lenProd = length() * other.length();
-			if (lenProd < 1e-8f) return 0.0f;
-			float cosTheta = dotProd / lenProd;
-			cosTheta = std::clamp(cosTheta, -1.0f, 1.0f);
+			T dotProd = dot(other);
+			T lenProd = length() * other.length();
+			if (lenProd < T(1e-8)) return T(0);
+			T cosTheta = dotProd / lenProd;
+			cosTheta = std::clamp(cosTheta, T(-1), T(1));
 			return std::acos(cosTheta);
 		}
-		[[nodiscard]] float signedAngleTo(Vec2 other) const noexcept
+		[[nodiscard]] T signedAngleTo(Vec2F other) const noexcept
 		{
 			return std::atan2(cross(other), dot(other));
 		}
 
-		[[nodiscard]] Vec2 reflect(Vec2 normal) const noexcept
+		[[nodiscard]] Vec2F reflect(Vec2F normal) const noexcept
 		{
-			if (normal.lengthSqr() < 1e-8f) return *this;
+			if (normal.lengthSqr() < T(1e-8)) return *this;
 			normal = normal.normalized();
-			return *this - normal * (2.0f * dot(normal));
+			return *this - normal * (T(2) * dot(normal));
 		}
 
-		[[nodiscard]] Vec2 projectOnto(Vec2 other) const noexcept
+		[[nodiscard]] constexpr Vec2F projectOnto(Vec2F other) const noexcept
 		{
-			float otherLenSqr = other.lengthSqr();
-			if (otherLenSqr < 1e-8f) return Vec2(0.0f, 0.0f);
-			float projectionScale = dot(other) / otherLenSqr;
+			T otherLenSqr = other.lengthSqr();
+			if (otherLenSqr < T(1e-8)) return Vec2F(0, 0);
+			T projectionScale = dot(other) / otherLenSqr;
 			return other * projectionScale;
 		}
 
-		static constexpr Vec2 Zero() noexcept { return Vec2{ 0.0f, 0.0f }; }
-		static constexpr Vec2 XUnit() noexcept { return Vec2{ 1.0f, 0.0f }; }
-		static constexpr Vec2 YUnit() noexcept { return Vec2{ 0.0f, 1.0f }; }
-		static Vec2 Polar(float length, float rad) noexcept { return Vec2{ length * std::cos(rad), length * std::sin(rad) }; }
+		static constexpr Vec2F Zero() noexcept { return Vec2F{ 0, 0 }; }
+		static constexpr Vec2F XUnit() noexcept { return Vec2F{ 1, 0 }; }
+		static constexpr Vec2F YUnit() noexcept { return Vec2F{ 0, 1 }; }
+		static Vec2F Polar(T length, T rad) noexcept { return Vec2F{ length * std::cos(rad), length * std::sin(rad) }; }
 
 	};
 
-	[[nodiscard]] inline constexpr Vec2 operator*(float a, Vec2 b) noexcept
+	template<std::floating_point T, std::convertible_to<T> U>
+	[[nodiscard]] inline constexpr Vec2F<T> operator*(U a, Vec2F<T> b) noexcept
 	{
-		return b * a;
+		return b * static_cast<T>(a);
 	}
+
+	using Vec2 = Vec2F<float>;
+
+	template<std::integral T>
+	struct Vec2I
+	{
+		T x;
+		T y;
+
+		constexpr Vec2I() noexcept : x(0), y(0) {}
+		constexpr Vec2I(T x, T y) noexcept : x(x), y(y) {}
+
+		template<std::convertible_to<T> T0, std::convertible_to<T> T1>
+		constexpr Vec2I(T0 x, T1 y) : x(static_cast<T>(x)), y(static_cast<T>(y)) {}
+
+		template<std::floating_point U>
+		constexpr Vec2I(Vec2F<U> vec2F) noexcept : x(static_cast<T>(vec2F.x)), y(static_cast<T>(vec2F.y)) {}
+
+		template<std::integral U>
+		constexpr Vec2I(Vec2I<U> other) noexcept : x(static_cast<T>(other.x)), y(static_cast<T>(other.y)) {}
+
+		[[nodiscard]] constexpr bool operator==(const Vec2I& other) const noexcept = default;
+		[[nodiscard]] constexpr bool operator!=(const Vec2I& other) const noexcept = default;
+
+		template<std::floating_point U>
+		[[nodiscard]] Vec2F<U> toVec2F() const noexcept
+		{
+			return Vec2F<U>(static_cast<U>(x), static_cast<U>(y));
+		}
+
+		template<std::floating_point U>
+		[[nodiscard]] explicit operator Vec2F<U>() const noexcept
+		{
+			return toVec2F<U>();
+		}
+
+		[[nodiscard]] constexpr Vec2I operator+(Vec2I other) const noexcept
+		{
+			return Vec2I(x + other.x, y + other.y);
+		}
+		[[nodiscard]] constexpr Vec2I operator-(Vec2I other) const noexcept
+		{
+			return Vec2I(x - other.x, y - other.y);
+		}
+		[[nodiscard]] constexpr Vec2I operator*(T scalar) const noexcept
+		{
+			return Vec2I(x * scalar, y * scalar);
+		}
+		[[nodiscard]] constexpr Vec2I operator/(T scalar) const noexcept
+		{
+			return Vec2I(x / scalar, y / scalar);
+		}
+		[[nodiscard]] constexpr Vec2I operator-() const noexcept
+		{
+			return Vec2I(-x, -y);
+		}
+
+		constexpr Vec2I& operator+=(Vec2I other) noexcept
+		{
+			x += other.x;
+			y += other.y;
+			return *this;
+		}
+		constexpr Vec2I& operator-=(Vec2I other) noexcept
+		{
+			x -= other.x;
+			y -= other.y;
+			return *this;
+		}
+		constexpr Vec2I& operator*=(T scalar) noexcept
+		{
+			x *= scalar;
+			y *= scalar;
+			return *this;
+		}
+		constexpr Vec2I& operator/=(T scalar) noexcept
+		{
+			x /= scalar;
+			y /= scalar;
+			return *this;
+		}
+
+		constexpr Vec2I& operator++() noexcept
+		{
+			++x;
+			++y;
+			return *this;
+		}
+
+		constexpr Vec2I& operator--() noexcept
+		{
+			--x;
+			--y;
+			return *this;
+		}
+
+		constexpr Vec2I operator++(int) noexcept
+		{
+			Vec2I temp = *this;
+			++(*this);
+			return temp;
+		}
+
+		constexpr Vec2I operator--(int) noexcept
+		{
+			Vec2I temp = *this;
+			--(*this);
+			return temp;
+		}
+
+		constexpr Vec2I operator%(T scalar) const noexcept
+		{
+			return Vec2I(x % scalar, y % scalar);
+		}
+
+		constexpr Vec2I& operator%=(T scalar) noexcept
+		{
+			x %= scalar;
+			y %= scalar;
+			return *this;
+		}
+
+		template<std::floating_point U>
+		[[nodiscard]] constexpr U lengthSqr() const noexcept
+		{
+			return static_cast<U>(x) * static_cast<U>(x) + static_cast<U>(y) * static_cast<U>(y);
+		}
+		template<std::floating_point U>
+		[[nodiscard]] U length() const noexcept
+		{
+			return std::sqrt(lengthSqr<U>());
+		}
+
+		template<std::floating_point U>
+		[[nodiscard]] U distantTo(Vec2I other) const noexcept
+		{
+			return (*this - other).length<U>();
+		}
+
+		template<std::floating_point U>
+		[[nodiscard]] Vec2F<U> normalized() const noexcept
+		{
+			return Vec2F<U>(static_cast<U>(x), static_cast<U>(y)).normalized();
+		}
+
+		static constexpr Vec2I Zero() noexcept { return Vec2I{ 0, 0 }; }
+		static constexpr Vec2I XUnit() noexcept { return Vec2I{ 1, 0 }; }
+		static constexpr Vec2I YUnit() noexcept { return Vec2I{ 0, 1 }; }
+	};
+
+	template<std::floating_point T>
+	template<std::integral U>
+	constexpr Vec2F<T>::Vec2F(Vec2I<U> vec2I)
+	{
+		x = static_cast<T>(vec2I.x);
+		y = static_cast<T>(vec2I.y);
+	}
+
+}
+
+namespace std
+{
+	template<std::floating_point T>
+	struct hash<ebbglow::Vec2F<T>>
+	{
+		size_t operator()(const ebbglow::Vec2F<T>& vec) const noexcept
+		{
+			size_t h1 = std::hash<T>{}(vec.x);
+			size_t h2 = std::hash<T>{}(vec.y);
+			return h1 ^ (h2 << 1);
+		}
+	};
+	template<std::integral T>
+	struct hash<ebbglow::Vec2I<T>>
+	{
+		size_t operator()(const ebbglow::Vec2I<T>& vec) const noexcept
+		{
+			size_t h1 = std::hash<T>{}(vec.x);
+			size_t h2 = std::hash<T>{}(vec.y);
+			return h1 ^ (h2 << 1);
+		}
+	};
+}
+
+namespace ebbglow
+{
 
 	struct ColorR8G8B8A8
 	{
